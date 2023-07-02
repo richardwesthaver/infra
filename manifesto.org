@@ -1,0 +1,5 @@
+#+TITLE: manifesto
+#+AUTHOR: ellis
+#+DATE: 2023-04-01 Sat
+* Abstract
+* Introduction

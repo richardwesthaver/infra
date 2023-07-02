@@ -1,0 +1,38 @@
+#+TITLE: tech
+#+AUTHOR: ellis
+
+Editors:
+- Emacs
+
+Core PLs:
+- Lisp
+- Rust
+- C
+
+OS:
+- GNU/Linux
+- MacOS
+- Windows
+
+Ecosystem:
+- RocksDB
+- QUIC
+- QEMU
+- Postgres
+- SQLite
+- AWS
+- GCP
+- LLVM
+- Python
+- Node.js
+- X11
+- systemd
+- UEFI
+- Nginx
+- Wireguard
+- OpenVPN
+- IRC
+- Matrix
+- Discord
+- Notion.so
+- Stripe

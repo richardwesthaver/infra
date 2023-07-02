@@ -1,0 +1,13 @@
+#+TITLE: business
+#+AUTHOR: ellis
+
+* Abstract
+In short, this document describes =otom8= the business. We are
+designed to be small, fast, and agile. We infiltrate a market, apply
+our methodology, and develop solutions that are simply years ahead of
+the competition. We treat the market like we're the only supplier,
+because we can. This is in part due to our internal research &
+development pursuits, but also our approach to business. We build
+businesses and revenue streams the exact same way we build software --
+with a bottom up approach. This is our secret weapon, and what gives
+us the ability to adapt to any environment where our interests lie.
