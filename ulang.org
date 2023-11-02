@@ -1,0 +1,53 @@
+#+TITLE: ulang
+
+This document defines a *U-Language* as described by the late great
+Haskell Curry:
+
+#+begin_quote
+Every investigation, including the present one, has to be communicated
+from one person to another by means of language. It is expedient to
+begin our study by calling attention to this obvious fact, by giving a
+name to the language being used, and by being explicit about a few of
+its features. We shall call the language being used the
+U-Language. [...] There would be no point in calling attention to it,
+if it were not for the fact that language is more intimately related
+to our job than of most others.
+#+end_quote
+
+There is a natural reader/writer relationship that exists in countless
+places, but is rarely examined because it is rarely necessary. However
+there is a wide array of significantly complex code and prose projects
+out there which would benefit greatly from such an investigation.
+
+I would also like to humbly clarify on our interpretation of a *job*
+as Curry puts it. We all have the same job really - to be curious, and
+to solve problems. It is the *problems* I would like to shine a light
+on, if just for a moment, because it's important. Just as Curry thinks
+of languages, we can think of problems. There exists the *problem of
+problems* which is the subject of our investigations. This *U-Problem*
+is what we are solving for at all times. In this light, we can view
+the *U-Language* as a means of bringing both the /reader/ and /writer/
+as close as possible to the *U-Problem*.
+
+For convenience, our *U-Problem* is undecidable, but we model and
+solve for it using /computers/, or more abstractly machines. Thus, our
+*U-Language* helps bring the /reader/ and /writer/ closer to
+our /machines/ as well as expedite communications.
+
+- /Why do we need a U-Language?/ ::
+  To bring both the /reader/ and /writer/ closer to our *U-Problem*.
+- /What is our U-Problem?/ :: 
+  Undecidable, but we use /computers/ as a model of the
+  *U-Problem*.
+- /How do we solve our U-Problem?/ ::
+  With /computers/, by developing accurate models and finding optimal
+  solutions.
+
+* Key Words
+* Abbrevs
+* Conditionals
+* Operators
+* Expressions
+* Links
+* Timestamps
+* Macros

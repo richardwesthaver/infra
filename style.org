@@ -1,3 +1,23 @@
 #+TITLE: style
 
-* U-Lang
+As an organization we maintain a styleguide[fn:1] which lists all of
+the style guidelines we use for our code. If you are contributing to
+one of our projects, you should review and understand the relevant
+sections below.
+
+You should also review the [[file:ulang.org][ulang]] document, which may shine some light
+on code comments and developer docs.
+
+[fn:1] https://google.github.io/styleguide/ 
+
+* Common Lisp
+
+* Rust
+
+* Emacs Lisp
+
+* Org-mode
+
+* Shell
+
+* Python
