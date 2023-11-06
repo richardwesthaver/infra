@@ -1,6 +1,6 @@
 #+TITLE: ulang
-
-This document defines a *U-Language* as described by the late great
+#+OPTIONS: toc:nil
+This document describes a *U-Language* as described by the late great
 Haskell Curry:
 
 #+begin_quote
@@ -20,34 +20,180 @@ there is a wide array of significantly complex code and prose projects
 out there which would benefit greatly from such an investigation.
 
 I would also like to humbly clarify on our interpretation of a *job*
-as Curry puts it. We all have the same job really - to be curious, and
-to solve problems. It is the *problems* I would like to shine a light
-on, if just for a moment, because it's important. Just as Curry thinks
-of languages, we can think of problems. There exists the *problem of
-problems* which is the subject of our investigations. This *U-Problem*
-is what we are solving for at all times. In this light, we can view
-the *U-Language* as a means of bringing both the /reader/ and /writer/
-as close as possible to the *U-Problem*.
+as Curry puts it. 
+
+We all have the same job really - to be curious, and to solve
+problems. It is the *problems* I would like to shine a light on, if
+just for a moment, because it's important. 
+
+Just as Curry thinks of languages, we can think of problems. There
+exists the *problem of problems* which is the subject of our
+investigations. This *U-Problem* is what we are solving for at all
+times. In this light, we can view the *U-Language* as a means of
+bringing both the /reader/ and /writer/ as close as possible to the
+*U-Problem*.
 
 For convenience, our *U-Problem* is undecidable, but we model and
-solve for it using /computers/, or more abstractly machines. Thus, our
-*U-Language* helps bring the /reader/ and /writer/ closer to
-our /machines/ as well as expedite communications.
+solve for it using ~computers~, or more abstractly ~machines~. Thus,
+our *U-Language* helps bring the /reader/ and /writer/ closer to our
+~machines~ as well as expedite communications between reader and
+writer.
 
-- /Why do we need a U-Language?/ ::
-  To bring both the /reader/ and /writer/ closer to our *U-Problem*.
-- /What is our U-Problem?/ :: 
-  Undecidable, but we use /computers/ as a model of the
-  *U-Problem*.
-- /How do we solve our U-Problem?/ ::
-  With /computers/, by developing accurate models and finding optimal
-  solutions.
+:summary:
+- /Why do we need a U-Language?/ :: To bring both the /reader/ and
+  /writer/ closer to our *U-Problem*.
 
-* Key Words
-* Abbrevs
-* Conditionals
-* Operators
-* Expressions
-* Links
-* Timestamps
-* Macros
+- /What is our U-Problem?/ :: Undecidable, but we use /computers/ as a
+  model of the *U-Problem*. When we are dealing with the *U-Problem*
+  we are speaking in terms of /computation/ and the ability of a given
+  machine to /compute/.
+
+- /How do we solve our U-Problem?/ :: With /computers/, by developing
+  accurate models and finding optimal solutions.
+:end:
+
+* ulang
+As the title suggest we refer to our *Universal Language* as
+ulang. When I say something along the lines of "Please refer to
+[[Links][ulang:links]]", I am referencing the section named /Links/ of this
+document.
+
+This is a "living" document. In other words, it is incomplete. I may
+include additional elements in the ulang, or modify the specification
+of existing ones.
+
+Each section of this document describes an element of the ulang. It is
+recommended to skim through the top-level sections ([[Org-mode][Org-mode]] and
+[[Elements][Elements]]) and review the element sub-headings as needed.
+
+#+TOC: headlines 3
+
+** Org-mode
+[[https://www.gnu.org/software/emacs/][GNU Emacs]] is our text editor, so naturally [[https://orgmode.org/][Org Mode]] is our
+documentation engine. 
+
+If you are already familiar with Emacs and org-mode, I recommend
+opening the source file of this document in Emacs and following along.
+
+If not, I recommend browsing through the [[https://orgmode.org/worg/][Worg resources]], but we're not
+getting too deep into tribal hacker knowledge of Emacs. The choice of
+Org is arbitrary and the concepts here would apply to other formats
+(LaTeX, Markdown, etc).
+
+Let us first consider /Org the syntax/.
+
+Org syntax is much less popular than Markdown and lacks parsing
+utilities in popular programming languages[fn:1]. Perhaps Org is not
+suited as a /universal/ text format because it's arguably harder to
+parse, making it less interoperable and intimidating to adopt.
+
+Regardless, we are committed to it as a foundation because it is the
+most hackable documentation engine available. With enough experience
+you can morph Org into whatever system you want, and that is /exactly/
+our intention.
+
+[fn:1] The ecosystem is changing though, thanks to the dedication of
+some excellent hackers: [[https://github.com/karlicoss/orgparse][python]], [[https://github.com/tecosaur/Org.jl][julia]]
+
+*** TODO organ
+- State "TODO"       from              [2023-11-05 Sun 19:21]
+Org is the designated text representation of our ulang. Org-mode
+depends on Emacs (it's written in Emacs Lisp) but that doesn't mean we
+have to. To solve the issue of interoperability between different
+systems, we are developing a modular tool called [[https://lab.rwest.io/comp/core/-/tree/branch/default/lisp/lib/organ][organ]]. The purpose of
+=organ= is to provide an external API for Org documents that doesn't
+depend on GNU Emacs.
+
+If we were designing a /personal/ note-taking system, I would argue
+that we don't need this tool. The problem is it's not personal - we
+have a much wider intended audience - it's business. This means
+thinking about hundreds to thousands of documents instead of tens,
+about processing those documents into a full-text search database, and
+reducing cost along the way.
+
+Emacs can do all of these things, but do you really want it to? I
+don't. Emacs should remain close to the developer and we can outsource
+the tricky bits to =organ=.
+
+** Elements
+*** Keywords
+The ulang *Keywords* are a superset of those defined by [[https://datatracker.ietf.org/doc/html/rfc2119][RFC-2119]]. The
+definition of a keyword from the original spec is ultimately
+unchanged:
+
+#+begin_quote
+In many standards track documents several words are used to signify
+the requirements in the specification.  These words are often
+capitalized.  This document defines these words as they should be
+interpreted in IETF documents.  Authors who follow these guidelines
+should incorporate this phrase near the beginning of their document:
+
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
+NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and
+"OPTIONAL" in this document are to be interpreted as described in
+RFC 2119.
+#+end_quote
+
+We can't be bothered to include these with every document, so here
+they are - don't forget!
+
+#+begin_quote
+1. MUST   This word, or the terms "REQUIRED" or "SHALL", mean that the
+   definition is an absolute requirement of the specification.
+
+2. MUST NOT   This phrase, or the phrase "SHALL NOT", mean that the
+   definition is an absolute prohibition of the specification.
+
+3. SHOULD   This word, or the adjective "RECOMMENDED", mean that there
+   may exist valid reasons in particular circumstances to ignore a
+   particular item, but the full implications must be understood and
+   carefully weighed before choosing a different course.
+
+4. SHOULD NOT   This phrase, or the phrase "NOT RECOMMENDED" mean that
+   there may exist valid reasons in particular circumstances when the
+   particular behavior is acceptable or even useful, but the full
+   implications should be understood and the case carefully weighed
+   before implementing any behavior described with this label.
+
+5. MAY   This word, or the adjective "OPTIONAL", mean that an item is
+   truly optional.  One vendor may choose to include the item because a
+   particular marketplace requires it or because the vendor feels that
+   it enhances the product while another vendor may omit the same item.
+   An implementation which does not include a particular option MUST be
+   prepared to interoperate with another implementation which does
+   include the option, though perhaps with reduced functionality. In the
+   same vein an implementation which does include a particular option
+   MUST be prepared to interoperate with another implementation which
+   does not include the option (except, of course, for the feature the
+   option provides.)
+#+end_quote
+
+One of the important features of keywords is that we use them as Org
+[[https://orgmode.org/manual/Workflow-states.html][Workflow states]]. You may use any of the keywords above or below as the
+first word in a heading to signify a requirement or a workflow state:
+
+6. TBD   A task to be done at a later date.
+
+7. TODO   A task yet to be done.
+
+8. WIP   Work In Progress task.
+
+9. NOTE   Designates a note item.
+
+10. DRAFT   Designates a draft item.
+
+11. NOPE   Item that will not be completed.
+
+12. DONE   Completed task.
+
+*** Abbrevs
+Abbrevs include domain-specific acronyms and slang such as /DB/ for
+database or /M$/ for Microsoft. They're abbreviations, but even lazier
+(we can't even be bothered to spell out the name). By defining them in
+one place we can use Emacs to lookup abbrevs on the fly, and we can
+automatically generate help text and references to abbrev definitions
+for our readers.
+*** Operators
+*** Links
+*** Timestamps
+*** Macros
