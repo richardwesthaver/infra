@@ -1,0 +1,4 @@
+#+TITLE: quickstart
+* Install
+* Configure the daemon
+* Connect a client

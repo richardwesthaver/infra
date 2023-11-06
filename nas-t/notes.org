@@ -1,0 +1,235 @@
+#+TITLE: notes
+#+BIBLIOGRAPHY: refs.bib
+* File Systems
+** BTRFS
+#+begin_quote
+BTRFS is a Linux filesystem based on copy-on-write, allowing for
+efficient snapshots and clones.
+
+It uses B-trees as its main on-disk data structure. The design goal is
+to work well for many use cases and workloads. To this end, much
+effort has been directed to maintaining even performance as the
+filesystem ages, rather than trying to support a particular narrow
+benchmark use-case.
+
+Linux filesystems are installed on smartphones as well as enterprise
+servers. This entails challenges on many different fronts.
+
+- Scalability :: The filesystem must scale in many dimensions: disk
+  space, memory, and CPUs.
+
+- Data integrity :: Losing data is not an option, and much effort is
+  expended to safeguard the content. This includes checksums, metadata
+  duplication, and RAID support built into the filesystem.
+
+- Disk diversity :: The system should work well with SSDs and hard
+  disks. It is also expected to be able to use an array of different
+  sized disks, which poses challenges to the RAID and striping
+  mechanisms.
+#+end_quote
+-- [cite/t/f:@btrfs]
+*** [2023-08-08 Tue] btrfs performance speculation ::
+  - [[https://www.percona.com/blog/taking-a-look-at-btrfs-for-mysql/]]
+    - zfs outperforms immensely, but potential misconfiguration on btrfs side (virt+cow
+      still enabled?)
+  - https://www.ctrl.blog/entry/btrfs-vs-ext4-performance.html
+    - see the follow up comment on this post
+      - https://www.reddit.com/r/archlinux/comments/o2gc42/is_the_performance_hit_of_btrfs_serious_is_it/
+            #+begin_quote
+      I’m the author of OP’s first link. I use BtrFS today. I often shift lots of
+      de-duplicatable data around, and benefit greatly from file cloning. The data is actually
+      the same data that caused the slow performance in the article. BtrFS and file cloning
+      now performs this task quicker than a traditional file system. (Hm. It’s time for a
+      follow-up article.)
+
+      In a laptop with one drive: it doesn’t matter too much unless you do work that benefit
+      from file cloning or snapshots. This will likely require you to adjust your tooling and
+      workflow. I’ve had to rewrite the software I use every day to make it take advantage of
+      the capabilities of a more modern file system. You won’t benefit much from the data
+      recovery and redundancy features unless you’ve got two storage drives in your laptop and
+      can setup redundant data copies.
+
+          on similar hardware to mine?
+
+      It’s not a question about your hardware as much as how you use it. The bad performance I
+      documented was related to lots and lots of simultaneous random reads and writes. This
+      might not be representative of how you use your computer.
+            #+end_quote
+  - https://dl.acm.org/doi/fullHtml/10.1145/3386362
+    - this is about distributed file systems (in this case Ceph) - they argue against
+      basing DFS on ondisk-format filesystems (XFS ext4) - developed BlueStore as
+      backend, which runs directly on raw storage hardware.
+    - this is a good approach, but expensive (2 years in development) and risky
+    - better approach is to take advantage of a powerful enough existing ondisk-FS
+      format and pair it with supporting modules which abstract away the 'distributed'
+      mechanics.
+    - the strategy presented here is critical for enterprise-grade hardware where the
+      ondisk filesystem becomes the bottleneck that you're looking to optimize
+  - https://lore.kernel.org/lkml/cover.1676908729.git.dsterba@suse.com/
+    - linux 6.3 patch by David Sterba [2023-02-20 Mon]
+    - btrfs continues to show improvements in the linux kernel, ironing out the kinks
+    - makes it hard to compare benchmarks tho :/
+*** MacOS support
+- see this WIP k-ext for macos: [[https://github.com/relalis/macos-btrfs][macos-btrfs]]
+  - maybe we can help out with the VFS/mount support
+*** on-disk format
+- [[https://btrfs.readthedocs.io/en/latest/dev/On-disk-format.html][on-disk-format]]
+- 'btrfs consists entirely of several trees. the trees use copy-on-write.'
+- trees are stored in nodes which belong to a level in the b-tree structure.
+- internal nodes (inodes) contain refs to other inodes on the /next/ level OR
+  - to leaf nodes then the level reaches 0.
+- leaf nodes contain various types depending on the tree.
+- basic structures
+  - 0:8 uint = objectid, each tree has its own set of object IDs
+  - 8:1 uint = item type
+  - 9:8 uint = offset, depends on type.
+  - little-endian
+  - fields are unsigned
+  - *superblock*
+    - primary superblock is located at 0x10000 (64KiB)
+    - Mirror copies of the superblock are located at physical addresses 0x4000000 (64
+      MiB) and 0x4000000000 (256GiB), if valid. copies are updated simultaneously.
+    - during mount only the first super block at 0x10000 is read, error causes mount to
+      fail.
+    - BTRFS onls recognizes disks with a valid 0x10000 superblock.
+  - *header*
+    - stored at the start of every inode
+    - data following it depends on whether it is an internal or leaf node.
+  - *inode*
+    - node header followed by a number of key pointers
+    - 0:11 key
+    - 11:8 uint = block number
+    - 19:8 uint = generation
+  - *lnode*
+    - leaf nodes contain header followed by key pointers
+    - 0:11 key
+    - 11:4 uint = data offset relative to end of header(65)
+    - 15:4 uint = data size
+- objects
+  - ROOT_TREE
+    - holds ROOT_ITEMs, ROOT_REFs, and ROOT_BACKREFs for every tree other than itself.
+    - used to find the other trees and to determine the subvol structure.
+    - holds items for the 'root tree directory'. laddr is store in the superblock
+  - objectIDs
+    - free ids: BTRFS_FIRST_FREE_OBJECTID=256ULL:BTRFS_LAST_FREE_OBJECTID=-256ULL
+    - otherwise used for internal use
+*** send-stream format
+- [[https://btrfs.readthedocs.io/en/latest/dev/dev-send-stream.html][send stream format]]
+- Send stream format represents a linear sequence of commands describing actions to be
+  performed on the target filesystem (receive side), created on the source filesystem
+  (send side).
+- The stream is currently used in two ways: to generate a stream representing a
+  standalone subvolume (full mode) or a difference between two snapshots of the same
+  subvolume (incremental mode).
+- The stream can be generated using a set of other subvolumes to look for extent
+  references that could lead to a more efficient stream by transferring only the
+  references and not full data.
+- The stream format is abstracted from on-disk structures (though it may share some
+  BTRFS specifics), the stream instructions could be generated by other means than the
+  send ioctl.
+- it's a checksum+TLV
+- header: u32len,u16cmd,u32crc32c
+- data: type,length,raw data
+- the v2 protocol supports the encoded commands
+- the commands are kinda clunky - need to MKFIL/MKDIR then RENAM to create
+*** [2023-08-09 Wed] ioctls
+- magic#: 0x94 
+  - https://docs.kernel.org/userspace-api/ioctl/ioctl-number.html
+  - Btrfs filesystem some lifted to vfs/generic
+  - fs/btrfs/ioctl.h and linux/fs.h
+** ZFS
+-- [cite/t/f:@zfs]
+
+- core component of TrueNAS software
+** TMPFS
+-- [cite/t/f:@tmpfs]
+- in-mem FS
+** EXT4
+-- [cite/t/f:@ext4]
+** XFS
+-- [cite/t/f:@xfs]
+-- [cite/t/f:@xfs-scalability]
+* Storage Mediums
+** HDD
+-- [cite/t/f:@hd-failure-ml]
+** SSD
+-- [cite/t/f:@smart-ssd-qp]
+-- [cite/t/f:@ssd-perf-opt]
+
+** Flash
+-- [cite/t/f:@flash-openssd-systems]
+** NVMe
+-- [cite/t/f:@nvme-ssd-ux]
+-- [[https://nvmexpress.org/specifications/][specifications]]
+*** ZNS
+-- [cite/t/f:@zns-usenix]
+#+begin_quote
+Zoned Storage is an open source, standards-based initiative to enable data centers to
+scale efficiently for the zettabyte storage capacity era. There are two technologies
+behind Zoned Storage, Shingled Magnetic Recording (SMR) in ATA/SCSI HDDs and Zoned
+Namespaces (ZNS) in NVMe SSDs.
+#+end_quote
+-- [[https://zonedstorage.io/][zonedstorage.io]]
+-- $465 8tb 2.5"? [[https://www.serversupply.com/SSD/PCI-E/7.68TB/WESTERN%20DIGITAL/WUS4BB076D7P3E3_332270.htm][retail]]
+** eMMC
+-- [cite/t/f:@emmc-mobile-io]
+* Linux
+** syscalls
+*** ioctl
+- [[https://elixir.bootlin.com/linux/latest/source/Documentation/userspace-api/ioctl/ioctl-number.rst][ioctl-numbers]]
+* Rust
+** crates
+*** nix
+- [[https://crates.io/crates/nix][crates.io]]
+*** memmap2
+- [[https://crates.io/crates/memmap2][crates.io]]
+*** zstd
+- [[https://crates.io/crates/zstd][crates.io]]
+*** rocksdb
+- [[https://crates.io/crates/rocksdb][crates.io]]
+*** tokio                                                           :tokio:
+- [[https://crates.io/crates/tokio][crates.io]]
+*** tracing                                                         :tokio:
+- [[https://crates.io/crates/tracing][crates.io]]
+**** tracing-subscriber
+- [[https://crates.io/crates/tracing-subscriber][crates.io]]
+*** axum                                                            :tokio:
+- [[https://crates.io/crates/axum][crates.io]]
+*** tower                                                           :tokio:
+- [[https://crates.io/crates/tower][crates.io]]
+*** uuid
+- [[https://crates.io/crates/uuid][crates.io]]
+** unstable
+*** lazy_cell
+- [[https://github.com/rust-lang/rust/issues/109736][tracking-issue]]
+*** {BTreeMap,BTreeSet}::extract_if
+- [[https://github.com/rust-lang/rust/issues/70530][tracking-issue]]
+* Lisp
+** ASDF
+- [[https://gitlab.common-lisp.net/asdf/asdf][gitlab.common-lisp.net]]
+- [[https://asdf.common-lisp.dev/][common-lisp.dev]]
+- [[https://github.com/fare/asdf/blob/master/doc/best_practices.md][best-practices]]
+- includes UIOP
+** Reference Projects
+*** StumpWM
+- [[https://github.com/stumpwm/stumpwm][github]]
+*** Nyxt
+- [[https://github.com/atlas-engineer/nyxt][github]]
+*** Kons-9
+- [[https://github.com/kaveh808/kons-9][github]]
+*** cl-torrents
+- [[https://github.com/vindarel/cl-torrents][github]]
+*** Mezzano
+- [[https://github.com/froggey/Mezzano][github]]
+*** yalo
+- [[https://github.com/whily/yalo][github]]
+*** cl-ledger
+- [[https://github.com/ledger/cl-ledger][github]]
+*** Lem
+- [[https://github.com/lem-project/lem][github]]
+*** kindista
+- [[https://github.com/kindista/kindista][github]]
+*** lisp-chat
+- [[https://github.com/ryukinix/lisp-chat][github]]
+* Refs
+#+print_bibliography:

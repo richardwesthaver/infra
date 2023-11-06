@@ -10,14 +10,35 @@ on code comments and developer docs.
 
 [fn:1] https://google.github.io/styleguide/ 
 
+* General Programming
+
+- indent-offset = 2
+- max-line-width = 80
+- page-length ~ 32
+- module-length ~ 512
+- file-size ~ 1024
+
+- start every source-file with a header comment
+- use outline headings to organize your program
+- use ulang-comments as needed for referencing bugs, notes, etc.
+- inline documentation should be declarative. your code explains your
+  comments for you.
+
 * Common Lisp
 
+- prefer symbol docs to comment docs
+
+** File templates
 * Rust
 
+- don't make =mod.rs= files
+  - use the =foo.rs=, =foo/*= pattern instead
+** File templates
 * Emacs Lisp
-
+** File templates
 * Org-mode
-
+** File templates
 * Shell
-
+** File templates
 * Python
+** File templates

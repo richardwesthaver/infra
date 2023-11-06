@@ -1,0 +1,6 @@
+#+TITLE: install
+* Overview
+#+begin_src sh
+  make build
+  # make install
+#+end_src

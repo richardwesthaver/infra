@@ -1,0 +1,15 @@
+#+TITLE: index
+#+DESCRIPTION: NAS-T Documentation
+
+Welcome to the documentation home of NAS-T. Choose one of the topics below to get
+started.
+
+- [[file:quickstart.org][Quickstart]] :: get your private cloud now.
+  
+- [[file:install.org][Install]] :: complete installation guide.
+  
+- [[file:tutorial.org][Tutorial]] :: in-depth tutorial with detailed examples.
+  
+- [[file:roadmap.org][Roadmap]] :: The NAS-T development roadmap.
+  
+- [[file:api.org][API]] :: API Documentation for NAS-T hackers.
