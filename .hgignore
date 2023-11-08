@@ -1,0 +1,3 @@
+.*[.](fasl|lock|elc|eln|scratch|tar)$
+.*(target|dist|node_modules|target-trunk|build)/.*
+linux/linux-[0-9]+[.].*/.*
