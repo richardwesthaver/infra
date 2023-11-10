@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 # https://git.kernel.org/pub/scm/linux/kernel/git/mricon/korg-helpers.git/tree/get-verified-tarball
 # get-verified-tarball
 # --------------------
