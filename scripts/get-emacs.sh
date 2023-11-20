@@ -1,8 +1,8 @@
 #!/usr/bin/bash
-TIMESTAMP=$(date +%s)
+CPUS=$(shell getconf _NPROCESSORS_ONLN)
 VER="${1:-main}"
 TARGETDIR=${2:-$(realpath build/emacs-$VER)}
-DISTDIR=${3:-$(realpath dist/emacs-$VER-$TIMESTAMP)}
+DISTDIR=${3:-$(realpath dist/emacs-$VER)}
 CONFIG=(--with-mailutils
 	--with-imagemagick
 	--with-x-toolkit=gtk
@@ -16,10 +16,10 @@ CONFIG=(--with-mailutils
 git clone https://lab.rwest.io/packy/shed/vendor/emacs.git $TARGETDIR
 pushd $TARGETDIR
 ./autogen.sh
-mkdir -p $DISTDIR
+mkdir -pv $DISTDIR
 pushd $DISTDIR
 $TARGETDIR/configure ${CONFIG[@]} 
-NATIVE_FULL_AOT=1 make -j8
+NATIVE_FULL_AOT=1 make -j$CPUS
 # make install
 popd
 popd

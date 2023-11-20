@@ -1,6 +1,6 @@
 #!/usr/bin/bash
-# https://git.kernel.org/pub/scm/linux/kernel/git/mricon/korg-helpers.git/tree/get-verified-tarball
-# get-verified-tarball
+# get-linux
+# from https://git.kernel.org/pub/scm/linux/kernel/git/mricon/korg-helpers.git/tree/get-verified-tarball
 # --------------------
 # Get Linux kernel tarball and cryptographically verify it,
 # retrieving the PGP keys using the Web Key Directory (WKD)
@@ -9,7 +9,7 @@
 # Pass the kernel version as the only parameter, or
 # we'll grab the latest stable kernel.
 #
-# Example: ./get-verified-tarball 4.4.145
+# Example: ./get-linux 4.4.145
 #
 # Configurable parameters
 # -----------------------
@@ -101,8 +101,9 @@ if [[ ! -x ${GPGVBIN} ]]; then
     exit 1
 fi
 
-# Let's make a safe temporary directory for intermediates
-TMPDIR=$(mktemp -d ${TARGETDIR}/linux-tarball-verify.XXXXXXXXX.untrusted)
+# NOTE 2023-11-19: we make a folder in /tmp/ due to a strange bug
+# encountered when using the TARGETDIR. Need to test on 
+TMPDIR=$(mktemp -d)
 echo "Using TMPDIR=${TMPDIR}"
 # Are we using a keyring?
 if [[ -z ${USEKEYRING} ]]; then
