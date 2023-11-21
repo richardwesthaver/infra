@@ -53,6 +53,9 @@ writer.
 :end:
 
 * ulang
+:PROPERTIES:
+:CUSTOM_ID: 8447a560-7f77-45c7-bd14-2a2af6ad2abc
+:END:
 As the title suggest we refer to our *Universal Language* as
 ulang. When I say something along the lines of "Please refer to
 [[Links][ulang:links]]", I am referencing the section named /Links/ of this
@@ -69,6 +72,9 @@ recommended to skim through the top-level sections ([[Org-mode][Org-mode]] and
 #+TOC: headlines 3
 
 ** Org-mode
+:PROPERTIES:
+:CUSTOM_ID: 98a02bb2-3f39-49c6-898a-68ccd8f3cbe1
+:END:
 [[https://www.gnu.org/software/emacs/][GNU Emacs]] is our text editor, so naturally [[https://orgmode.org/][Org Mode]] is our
 documentation engine. 
 
@@ -96,6 +102,9 @@ our intention.
 some excellent hackers: [[https://github.com/karlicoss/orgparse][python]], [[https://github.com/tecosaur/Org.jl][julia]]
 
 *** TODO organ
+:PROPERTIES:
+:CUSTOM_ID: 22474039-5c18-4179-82aa-a6731e6313a2
+:END:
 - State "TODO"       from              [2023-11-05 Sun 19:21]
 Org is the designated text representation of our ulang. Org-mode
 depends on Emacs (it's written in Emacs Lisp) but that doesn't mean we
@@ -116,7 +125,13 @@ don't. Emacs should remain close to the developer and we can outsource
 the tricky bits to =organ=.
 
 ** Elements
+:PROPERTIES:
+:CUSTOM_ID: 4aa3ec2a-b360-43ae-b2d8-f9735f211290
+:END:
 *** Keywords
+:PROPERTIES:
+:CUSTOM_ID: 2cadda9a-22a3-4b42-ad4e-d7a774f74cba
+:END:
 The ulang *Keywords* are a superset of those defined by [[https://datatracker.ietf.org/doc/html/rfc2119][RFC-2119]]. The
 definition of a keyword from the original spec is ultimately
 unchanged:
@@ -187,6 +202,9 @@ first word in a heading to signify a requirement or a workflow state:
 12. DONE   Completed task.
 
 *** Abbrevs
+:PROPERTIES:
+:CUSTOM_ID: b4c326ba-f74c-4409-9314-8d32df61fc5e
+:END:
 Abbrevs include domain-specific acronyms and slang such as /DB/ for
 database or /M$/ for Microsoft. They're abbreviations, but even lazier
 (we can't even be bothered to spell out the name). By defining them in
@@ -194,6 +212,18 @@ one place we can use Emacs to lookup abbrevs on the fly, and we can
 automatically generate help text and references to abbrev definitions
 for our readers.
 *** Operators
+:PROPERTIES:
+:CUSTOM_ID: f91ca826-2c72-4d00-810c-2d61aa073658
+:END:
 *** Links
+:PROPERTIES:
+:CUSTOM_ID: 7bd8eeaa-9f21-4ab4-ba6e-be118e68d36a
+:END:
 *** Timestamps
+:PROPERTIES:
+:CUSTOM_ID: 4faf913e-7c15-4937-9547-b50a6c8ba896
+:END:
 *** Macros
+:PROPERTIES:
+:CUSTOM_ID: cdb4976b-1d0d-49df-bfb1-3dbd5d99590e
+:END:

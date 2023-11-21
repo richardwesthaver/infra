@@ -1,5 +1,11 @@
-#+TITLE: index
+#+TITLE: NAS-T Docs
 #+DESCRIPTION: NAS-T Documentation
+#+AUTHOR: Richard Westhaver <ellis@rwest.io>
+#+OPTIONS: ^:nil toc:nil num:nil html-postamble:nil
+#+HTML_HEAD: <link rel="stylesheet" href="https://fonts.xz.style/serve/inter.css"/>
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="https://packy.rwest.io/style/css/new.min.css"/>
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="https://packy.rwest.io/style/css/terminal.css"/>
+#+EXPORT_FILE_NAME: index
 
 Welcome to the documentation home of NAS-T. Choose one of the topics below to get
 started.
