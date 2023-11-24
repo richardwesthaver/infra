@@ -6,3 +6,11 @@ The Compiler Company Infrastructure)}}}
 
 This project contains scripts, utils, and applications used to
 host and maintain The Compiler Company infrastructure.
+
+* Usage
+#+begin_src shell
+# ( linux emacs rocksdb sbcl rust code virt dist )
+make
+make install
+# make deploy
+#+end_src

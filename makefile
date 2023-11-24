@@ -29,7 +29,7 @@ $(LINUX_TARGET):scripts/get-linux.sh;
 	$< $(LINUX_VERSION) build build/$@/keyring.gpg
 	cd build && unxz $@.tar.xz && tar -xvf $@.tar $(LINUX_TARGET)
 linux-config:$(LINUX_TARGET);
-	cd build/$< && make mrproper -j && zcat /proc/config.gz > .config && make localmodconfig
+	cd build/$< && make mrproper -j && zcat /proc/config.gz > .config && yes N | make localmodconfig
 linux-clean::;rm -rf build/$(LINUX_TARGET)*
 
 ### Emacs
@@ -55,6 +55,7 @@ rust:scripts/get-rust.sh
 ### Code
 code:scripts/get-code.sh
 	$< $(SRC)
+
 code-clean::;rm -rf build/$(SRC)*
 
 ### Virt
@@ -85,6 +86,14 @@ dist/code:scripts/bundle.sh
 dist/cdn:cdn
 	cp -r $^ $@
 
-dist:dist/code dist/cdn
+dist/sbcl:sbcl;
+
+dist/linux:linux;
+
+dist/rocksdb:rocksdb;
+
+dist/emacs:emacs;
+
+dist:dist/code dist/cdn dist/sbcl dist/linux dist/rocksdb
 
 dist-clean::;rm -rf dist/*
