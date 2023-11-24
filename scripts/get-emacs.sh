@@ -13,7 +13,7 @@ CONFIG=(--with-mailutils
 	--with-native-compilation
 	--with-modules)
 
-git clone https://lab.rwest.io/packy/shed/vendor/emacs.git $TARGETDIR
+git clone https://vc.compiler.company/packy/shed/vendor/emacs.git $TARGETDIR
 pushd $TARGETDIR
 ./autogen.sh
 mkdir -pv $DISTDIR

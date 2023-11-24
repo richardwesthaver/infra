@@ -1,2 +1,8 @@
-#+TITLE: comp/infra
-#+AUTHOR: Richard Westhaver <ellis@rwest.io>
+{{{header(infra,
+Richard Westhaver,
+ellis@rwest.io,
+The Compiler Company Infrastructure)}}}
+#+EXPORT_FILE_NAME: index
+
+This project contains scripts, utils, and applications used to
+host and maintain The Compiler Company infrastructure.
