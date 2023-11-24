@@ -12,11 +12,12 @@ CURL:=curl
 CPU_COUNT:=$(shell getconf _NPROCESSORS_ONLN)
 HG_COMMIT:=$(shell hg id -i)
 VERSION:=
+
 VARS:=$(foreach v,$(filter-out $(__) __,$(.VARIABLES)),"\n$(v) = $($(v))")
 
-all:dist
+all:linux emacs rocksdb sbcl rust code virt dist;
 
-clean:linux-clean dist-clean;
+clean:linux-clean code-clean dist-clean;
 
 ### Linux
 LINUX_TARGET:=linux-$(LINUX_VERSION)
@@ -54,6 +55,7 @@ rust:scripts/get-rust.sh
 ### Code
 code:scripts/get-code.sh
 	$< $(SRC)
+code-clean::;rm -rf build/$(SRC)*
 
 ### Virt
 pod:virt/build-pod.sh
@@ -71,20 +73,18 @@ heptapod:virt/build-heptapod.sh
 heptapod-runner:virt/build-heptapod-runner.sh
 	$<
 
+vc:heptapod heptapod-runner
+
+virt:pod box bbdb vc
 ### Web
-compiler.company:;
-the.compiler.company:;
-vc.compiler.company:;
-cdn.compiler.company:;
-packy.compiler.company:;
 
 ### Dist
 dist/code:scripts/bundle.sh
 	$<
 
-dist/style:style
-	cp $< $@
+dist/cdn:cdn
+	cp -r $^ $@
 
-dist:dist/code dist/style
+dist:dist/code dist/cdn
 
 dist-clean::;rm -rf dist/*
