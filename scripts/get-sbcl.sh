@@ -5,8 +5,7 @@ DISTDIR=${3:-$(realpath dist/sbcl)}
 git clone https://vc.compiler.company/packy/shed/vendor/sbcl.git $TARGETDIR
 pushd $TARGETDIR
 sh make.sh --prefix=$DISTDIR --fancy
-# make docs
 cd doc/manual && make && cd ../..
 # doesn't actually install on local system - copies to DISTDIR
-sh install.sh
+# sh install.sh
 popd
