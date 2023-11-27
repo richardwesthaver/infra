@@ -48,10 +48,21 @@ sbcl:scripts/get-sbcl.sh;
 	$< $(SBCL_VERSION)
 
 ### Rust
-RUST_TARGET:=rocksdb-$(ROCKSDB_VERSION)
+RUST_TARGET:=rust-$(RUST_VERSION)
 rust:scripts/get-rust.sh
 	$< $(RUST_VERSION)
-
+rust-install-x:rust;
+	cargo install --path build/$(RUST_TARGET)/src/tools/x
+rust-build:rust rust-install-x;
+	cd build/$(RUST_TARGET) && x build library
+rust-doc:rust rust-install-x;
+	cd build/$(RUST_TARGET) && x doc
+rust-build-full:rust-build;
+	cd build/$(RUST_TARGET) && x build --stage 2 compiler/rustc
+rust-install:rust-build;
+	cd build/$(RUST_TARGET) && x install
+rust-dist:rust-build;
+	cd build/$(RUST_TARGET) && x dist
 ### Code
 code:scripts/get-code.sh
 	$< $(SRC)
