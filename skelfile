@@ -1,0 +1,4 @@
+;;; skelfile --- infra skelfile -*- mode: skel; -*-
+:name "infra"
+:description "The Compiler Company Infrastructure"
+:author "Richard Westhaver <ellis@rwest.io>"

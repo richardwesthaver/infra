@@ -91,7 +91,7 @@ virt:pod box bbdb vc
 ### Web
 
 ### Dist
-dist/code:scripts/bundle.sh
+dist/comp:scripts/bundle-dir.sh
 	$<
 
 dist/cdn:cdn
@@ -105,6 +105,9 @@ dist/rocksdb:rocksdb;
 
 dist/emacs:emacs;
 
-dist:dist/code dist/cdn dist/sbcl dist/linux dist/rocksdb
+dist:dist/comp dist/cdn dist/sbcl dist/linux dist/rocksdb
 
 dist-clean::;rm -rf dist/*
+
+### Quickstart
+quick:code

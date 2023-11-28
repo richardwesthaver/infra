@@ -7,10 +7,54 @@ The Compiler Company Infrastructure)}}}
 This project contains scripts, utils, and applications used to
 host and maintain The Compiler Company infrastructure.
 
-* Usage
+* Quickstart
+- Dependencies
+  - Mercurial
+  - Make
 #+begin_src shell
-# ( linux emacs rocksdb sbcl rust code virt dist )
-make
-make install
-# make deploy
+sudo pacman -Sy make mercurial
+# make quick
+# make install
 #+end_src
+* Scripts
+** [[file:scripts/eval.sh][eval.sh]]
+Eval a lisp script using SBCL.
+** [[file:scripts/check.lisp][check.lisp]]
+Check the host for compatibility.
+#+begin_src shell :results pp replace :exports both
+./scripts/eval.sh ./scripts/check.lisp
+#+end_src
+
+#+RESULTS:
+#+begin_example
+
+#HOST-FEATURES{
+(lisp . (SBCL 2.3.8
+         (CL-PPCRE NAMED-READTABLES ASDF3.3 ASDF3.2 ASDF3.1 ASDF3 ASDF2 ASDF
+          OS-UNIX NON-BASE-CHARS-EXIST-P ASDF-UNICODE ARENA-ALLOCATOR X86-64
+          GENCGC 64-BIT ANSI-CL COMMON-LISP ELF IEEE-FLOATING-POINT LINUX
+          LITTLE-ENDIAN PACKAGE-LOCAL-NICKNAMES SB-CORE-COMPRESSION SB-LDB
+          SB-PACKAGE-LOCKS SB-THREAD SB-UNICODE SBCL UNIX))) 
+(shell . /home/ellis/dev/comp/infra) 
+(rocksdb . librocksdb.so) 
+(uring . liburing.so) 
+(btrfs . libbtrfs.so) 
+(btrfsutil . libbtrfsutil.so) 
+(tree-sitter . libtree-sitter.so) 
+(gtk-4 . libgtk-4.so) 
+(blake3 . libblake3.so) 
+(k . libk.so) 
+(cbqn . libcbqn.so)} 
+#+end_example
+** [[file:scripts/autogen.lisp][autogen.lisp]]
+** get-*
+Pull and build dependencies.
+** [[file:scripts/git-vendor-pull.sh][git-vendor-pull.sh]]
+Pull an upstream vendored repository from Git and push it to our
+private mirror.
+
+#+begin_src shell :noeval t :exports code
+scripts/git-vendor-pull.sh git.savannah.gnu.org/git emacs master
+#+end_src
+** [[file:scripts/bundle-dir.sh][bundle-dir.sh]]
+Bundle a local directory of source-code repos.

@@ -4,7 +4,7 @@ SRC="${1:-comp}"
 OUT=build/comp-$(date "+%Y%m%d")
 mkdir -pv $OUT
 pushd $OUT 
-wget https://packy.compiler.company/$SRC.tar.zst 
+wget https://packy.compiler.company/bundle/src/$SRC.tar.zst 
 unzstd $SRC.tar.zst
 tar -xvf $SRC.tar
 rm -rf $SRC.tar.zst $SRC.tar
