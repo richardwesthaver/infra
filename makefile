@@ -5,6 +5,8 @@ EMACS_VERSION:=main
 ROCKSDB_VERSION:=main
 SBCL_VERSION:=main
 RUST_VERSION:=main
+B:=build
+D:=dist
 SRC:=comp
 SHELL=/bin/sh
 UNAME=$(shell uname)
@@ -17,7 +19,7 @@ VARS:=$(foreach v,$(filter-out $(__) __,$(.VARIABLES)),"\n$(v) = $($(v))")
 
 all:linux emacs rocksdb sbcl rust code virt dist;
 
-clean:linux-clean code-clean dist-clean;
+clean:clean-linux clean-code clean-dist;
 
 ### Linux
 LINUX_TARGET:=linux-$(LINUX_VERSION)
@@ -30,17 +32,30 @@ $(LINUX_TARGET):scripts/get-linux.sh;
 	cd build && unxz $@.tar.xz && tar -xvf $@.tar $(LINUX_TARGET)
 linux-config:$(LINUX_TARGET);
 	cd build/$< && make mrproper -j && zcat /proc/config.gz > .config && yes N | make localmodconfig
-linux-clean::;rm -rf build/$(LINUX_TARGET)*
+clean-linux::;rm -rf build/$(LINUX_TARGET)*
 
 ### Emacs
-EMACS_TARGET:=emacs-$(EMACS_VERSION)
+EMACS_TARGET:=build/src/emacs-$(EMACS_VERSION)
+EMACS_DIST:=$(DIST)/src/emacs
 emacs:scripts/get-emacs.sh;
 	$< $(EMACS_VERSION)
 
+emacs-build:emacs scripts/build-emacs.sh;
+	cd $(EMACS_TARGET)
+	./autogen.sh
+	mkdir -pv $(EMACS_DIST)
+	scripts/build-emacs.sh $(EMACS_VERSION) $(EMACS_TARGET) $(EMACS_DIST)
+
+emacs-install:emacs-build;
+	cd $(EMACS_DIST)
+	make install
+
 ### RocksDB
-ROCKSDB_TARGET:=rocksdb-$(ROCKSDB_VERSION)
+ROCKSDB_TARGET:=build/src/rocksdb-$(ROCKSDB_VERSION)
 rocksdb:scripts/get-rocksdb.sh;
 	$< $(ROCKSDB_VERSION)
+	cd $(ROCKSDB_TARGET) 
+	make shared_lib DISABLE_JEMALLOC=1
 
 ### SBCL
 SBCL_TARGET:=sbcl-$(SBCL_VERSION)
@@ -48,29 +63,29 @@ sbcl:scripts/get-sbcl.sh;
 	$< $(SBCL_VERSION)
 
 ### Rust
-RUST_TARGET:=rust-$(RUST_VERSION)
+RUST_TARGET:=build/src/rust-$(RUST_VERSION)
 rust:scripts/get-rust.sh
 	$< $(RUST_VERSION)
-rust-install-x:rust;
-	cargo install --path build/$(RUST_TARGET)/src/tools/x
+rust-x:rust;
+	cargo install --path $(RUST_TARGET)/src/tools/x
 rust-build:rust rust-install-x;
-	cd build/$(RUST_TARGET) && x build library
+	cd $(RUST_TARGET) && x build library
 rust-doc:rust rust-install-x;
-	cd build/$(RUST_TARGET) && x doc
+	cd $(RUST_TARGET) && x doc
 rust-build-full:rust-build;
-	cd build/$(RUST_TARGET) && x build --stage 2 compiler/rustc
+	cd $(RUST_TARGET) && x build --stage 2 compiler/rustc
 rust-install:rust-build;
-	cd build/$(RUST_TARGET) && x install
-rust-dist:rust-build;
-	cd build/$(RUST_TARGET) && x dist
+	cd $(RUST_TARGET) && x install
+
 ### Code
+CODE_TARGET:=build/src/$(SRC)
 code:scripts/get-code.sh
 	$< $(SRC)
 
-code-clean::;rm -rf build/$(SRC)*
+clean-code::;rm -rf $(CODE_TARGET)/*
 
 ### Virt
-pod:virt/build-pod.sh
+dev-pod:virt/build-pod.sh
 	$<
 archlinux:virt/build-archlinux-base.sh
 	$<
@@ -85,16 +100,16 @@ heptapod:virt/build-heptapod.sh
 heptapod-runner:virt/build-heptapod-runner.sh
 	$<
 
-vc:heptapod heptapod-runner
+vc-pod:heptapod heptapod-runner
 
 virt:pod box bbdb vc
-### Web
 
 ### Dist
-dist/comp:scripts/bundle-dir.sh
+dist/bundle:scripts/bundle-dir.sh
 	$<
 
 dist/cdn:cdn
+	mkdir -pv $@
 	cp -r $^ $@
 
 dist/sbcl:sbcl;
@@ -102,12 +117,18 @@ dist/sbcl:sbcl;
 dist/linux:linux;
 
 dist/rocksdb:rocksdb;
+	cd $(ROCKSDB_TARGET)
+	cp -rf include/* $(D)
+	cp -f librocksdb.so* $(D)/lib/
+
+dist/rust:rust-build;
+	cd $(RUST_TARGET) && x dist
 
 dist/emacs:emacs;
 
-dist:dist/comp dist/cdn dist/sbcl dist/linux dist/rocksdb
+dist:dist/bundle dist/cdn dist/sbcl dist/rocksdb # dist/linux dist/rust
 
-dist-clean::;rm -rf dist/*
+clean-dist::;rm -rf dist/*
 
 ### Quickstart
 quick:code
