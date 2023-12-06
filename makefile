@@ -1,26 +1,33 @@
 ### infra/makefile --- The Compiler Company Infrastructure
-__ := $(.VARIABLES)
+
+# this makefile is used to build all of our source code, package it,
+# and ship it to various locations. It is for internal-use only.
+
+# If possible, use the packy (packy.compiler.company) to find and
+# download a prepared bundle that suits your project needs.
+
+# You probably don't want to install all targets unless you have lots
+# of time and a powerful machine, although it is possible. Instead,
+# just run the targets for the components you are missing in your
+# local environment (compatible compiler versions, shared libraries,
+# etc)
+
+VERSION="0.1.0"
 LINUX_VERSION:=$(shell uname -r | cut -d- -f1)
 EMACS_VERSION:=main
 ROCKSDB_VERSION:=main
 SBCL_VERSION:=main
 RUST_VERSION:=main
 B:=build
-D:=$(realpath dist)
+D:=dist
 SRC:=comp
-SHELL=/bin/sh
-UNAME=$(shell uname)
-CURL:=curl
-CPU_COUNT:=$(shell getconf _NPROCESSORS_ONLN)
 HG_COMMIT:=$(shell hg id -i)
-VERSION:=
 
-VARS:=$(foreach v,$(filter-out $(__) __,$(.VARIABLES)),"\n$(v) = $($(v))")
-
-all:linux emacs rocksdb sbcl rust code virt dist;
-
-clean:clean-linux clean-code clean-sbcl clean-dist;
-
+init:sbcl rust emacs rocksdb code virt;
+dist:dist/bundle dist/cdn dist/sbcl dist/rocksdb # dist/linux dist/rust
+clean:;rm -rf $(B) $(D)
+$(B):;mkdir -pv $@/src
+$(D):;mkdir -pv $@
 ### Linux
 LINUX_TARGET:=linux-$(LINUX_VERSION)
 linux:$(LINUX_TARGET) linux-config;
@@ -36,8 +43,8 @@ clean-linux::;rm -rf build/$(LINUX_TARGET)
 
 ### Emacs
 EMACS_TARGET:=build/src/emacs-$(EMACS_VERSION)
-EMACS_DIST:=$(DIST)/src/emacs
-emacs:scripts/get-emacs.sh;
+EMACS_DIST:=$(D)/src/emacs
+emacs:$(B) scripts/get-emacs.sh;
 	$< $(EMACS_VERSION)
 
 emacs-build:emacs scripts/build-emacs.sh;
@@ -59,7 +66,7 @@ rocksdb:scripts/get-rocksdb.sh;
 
 ### SBCL
 SBCL_TARGET:=build/src/sbcl-$(SBCL_VERSION)
-sbcl:scripts/get-sbcl.sh;
+sbcl:scripts/get-sbcl.sh $(B);
 	$< $(SBCL_VERSION)
 	cd $(SBCL_TARGET) && \
 	echo '"2.3.12+main"' > version.lisp-expr && \
@@ -75,7 +82,7 @@ clean-sbcl:;rm -rf $(SBCL_TARGET)
 
 ### Rust
 RUST_TARGET:=build/src/rust-$(RUST_VERSION)
-rust:scripts/get-rust.sh
+rust:scripts/get-rust.sh $(B);
 	$< $(RUST_VERSION)
 rust-x:rust;
 	cargo install --path $(RUST_TARGET)/src/tools/x
@@ -90,7 +97,7 @@ rust-install:rust-build;
 
 ### Code
 CODE_TARGET:=build/src/$(SRC)
-code:scripts/get-code.sh
+code:scripts/get-code.sh $(B)
 	$< $(SRC)
 
 clean-code::;rm -rf $(CODE_TARGET)
@@ -116,31 +123,29 @@ vc-pod:heptapod heptapod-runner
 virt:pod box bbdb vc
 
 ### Dist
-dist/bundle:scripts/bundle-dir.sh
+dist/bundle:scripts/bundle-dir.sh $(D)
 	$<
 
-dist/cdn:cdn
+dist/cdn:cdn $(D)
 	mkdir -pv $@
 	cp -r $^ $@
 
-dist/sbcl:sbcl;
+dist/sbcl:sbcl $(D);
 	$(SBCL_TARGET)/install.sh --prefix=$(D)
 
-dist/linux:linux;
+dist/linux:linux $(D);
 
-dist/rocksdb:rocksdb;
+dist/rocksdb:rocksdb $(D);
 	cd $(ROCKSDB_TARGET)
 	cp -rf include/* $(D)
 	cp -f librocksdb.so* $(D)/lib/
 
-dist/rust:rust-build;
+dist/rust:rust-build $(D);
 	cd $(RUST_TARGET) && x dist
 
-dist/emacs:emacs;
+dist/emacs:emacs-build $(D);
 
-dist:dist/bundle dist/cdn dist/sbcl dist/rocksdb # dist/linux dist/rust
-
-clean-dist::;rm -rf dist/*
+clean-dist::;rm -rf dist
 
 ### Quickstart
 quick:code

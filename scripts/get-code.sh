@@ -1,5 +1,5 @@
 #!/bin/bash
-# unbundle a tar.zst archive of Mercurial repositories.
+# Get The Compiler Company source code
 SRC="${1:-comp}"
 OUT=build/comp-$(date "+%Y%m%d")
 mkdir -pv $OUT

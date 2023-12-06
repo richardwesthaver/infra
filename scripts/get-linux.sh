@@ -1,6 +1,11 @@
 #!/usr/bin/bash
 # get-linux
+
 # from https://git.kernel.org/pub/scm/linux/kernel/git/mricon/korg-helpers.git/tree/get-verified-tarball
+
+# there are minimal modifications to this script - be careful, it
+# pulls from the upstream kernel source archives.
+
 # --------------------
 # Get Linux kernel tarball and cryptographically verify it,
 # retrieving the PGP keys using the Web Key Directory (WKD)

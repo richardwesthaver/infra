@@ -1,6 +1,10 @@
 #!/bin/sh
 
-# install the compiler.company installer.
+# run the compiler.company core installer (cc-init)
+
+# this script downloads and calls the 'cc-init' installer for the
+# current host. Follow the prompts and read the documentation to build
+# a fully compliant operator system.
 
 set -u
 

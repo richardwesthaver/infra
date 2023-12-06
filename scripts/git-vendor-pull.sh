@@ -1,4 +1,6 @@
 #!/usr/bin/bash
+# pull a vendored dependency and push to upstream vc
+
 # scripts/git-vendor-pull.sh git.savannah.gnu.org/git emacs master
 NAME="${1}"
 DOMAIN="${2}"

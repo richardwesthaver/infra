@@ -1,7 +1,7 @@
 #!/bin/sh
 
-# eval lisp code
-LISP="/usr/bin/sbcl"
+# eval lisp code with sbcl
+LISP=sbcl
 args=""
 FILE="${1}"
 [[ -z "$FILE" ]] && : || args="--script $FILE "
