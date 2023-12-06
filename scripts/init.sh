@@ -10,7 +10,7 @@ set -u
 
 COMPANY_UPDATE_ROOT="${COMPANY_UPDATE_ROOT:-https://packy.compiler.company/dist}"
 
-# NOTICE: If you change anything here, please make the same changes in setup_mode.rs
+# this is copy/pasted from the actual release build.
 usage() {
     cat <<EOF
 cc-init 0.10 (0941fa04c53d+ 2023-12-03)

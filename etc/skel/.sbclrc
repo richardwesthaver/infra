@@ -1,0 +1,10 @@
+(in-package :cl-user)
+(setq *debug-beginner-help-p* nil
+      *print-case* :downcase
+      *print-level* 50
+      *print-length* 200)
+
+#-quicklisp
+(let ((quicklisp-init (merge-pathnames "quicklisp/setup.lisp" (user-homedir-pathname))))
+  (when (probe-file quicklisp-init)
+    (load quicklisp-init)))
