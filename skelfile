@@ -7,6 +7,13 @@
 :vc (:hg "https://vc.compiler.company/comp/infra")
 :docs ((:org "readme"))
 :tags (:infra)
-:scripts ((get-sbcl "scripts/get-sbcl.sh"))
-:snippets ((init #$curl --proto '=https' --tlsv1.2 -sSf https://packy.compiler.company/do/init.sh | sh$#))
-:rules ((all (linux emacs rocksdb sbcl rust code virt dist)))
+:scripts ((:lisp "scripts/get-sbcl.sh"))
+:snippets 
+((init #$curl --proto '=https' --tlsv1.2 -sSf https://packy.compiler.company/do/init.sh | sh$#)
+ (autogen "scripts/autogen.lisp"))
+:rules 
+((default (emacs rocksdb sbcl rust))
+ (emacs #$make emacs$#)
+ (rocksdb #$make rocksdb$#)
+ (sbcl #$make sbcl$#)
+ (rust #$make rust$#))

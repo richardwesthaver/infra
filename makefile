@@ -145,7 +145,8 @@ dist/rust:rust-build $(D);
 
 dist/emacs:emacs-build $(D);
 
-clean-dist::;rm -rf dist
+clean-dist:;rm -rf $(D)
+clean-build:;rm -rf $(B)
 
 ### Quickstart
-quick:code
+quick:init code
