@@ -95,6 +95,10 @@ rust-build-full:rust-build;
 rust-install:rust-build;
 	cd $(RUST_TARGET) && x install
 
+### Tree-sitter Langs
+TS_LANGS_TARGET:=build/src/ts-langs
+ts-langs:scripts/ts-install-langs.sh # this requires sudo for now
+
 ### Code
 CODE_TARGET:=build/src/$(SRC)
 code:scripts/get-code.sh $(B)
