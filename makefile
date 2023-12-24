@@ -76,7 +76,7 @@ $(SBCL_TARGET):scripts/get-sbcl.sh $(B);
 	  --fancy && \
 	cd doc/manual && make
 sbcl:$(SBCL_TARGET)
-sbcl-install:sbcl;cd $(SBCL_TARGET) && install.sh
+sbcl-install:sbcl;cd $(SBCL_TARGET) && ./install.sh
 clean-sbcl:;rm -rf $(SBCL_TARGET)
 
 ### Rust
