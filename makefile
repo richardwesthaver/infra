@@ -44,24 +44,20 @@ clean-linux::;rm -rf build/$(LINUX_TARGET)
 ### Emacs
 EMACS_TARGET:=build/src/emacs-$(EMACS_VERSION)
 EMACS_DIST:=$(D)/src/emacs
-emacs:$(B) scripts/get-emacs.sh;
+$(EMACS_TARGET):scripts/get-emacs.sh $(B);
 	$< $(EMACS_VERSION)
-
+emacs:$(EMACS_TARGET)
 emacs-build:emacs scripts/build-emacs.sh;
-	cd $(EMACS_TARGET)
-	./autogen.sh
-	mkdir -pv $(EMACS_DIST)
-	scripts/build-emacs.sh $(EMACS_VERSION) $(EMACS_TARGET) $(EMACS_DIST)
-
+	cd $(EMACS_TARGET) && ./autogen.sh
+	scripts/build-emacs.sh $(EMACS_VERSION) $(EMACS_TARGET)
 emacs-install:emacs-build;
-	cd $(EMACS_DIST)
-	make install
+	cd $(EMACS_TARGET) && make install
 
 ### RocksDB
 ROCKSDB_TARGET:=build/src/rocksdb-$(ROCKSDB_VERSION)
 rocksdb:scripts/get-rocksdb.sh;
 	$< $(ROCKSDB_VERSION)
-	cd $(ROCKSDB_TARGET) 
+	cd $(ROCKSDB_TARGET) && \
 	make shared_lib DISABLE_JEMALLOC=1
 
 ### SBCL

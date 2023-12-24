@@ -1,8 +1,7 @@
-#!/usr/bin/bash
-CPUS=$(shell getconf _NPROCESSORS_ONLN)
+#!/usr/bin/env bash
+CPUS=$(getconf _NPROCESSORS_ONLN)
 VER="${1:-main}"
-TARGETDIR=${2:-$(realpath build/emacs-$VER)}
-DISTDIR=${3:-$(realpath dist/emacs-$VER)}
+TARGETDIR=${2:-$(realpath build/src/emacs-$VER)}
 CONFIG=(--with-mailutils
 	--with-imagemagick
 	--with-x-toolkit=gtk
@@ -14,9 +13,6 @@ CONFIG=(--with-mailutils
 	--with-modules)
 pushd $TARGETDIR
 ./autogen.sh
-mkdir -pv $DISTDIR
-pushd $DISTDIR
 $TARGETDIR/configure ${CONFIG[@]} 
 NATIVE_FULL_AOT=1 make -j$CPUS
-popd
 popd

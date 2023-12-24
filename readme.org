@@ -7,15 +7,8 @@ The Compiler Company Infrastructure)}}}
 This project contains scripts, utils, and applications used to
 host and maintain The Compiler Company infrastructure.
 
-* Quickstart
-- Dependencies
-  - Mercurial
-  - Make
-#+begin_src shell
-sudo pacman -Sy make mercurial
-# make quick
-# make install
-#+end_src
+- [[https://compiler.company/docs/infra/quickstart.html][Quickstart]]
+
 * Scripts
 ** [[file:scripts/eval.sh][eval.sh]]
 Eval a lisp script using SBCL.
@@ -24,28 +17,14 @@ Check the host for compatibility.
 #+begin_src shell :results pp replace :exports both
 ./scripts/eval.sh ./scripts/check.lisp
 #+end_src
-
 #+RESULTS:
-#+begin_example
-
-#HOST-FEATURES{
-(lisp . (SBCL 2.3.8
-         (CL-PPCRE NAMED-READTABLES ASDF3.3 ASDF3.2 ASDF3.1 ASDF3 ASDF2 ASDF
-          OS-UNIX NON-BASE-CHARS-EXIST-P ASDF-UNICODE ARENA-ALLOCATOR X86-64
-          GENCGC 64-BIT ANSI-CL COMMON-LISP ELF IEEE-FLOATING-POINT LINUX
-          LITTLE-ENDIAN PACKAGE-LOCAL-NICKNAMES SB-CORE-COMPRESSION SB-LDB
-          SB-PACKAGE-LOCKS SB-THREAD SB-UNICODE SBCL UNIX))) 
-(shell . /home/ellis/dev/comp/infra) 
-(rocksdb . librocksdb.so) 
-(uring . liburing.so) 
-(btrfs . libbtrfs.so) 
-(btrfsutil . libbtrfsutil.so) 
-(tree-sitter . libtree-sitter.so) 
-(gtk-4 . libgtk-4.so) 
-(blake3 . libblake3.so) 
-(k . libk.so) 
-(cbqn . libcbqn.so)} 
-#+end_example
+: This is SBCL 2.3.12+main, an implementation of ANSI Common Lisp.
+: More information about SBCL is available at <http://www.sbcl.org/>.
+: 
+: SBCL is free software, provided as is, with absolutely no warranty.
+: It is mostly in the public domain; some portions are provided under
+: BSD-style licenses.  See the CREDITS and COPYING files in the
+: distribution for more information.
 ** [[file:scripts/autogen.lisp][autogen.lisp]]
 ** get-*
 Pull and build dependencies.
