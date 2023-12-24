@@ -62,7 +62,8 @@ rocksdb:scripts/get-rocksdb.sh;
 
 ### SBCL
 SBCL_TARGET:=build/src/sbcl-$(SBCL_VERSION)
-sbcl:scripts/get-sbcl.sh $(B);
+
+$(SBCL_TARGET):scripts/get-sbcl.sh $(B);
 	$< $(SBCL_VERSION)
 	cd $(SBCL_TARGET) && \
 	echo '"2.3.12+main"' > version.lisp-expr && \
@@ -74,6 +75,8 @@ sbcl:scripts/get-sbcl.sh $(B);
 	  --dynamic-space-size=4Gb \
 	  --fancy && \
 	cd doc/manual && make
+sbcl:$(SBCL_TARGET)
+sbcl-install:sbcl;$(SBCL_TARGET)/install.sh
 clean-sbcl:;rm -rf $(SBCL_TARGET)
 
 ### Rust
