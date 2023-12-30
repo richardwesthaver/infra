@@ -23,8 +23,9 @@ D:=dist
 SRC:=comp
 HG_COMMIT:=$(shell hg id -i)
 
-init:sbcl rust emacs rocksdb code virt;
-dist:dist/bundle dist/cdn dist/sbcl dist/rocksdb # dist/linux dist/rust
+# init:sbcl rust emacs rocksdb comp virt;
+# dist/linux dist/rust dist/bundle
+all:dist/cdn dist/comp dist/fasl dist/sbcl dist/rocksdb dist/emacs
 clean:;rm -rf $(B) $(D)
 $(B):;mkdir -pv $@/src
 $(D):;mkdir -pv $@
@@ -54,17 +55,16 @@ emacs-install:emacs-build;
 	cd $(EMACS_TARGET) && make install
 
 ### RocksDB
-ROCKSDB_TARGET:=build/src/rocksdb-$(ROCKSDB_VERSION)
+ROCKSDB_TARGET:=build/src/rocksdb
 rocksdb:scripts/get-rocksdb.sh;
-	$< $(ROCKSDB_VERSION)
+	$<
 	cd $(ROCKSDB_TARGET) && \
 	make shared_lib DISABLE_JEMALLOC=1
 
 ### SBCL
-SBCL_TARGET:=build/src/sbcl-$(SBCL_VERSION)
-
+SBCL_TARGET:=build/src/sbcl
 $(SBCL_TARGET):scripts/get-sbcl.sh $(B);
-	$< $(SBCL_VERSION)
+	$<
 	cd $(SBCL_TARGET) && \
 	echo '"2.3.12+main"' > version.lisp-expr && \
 	sh make.sh \
@@ -77,7 +77,7 @@ $(SBCL_TARGET):scripts/get-sbcl.sh $(B);
 	cd doc/manual && make
 sbcl:$(SBCL_TARGET)
 sbcl-install:sbcl;cd $(SBCL_TARGET) && ./install.sh
-clean-sbcl:;rm -rf $(SBCL_TARGET)
+clean-sbcl:$(SBCL_TARGET);cd $(SBCL_TARGET) && ./clean.sh
 
 ### Rust
 RUST_TARGET:=build/src/rust-$(RUST_VERSION)
@@ -98,12 +98,12 @@ rust-install:rust-build;
 TS_LANGS_TARGET:=build/src/ts-langs
 ts-langs:scripts/ts-install-langs.sh # this requires sudo for now
 
-### Code
-CODE_TARGET:=build/src/$(SRC)
-code:scripts/get-code.sh $(B)
+### Comp
+COMP_TARGET:=build/src/$(SRC)
+comp:scripts/get-comp.sh $(B)
 	$< $(SRC)
 
-clean-code::;rm -rf $(CODE_TARGET)
+clean-comp::;rm -rf $(COMP_TARGET)
 
 ### Virt
 dev-pod:virt/build-pod.sh
@@ -131,10 +131,15 @@ dist/bundle:scripts/bundle-dir.sh $(D)
 
 dist/cdn:cdn $(D)
 	mkdir -pv $@
-	cp -r $^ $@
+	cp -r $</* $@
 
 dist/sbcl:sbcl $(D);
-	$(SBCL_TARGET)/install.sh --prefix=$(D)
+	mkdir -pv $@
+	cp $(SBCL_TARGET)/src/runtime/sbcl $@
+	cp $(SBCL_TARGET)/output/sbcl.core $@
+	cp -r $(SBCL_TARGET)/contrib $@
+	cd $(SBCL_TARGET) && ./clean.sh
+	tar -I 'zstd' -cf $@/sbcl-source.tar.zst --exclude .git $(SBCL_TARGET)
 
 dist/linux:linux $(D);
 
@@ -148,8 +153,22 @@ dist/rust:rust-build $(D);
 
 dist/emacs:emacs-build $(D);
 
+dist/fasl:scripts/sbcl-save-core.sh
+	mkdir -pv $@
+	$< "$@/std.core"
+	$< "$@/prelude.core" "(mapc #'ql:quickload \
+	(list :nlp :rdb :organ :packy :skel :obj :net :parse :pod :dat :log :packy :rt :syn :xdb))"
+	$< "$@/rdb.core" "(ql:quickload :rdb)"
+	$< "$@/organ.core" "(ql:quickload :organ)"
+	$< "$@/skel.core" "(ql:quickload :skel)"
+	$< "$@/pod.core" "(ql:quickload :pod)"
+	$< "$@/cli.core" "(ql:quickload :cli)"
+
+dist/comp:comp
+	mkdir -pv $@
+	cp -r $(COMP_TARGET)/{org,core,infra,demo,nas-t} $@
 clean-dist:;rm -rf $(D)
 clean-build:;rm -rf $(B)
 
 ### Quickstart
-quick:init code
+quick:comp

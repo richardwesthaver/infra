@@ -12,6 +12,7 @@ PS1="\u [\!]:\t:\w\n  >> \[\e[0m\]"
 export LANG=en_US.UTF-8
 
 export LISP='sbcl'
+export lr='rlwrap sbcl' # lisp repl
 export ESHELL='/usr/bin/bash'
 export ORGANIZATION='The Compiler Company'
 export LANG=en_US.UTF-8

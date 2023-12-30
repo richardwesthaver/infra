@@ -1,5 +1,4 @@
 #!/usr/bin/bash
 # get RocksDB source code
-VER="${1:-main}"
-TARGETDIR=${2:-$(realpath build/src/rocksdb-$VER)}
+TARGETDIR=${2:-$(realpath build/src/rocksdb)}
 git clone https://vc.compiler.company/packy/shed/vendor/rocksdb.git $TARGETDIR

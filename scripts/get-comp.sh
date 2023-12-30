@@ -1,7 +1,7 @@
 #!/bin/bash
 # Get The Compiler Company source code
 SRC="${1:-comp}"
-OUT=build/comp-$(date "+%Y%m%d")
+OUT=build/src/$SRC
 mkdir -pv $OUT
 pushd $OUT 
 wget https://packy.compiler.company/bundle/src/$SRC.tar.zst 
