@@ -14,10 +14,6 @@
 
 VERSION="0.1.0"
 LINUX_VERSION:=$(shell uname -r | cut -d- -f1)
-EMACS_VERSION:=main
-ROCKSDB_VERSION:=main
-SBCL_VERSION:=main
-RUST_VERSION:=main
 B:=build
 D:=dist
 SRC:=comp
@@ -43,36 +39,40 @@ linux-config:$(LINUX_TARGET);
 clean-linux::;rm -rf build/$(LINUX_TARGET)
 
 ### Emacs
-EMACS_TARGET:=build/src/emacs-$(EMACS_VERSION)
+EMACS_TARGET:=build/src/emacs
 EMACS_DIST:=$(D)/src/emacs
 $(EMACS_TARGET):scripts/get-emacs.sh $(B);
-	$< $(EMACS_VERSION)
+	$<
 emacs:$(EMACS_TARGET)
 emacs-build:emacs scripts/build-emacs.sh;
 	cd $(EMACS_TARGET) && ./autogen.sh
-	scripts/build-emacs.sh $(EMACS_VERSION) $(EMACS_TARGET)
+	scripts/build-emacs.sh $(EMACS_TARGET)
 emacs-install:emacs-build;
 	cd $(EMACS_TARGET) && make install
 
 ### RocksDB
 ROCKSDB_TARGET:=build/src/rocksdb
-rocksdb:scripts/get-rocksdb.sh;
+$(ROCKSDB_TARGET):scripts/get-rocksdb.sh $(B);
 	$<
 	cd $(ROCKSDB_TARGET) && \
 	make shared_lib DISABLE_JEMALLOC=1
+rocksdb:$(ROCKSDB_TARGET)
 
+rocksdb-install:$(ROCKSDB_TARGET)
+	cd $< && cp -rf $(ROCKSDB_TARGET)/include/* /usr/local/include/ && \
+	cp -f $(ROCKSDB_TARGET)/librocksdb.so* /usr/local/include/
 ### SBCL
 SBCL_TARGET:=build/src/sbcl
 $(SBCL_TARGET):scripts/get-sbcl.sh $(B);
 	$<
 	cd $(SBCL_TARGET) && \
-	echo '"2.3.12+main"' > version.lisp-expr && \
+	echo '"2.4.1+main"' > version.lisp-expr && \
 	sh make.sh \
 	  --without-gencgc \
 	  --with-mark-region-gc \
 	  --with-core-compression \
 	  --with-sb-xref-for-internals \
-	  --dynamic-space-size=4Gb \
+	  --dynamic-space-size=8Gb \
 	  --fancy && \
 	cd doc/manual && make
 sbcl:$(SBCL_TARGET)
@@ -80,9 +80,9 @@ sbcl-install:sbcl;cd $(SBCL_TARGET) && ./install.sh
 clean-sbcl:$(SBCL_TARGET);cd $(SBCL_TARGET) && ./clean.sh
 
 ### Rust
-RUST_TARGET:=build/src/rust-$(RUST_VERSION)
+RUST_TARGET:=build/src/rust
 rust:scripts/get-rust.sh $(B);
-	$< $(RUST_VERSION)
+	$<
 rust-x:rust;
 	cargo install --path $(RUST_TARGET)/src/tools/x
 rust-build:rust rust-install-x;
@@ -144,9 +144,9 @@ dist/sbcl:sbcl $(D);
 dist/linux:linux $(D);
 
 dist/rocksdb:rocksdb $(D);
-	cd $(ROCKSDB_TARGET)
-	cp -rf include/* $(D)
-	cp -f librocksdb.so* $(D)/lib/
+	mkdir -pv $@
+	cp -rf $(ROCKSDB_TARGET)/include/* $@
+	cp -f $(ROCKSDB_TARGET)/librocksdb.so* $@
 
 dist/rust:rust-build $(D);
 	cd $(RUST_TARGET) && x dist
@@ -158,11 +158,6 @@ dist/fasl:scripts/sbcl-save-core.sh
 	$< "$@/std.core"
 	$< "$@/prelude.core" "(mapc #'ql:quickload \
 	(list :nlp :rdb :organ :packy :skel :obj :net :parse :pod :dat :log :packy :rt :syn :xdb))"
-	$< "$@/rdb.core" "(ql:quickload :rdb)"
-	$< "$@/organ.core" "(ql:quickload :organ)"
-	$< "$@/skel.core" "(ql:quickload :skel)"
-	$< "$@/pod.core" "(ql:quickload :pod)"
-	$< "$@/cli.core" "(ql:quickload :cli)"
 
 dist/comp:comp
 	mkdir -pv $@

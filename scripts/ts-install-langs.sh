@@ -40,14 +40,14 @@ for lang in "${langs[@]}";do
     if test -f "scanner.cc"; then
       ${CXX} -I. -fPIC scanner.cc -c -lstdc++;
       ${CC} -I. -std=c99 -fPIC parser.c -c;
-      ${CXX} -shared scanner.o parser.o -o ${PREFIX}/lib/tree-sitter-"${lang//\//-}.${EXT}";
+      ${CXX} -shared scanner.o parser.o -o ${PREFIX}/lib/libtree-sitter-"${lang//\//-}.${EXT}";
     elif test -f "scanner.c"; then
       ${CC} -I. -std=c99 -fPIC scanner.c -c;
       ${CC} -I. -std=c99 -fPIC parser.c -c;
-      ${CC} -shared scanner.o parser.o -o ${PREFIX}/lib/tree-sitter-"${lang//\//-}.${EXT}";
+      ${CC} -shared scanner.o parser.o -o ${PREFIX}/lib/libtree-sitter-"${lang//\//-}.${EXT}";
     else
       ${CC} -I. -std=c99 -fPIC parser.c -c;
-      ${CC} -shared parser.o -o ${PREFIX}/lib/tree-sitter-"${lang//\//-}.${EXT}";
+      ${CC} -shared parser.o -o ${PREFIX}/lib/libtree-sitter-"${lang//\//-}.${EXT}";
     fi;
     mkdir -p "${PREFIX}/share/tree-sitter/${lang}/";
     cp grammar.json node-types.json "${PREFIX}/share/tree-sitter/${lang}";

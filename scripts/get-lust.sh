@@ -1,7 +1,6 @@
 #!/usr/bin/bash
 # install the Lonely Rust compiler source code
-VER="${1:-main}"
-TARGETDIR=${2:-$(realpath build/lust-$VER)}
+TARGETDIR=${1:-$(realpath build/lust)}
 hg clone https://vc.compiler.company/lust $TARGETDIR
 pushd $TARGETDIR
 make

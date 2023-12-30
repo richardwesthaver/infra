@@ -4,10 +4,6 @@
 ;; bootstrapping.
 
 ;;; Code:
-#+quicklisp
-(mapc (lambda (x) (unless (find-package x) (ql:quickload x)))
-      '(:cli :std :sb-alien :cli :log))
-
 (defpackage :infra/scripts/check
   (:nicknames :check)
   (:use :cl :std :sb-alien :cli :log)

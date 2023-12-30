@@ -1,6 +1,5 @@
 #!/usr/bin/bash
-VER="${1:-main}"
-TARGETDIR=${2:-$(realpath build/cl-$VER)}
+TARGETDIR=${1:-$(realpath build/cl)}
 hg clone https://vc.compiler.company/cl $TARGETDIR
 pushd $TARGETDIR
 make

@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 id=$(buildah from archlinux-base)
 # buildah add $id /mnt/y/lab /var/local/lab
 buildah run $id useradd -ms /bin/bash $USER
