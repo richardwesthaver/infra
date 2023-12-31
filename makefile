@@ -54,7 +54,7 @@ emacs-install:emacs-build;
 ### RocksDB
 ROCKSDB_TARGET:=build/src/rocksdb
 $(ROCKSDB_TARGET):scripts/get-rocksdb.sh $(B);
-	$<
+	./$<
 	cd $(ROCKSDB_TARGET) && \
 	make shared_lib DISABLE_JEMALLOC=1
 rocksdb:$(ROCKSDB_TARGET)
@@ -70,12 +70,12 @@ $(SBCL_TARGET):scripts/get-sbcl.sh $(B);
 	cd $(SBCL_TARGET) && \
 	echo '"2.4.1+main"' > version.lisp-expr && \
 	sh make.sh \
-	 # --without-gencgc \
-	 # --with-mark-region-gc \ # not supported on Alpine, FYI
-	 # --with-sb-xref-for-internals \ #
-	  --with-core-compression \
-	  --dynamic-space-size=8Gb \
-	  --fancy
+	--without-gencgc \
+	--with-mark-region-gc \ # not supported on Alpine?
+	--with-sb-xref-for-internals \ #
+	--with-core-compression \
+	--dynamic-space-size=8Gb \
+	--fancy
 sbcl:$(SBCL_TARGET)
 sbcl-docs:sbcl;## REQUIRES TEXLIVE
 	cd $(SBCL_TARGET)/doc/manual && make

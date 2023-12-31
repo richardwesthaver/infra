@@ -15,8 +15,6 @@ buildah run --net host $id hg clone https://vc.compiler.company/comp/infra
 buildah run --net host $id sh -c 'cd infra && make rocksdb-install'
 buildah run --net host $id sh -c 'cd infra && make sbcl-install'
 buildah run --net host $id sh -c 'cd infra && make ts-langs'
-buildah run --net host $id sh -c 'curl -o /tmp/quicklisp.lisp -O https://beta.quicklisp.org/quicklisp.lisp'
-buildah run --net host $id sh -c 'sbcl --load /tmp/quicklisp.lisp --eval (quicklisp-quickstart:install)'
 buildah run --net host $id sh -c 'cd infra && make dist/fasl'
 buildah run --net host $id sh -c 'mv infra/dist/fasl/* /usr/local/lib/sbcl/'
 buildah run --net host $id sh -c './infra/scripts/install-cargo-tools.sh'
