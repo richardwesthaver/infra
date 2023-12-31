@@ -72,7 +72,7 @@ $(SBCL_TARGET):scripts/get-sbcl.sh $(B);
 	sh make.sh \
 	--without-gencgc \
 	--with-mark-region-gc \
-	--with-sb-xref-for-internals \ #
+	--with-sb-xref-for-internals \
 	--with-core-compression \
 	--dynamic-space-size=8Gb \
 	--fancy
