@@ -5,6 +5,6 @@ cargo install cargo-asm
 cargo install t-rec
 cargo install trunk
 cargo install tokio-console
-cargo install sqlx-cli
+# cargo install sqlx-cli
 cargo install wasm-bindgen-cli
 cargo install wasm-opt

@@ -77,11 +77,13 @@ $(SBCL_TARGET):scripts/get-sbcl.sh $(B);
 	  --dynamic-space-size=8Gb \
 	  --fancy
 sbcl:$(SBCL_TARGET)
-sbcl-docs:sbcl;## REQURES TEXLIVE
+sbcl-docs:sbcl;## REQUIRES TEXLIVE
 	cd $(SBCL_TARGET)/doc/manual && make
 sbcl-install:sbcl;cd $(SBCL_TARGET) && ./install.sh
 clean-sbcl:$(SBCL_TARGET);cd $(SBCL_TARGET) && ./clean.sh
-
+build/quicklisp.lisp:;curl -o build/quicklisp.lisp -O https://beta.quicklisp.org/quicklisp.lisp
+quicklisp-install:build/quicklisp.lisp
+	sbcl --script $< --eval '(quicklisp-quickstart:install)'
 ### Rust
 RUST_TARGET:=build/src/rust
 $(RUST_TARGET):scripts/get-rust.sh $(B);$<
@@ -156,7 +158,7 @@ dist/rust:rust-build $(D);
 
 dist/emacs:emacs-build $(D);
 
-dist/fasl:scripts/sbcl-save-core.sh
+dist/fasl:scripts/sbcl-save-core.sh quicklisp-install
 	mkdir -pv $@
 	$< "$@/std.core"
 	$< "$@/prelude.core" "(mapc #'ql:quickload \
