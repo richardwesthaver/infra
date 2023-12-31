@@ -1,2 +1,8 @@
 #!/bin/sh
-podman pod create --name comp.lab --infra --publish 8080:80 --network bridge
+
+# to run a container in the pod:
+# podman run -dt --pod comp box-base top
+# podman container attach --latest
+# sudo podman ps -ap
+NAME=${1:-comp}
+podman pod create --name $NAME

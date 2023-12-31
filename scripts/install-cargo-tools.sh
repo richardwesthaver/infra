@@ -1,5 +1,5 @@
 #!/bin/sh
-cargo install carg-add
+cargo install cargo-add
 cargo install cbindgen
 cargo install cargo-asm
 cargo install t-rec

@@ -25,6 +25,7 @@ all:dist/cdn dist/comp dist/fasl dist/sbcl dist/rocksdb dist/emacs
 clean:;rm -rf $(B) $(D)
 $(B):;mkdir -pv $@/src
 $(D):;mkdir -pv $@
+
 ### Linux
 LINUX_TARGET:=linux-$(LINUX_VERSION)
 linux:$(LINUX_TARGET) linux-config;
@@ -61,6 +62,7 @@ rocksdb:$(ROCKSDB_TARGET)
 rocksdb-install:$(ROCKSDB_TARGET)
 	cd $< && cp -rf $(ROCKSDB_TARGET)/include/* /usr/local/include/ && \
 	cp -f $(ROCKSDB_TARGET)/librocksdb.so* /usr/local/include/
+
 ### SBCL
 SBCL_TARGET:=build/src/sbcl
 $(SBCL_TARGET):scripts/get-sbcl.sh $(B);
@@ -73,17 +75,18 @@ $(SBCL_TARGET):scripts/get-sbcl.sh $(B);
 	  --with-core-compression \
 	  --with-sb-xref-for-internals \
 	  --dynamic-space-size=8Gb \
-	  --fancy && \
-	cd doc/manual && make
+	  --fancy
 sbcl:$(SBCL_TARGET)
+sbcl-docs:sbcl;## REQURES TEXLIVE
+	cd $(SBCL_TARGET)/doc/manual && make
 sbcl-install:sbcl;cd $(SBCL_TARGET) && ./install.sh
 clean-sbcl:$(SBCL_TARGET);cd $(SBCL_TARGET) && ./clean.sh
 
 ### Rust
 RUST_TARGET:=build/src/rust
-rust:scripts/get-rust.sh $(B);
-	$<
-rust-x:rust;
+$(RUST_TARGET):scripts/get-rust.sh $(B);$<
+rust:$(RUST_TARGET)
+rust-install-x:rust;
 	cargo install --path $(RUST_TARGET)/src/tools/x
 rust-build:rust rust-install-x;
 	cd $(RUST_TARGET) && x build library
