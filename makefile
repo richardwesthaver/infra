@@ -61,7 +61,7 @@ rocksdb:$(ROCKSDB_TARGET)
 
 rocksdb-install:$(ROCKSDB_TARGET)
 	cd $< && cp -rf $(ROCKSDB_TARGET)/include/* /usr/local/include/ && \
-	cp -f $(ROCKSDB_TARGET)/librocksdb.so* /usr/local/include/
+	cp -f $(ROCKSDB_TARGET)/librocksdb.{so,dylib}* /usr/local/include/
 
 ### SBCL
 SBCL_TARGET:=build/src/sbcl
@@ -151,7 +151,7 @@ dist/linux:linux $(D);
 dist/rocksdb:rocksdb $(D);
 	mkdir -pv $@
 	cp -rf $(ROCKSDB_TARGET)/include/* $@
-	cp -f $(ROCKSDB_TARGET)/librocksdb.so* $@
+	cp -f $(ROCKSDB_TARGET)/librocksdb.{so,dylib}* $@
 
 dist/rust:rust-build $(D);
 	cd $(RUST_TARGET) && x dist
