@@ -21,7 +21,7 @@ HG_COMMIT:=$(shell hg id -i)
 
 # init:sbcl rust emacs rocksdb comp virt;
 # dist/linux dist/rust dist/bundle
-all:dist/cdn dist/comp dist/fasl dist/sbcl dist/rocksdb dist/emacs
+all:dist/cdn dist/comp dist/lisp dist/rust dist/sbcl dist/rocksdb dist/emacs
 clean:;rm -rf $(B) $(D)
 $(B):;mkdir -pv $@/src
 $(D):;mkdir -pv $@
@@ -131,7 +131,8 @@ vc-pod:heptapod heptapod-runner
 virt:pod box bbdb vc
 
 ### Dist
-dist/bundle:scripts/bundle-dir.sh $(D)
+dist/bundle:scripts/bundle-dir.sh comp
+	mkdir -pv $@
 	$<
 
 dist/cdn:cdn $(D)
@@ -155,14 +156,38 @@ dist/rocksdb:rocksdb $(D);
 
 dist/rust:rust-build $(D);
 	cd $(RUST_TARGET) && x dist
+dist/rust/bin:scripts/cargo-install.sh comp
+	mkdir -pv $@
+	$< "$(COMP_TARGET)/core/rust/app/cli/alik" "dist/rust"
+	$< "$(COMP_TARGET)/core/rust/app/cli/krypt" "dist/rust"
+	$< "$(COMP_TARGET)/core/rust/app/cli/tz" "dist/rust"
+	$< "$(COMP_TARGET)/core/rust/app/cli/cc-init" "dist/rust"
+	$< "$(COMP_TARGET)/core/rust/app/cli/mailman" "dist/rust"
 
 dist/emacs:emacs-build $(D);
 
-dist/fasl:scripts/sbcl-save-core.sh quicklisp-install
+dist/lisp/fasl:scripts/sbcl-save-core.sh quicklisp-install
 	mkdir -pv $@
 	$< "$@/std.core"
 	$< "$@/prelude.core" "(mapc #'ql:quickload \
 	(list :nlp :rdb :organ :packy :skel :obj :net :parse :pod :dat :log :packy :rt :syn :xdb))"
+
+dist/lisp/bin:scripts/sbcl-make-bin.sh comp
+	$< bin/skel
+	cp $(COMP_TARGET)/core/lisp/app/bin/skel $@
+	rm -f $(COMP_TARGET)/core/lisp/app/bin/skel.fasl
+	$< bin/organ
+	cp $(COMP_TARGET)/core/lisp/app/bin/organ $@
+	rm -f $(COMP_TARGET)/core/lisp/app/bin/organ.fasl
+	$< bin/homer
+	cp $(COMP_TARGET)/core/lisp/app/bin/homer $@
+	rm -f $(COMP_TARGET)/core/lisp/app/bin/homer.fasl
+	$< bin/packy
+	cp $(COMP_TARGET)/core/lisp/app/bin/packy $@
+	rm -f $(COMP_TARGET)/core/lisp/app/bin/packy.fasl
+	$< bin/rdb
+	cp $(COMP_TARGET)/core/lisp/app/bin/rdb $@
+	rm -f $(COMP_TARGET)/core/lisp/app/bin/rdb.fasl
 
 dist/comp:comp
 	mkdir -pv $@

@@ -5,4 +5,4 @@
 # podman container attach --latest
 # sudo podman ps -ap
 NAME=${1:-comp}
-podman pod create --name $NAME
+podman pod create --name $NAME --replace
