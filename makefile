@@ -101,8 +101,8 @@ rust-install:rust-build;
 
 ### Tree-sitter Langs
 TS_LANGS_TARGET:=build/src/ts-langs
-ts-langs:scripts/ts-install-langs.sh # this requires sudo for now
-
+ts-langs-install:scripts/ts-install-langs.sh # this requires sudo for now
+	$<
 ### Comp
 COMP_TARGET:=build/src/$(SRC)
 comp:scripts/get-comp.sh $(B)
