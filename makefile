@@ -53,8 +53,8 @@ emacs-install:emacs-build;
 
 ### RocksDB
 ROCKSDB_TARGET:=build/src/rocksdb
-$(ROCKSDB_TARGET):scripts/get-rocksdb.sh $(B);
-	./$<
+$(ROCKSDB_TARGET):scripts/get-rocksdb.sh $(B)
+	$<
 	cd $(ROCKSDB_TARGET) && \
 	make shared_lib DISABLE_JEMALLOC=1
 rocksdb:$(ROCKSDB_TARGET)
