@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Get The Compiler Company source code
 SRC="${1:-comp}"
 OUT=build/src/$SRC

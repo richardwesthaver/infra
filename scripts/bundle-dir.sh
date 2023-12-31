@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # bundle a tar.zst archive of Mercurial repositories.
 WD=/mnt/y/data/packy
 #WD=$(realpath dist)
