@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 CPUS=$(getconf _NPROCESSORS_ONLN)
-TARGETDIR=${1:-$(realpath build/src/emacs)}
+TARGETDIR=${1:-build/src/emacs}
 CONFIG=(--with-mailutils
 	--with-imagemagick
 	--with-x-toolkit=gtk

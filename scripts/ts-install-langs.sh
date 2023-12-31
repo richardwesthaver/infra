@@ -8,7 +8,7 @@ declare -ar default_langs=(
   typescript/tsx typescript/typescript yaml
 ) # more langs: agda c-sharp julia ocaml/interface ocaml/ocaml php ql ruby scala
 
-TARGETDIR=${1:-$(realpath build/src/ts-langs)}
+TARGETDIR=${1:-build/src/ts-langs}
 PREFIX=${PREFIX:-/usr/local}
 CC=${CC:-clang}
 CXX=${CXX:-clang++}

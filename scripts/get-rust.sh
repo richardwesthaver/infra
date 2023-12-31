@@ -8,5 +8,5 @@
 #rustup update
 #rustup default nightly
 
-TARGETDIR=${1:-$(realpath build/src/rust)}
+TARGETDIR=${1:-build/src/rust}
 git clone https://vc.compiler.company/packy/shed/vendor/rust.git $TARGETDIR

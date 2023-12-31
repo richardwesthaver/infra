@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # bundle a tar.zst archive of Mercurial repositories.
 WD=/mnt/y/data/packy
-#WD=$(realpath dist)
+#WD=dist
 OUT=$WD/bundle/src
 SRC_PATH=$HOME/dev/comp
 BUNDLE_NAME="${1:-comp}"
