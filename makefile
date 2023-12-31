@@ -101,7 +101,7 @@ rust-install:rust-build;
 
 ### Tree-sitter Langs
 TS_LANGS_TARGET:=build/src/ts-langs
-ts-langs-install:scripts/ts-install-langs.sh # this requires sudo for now
+ts-langs-install:scripts/ts-install-langs.sh
 	$<
 ### Comp
 COMP_TARGET:=build/src/$(SRC)
@@ -151,7 +151,7 @@ dist/linux:linux $(D);
 dist/rocksdb:rocksdb $(D);
 	mkdir -pv $@
 	cp -rf $(ROCKSDB_TARGET)/include/* $@
-	cp -f $(ROCKSDB_TARGET)/librocksdb.{so,dylib}* $@
+	cp -f $(ROCKSDB_TARGET)/librocksdb.* $@
 
 dist/rust:rust-build $(D);
 	cd $(RUST_TARGET) && x dist
