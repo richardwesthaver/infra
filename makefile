@@ -70,10 +70,10 @@ $(SBCL_TARGET):scripts/get-sbcl.sh $(B);
 	cd $(SBCL_TARGET) && \
 	echo '"2.4.1+main"' > version.lisp-expr && \
 	sh make.sh \
-	  --without-gencgc \
-	  --with-mark-region-gc \
+	 # --without-gencgc \
+	 # --with-mark-region-gc \ # not supported on Alpine, FYI
+	 # --with-sb-xref-for-internals \ #
 	  --with-core-compression \
-	  --with-sb-xref-for-internals \
 	  --dynamic-space-size=8Gb \
 	  --fancy
 sbcl:$(SBCL_TARGET)
