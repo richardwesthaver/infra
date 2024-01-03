@@ -7,7 +7,7 @@ id=$(buildah from alpine-base)
 buildah add $id etc/skel/ /etc/skel/
 buildah copy $id etc/skel/ /root/
 buildah run $id adduser worker -D
-buildah run $id apk add build-base zstd-dev sbcl curl make git linux-headers cargo openssl perl llvm clang
+buildah run $id apk add build-base zstd-dev sbcl curl make git linux-headers cargo openssl perl llvm clang pkg-config
 buildah run $id mkdir /store
 buildah run $id mkdir /stash
 buildah run $id mkdir /usr/share/lisp
