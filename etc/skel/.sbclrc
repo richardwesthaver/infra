@@ -1,3 +1,4 @@
+;;; .sbclrc --- sbcl init file -*- mode: common-lisp; -*-
 (in-package :cl-user)
 (setq *debug-beginner-help-p* nil
       *print-case* :downcase
@@ -8,3 +9,5 @@
 (let ((quicklisp-init (merge-pathnames "quicklisp/setup.lisp" (user-homedir-pathname))))
   (when (probe-file quicklisp-init)
     (load quicklisp-init)))
+
+(require :sb-aclrepl)

@@ -60,9 +60,12 @@ $(ROCKSDB_TARGET):scripts/get-rocksdb.sh $(B)
 rocksdb:$(ROCKSDB_TARGET)
 
 rocksdb-install:$(ROCKSDB_TARGET)
-	cd $< && cp -rf $(ROCKSDB_TARGET)/include/* /usr/local/include/ && \
-	cp -f $(ROCKSDB_TARGET)/librocksdb.* /usr/local/include/
+	cp -rf $(ROCKSDB_TARGET)/include/* /usr/local/include/
+	cp -f $(ROCKSDB_TARGET)/librocksdb.* /usr/local/lib/
 
+# TODO: separate params
+#	--without-gencgc \
+#	--with-mark-region-gc \
 ### SBCL
 SBCL_TARGET:=build/src/sbcl
 $(SBCL_TARGET):scripts/get-sbcl.sh $(B);
@@ -70,8 +73,6 @@ $(SBCL_TARGET):scripts/get-sbcl.sh $(B);
 	cd $(SBCL_TARGET) && \
 	echo '"2.4.1+main"' > version.lisp-expr && \
 	sh make.sh \
-	--without-gencgc \
-	--with-mark-region-gc \
 	--with-sb-xref-for-internals \
 	--with-core-compression \
 	--dynamic-space-size=8Gb \
