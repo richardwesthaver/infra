@@ -2,7 +2,7 @@
 # bundle a tar.zst archive of Mercurial repositories.
 # must be absolute
 #WD=/mnt/y/data/packy
-WD="${2:-$HOME/dev/infra/dist}"
+WD="${2:-$HOME/dev/comp/infra/dist}"
 OUT=$WD/bundle/src
 SRC_PATH=$HOME/dev/comp
 BUNDLE_NAME="${1:-comp}"

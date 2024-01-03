@@ -22,14 +22,14 @@ DESTINATION:=/mnt/y/data/packy
 # requires emacs-build-minimal
 worker:rocksdb-install sbcl-install ts-langs-install quicklisp-install
 # artifacts can deploy to dist/TARGET - need target triple first
-deploy:$(D) $(DESTINATION);cd $< && ../scripts/deploy.sh lisp rust bundle vc
 # init:sbcl rust emacs rocksdb comp virt;
 # dist/linux dist/rust dist/bundle
 all:dist/cdn dist/comp dist/lisp dist/rust dist/sbcl dist/rocksdb dist/emacs
 clean:;rm -rf $(B) $(D)
 $(B):;mkdir -pv $@/src
 $(D):;mkdir -pv $@
-
+$(DESTINATION):$(D);cp -rf $</* $@
+deploy:$(DESTINATION)
 ### Linux
 LINUX_TARGET:=linux-$(LINUX_VERSION)
 linux:$(LINUX_TARGET) linux-config;
