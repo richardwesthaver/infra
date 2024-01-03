@@ -1,0 +1,14 @@
+;;; /etc/sbclrc --- sbcl system init file -*- mode: common-lisp; -*-
+
+;; this is the system-wide startup script. It's always ran on startup
+;; unless --sysinit flags are used
+
+;;; Code:
+(in-package :cl-user)
+(setq *debug-beginner-help-p* nil
+      *print-case* :downcase
+      *print-level* 50
+      *print-length* 200)
+
+(pushnew #P"/usr/share/lisp/" asdf:*central-registry*)
+(pushnew #P"/usr/local/share/lisp/" asdf:*central-registry*)

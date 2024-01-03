@@ -1,6 +1,0 @@
-[build]
-compiler-docs = true
-target = ["x86_64-unknown-linux-gnu"]
-
-[rust]
-lto = "thin"
