@@ -16,6 +16,5 @@ buildah config --workingdir /infra $id
 buildah run --net host $id sh -c 'make worker -j4'
 buildah run --net host $id sh -c 'scripts/install-cargo-tools.sh'
 buildah run --net host $id sh -c 'make clean'
-buildah config --healthcheck btm $id
 buildah config --workingdir /stash $id
 buildah commit $id ci-worker
