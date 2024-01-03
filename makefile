@@ -61,7 +61,7 @@ rocksdb:$(ROCKSDB_TARGET)
 
 rocksdb-install:$(ROCKSDB_TARGET)
 	cd $< && cp -rf $(ROCKSDB_TARGET)/include/* /usr/local/include/ && \
-	cp -f $(ROCKSDB_TARGET)/librocksdb.{so,dylib}* /usr/local/include/
+	cp -f $(ROCKSDB_TARGET)/librocksdb.* /usr/local/include/
 
 ### SBCL
 SBCL_TARGET:=build/src/sbcl
