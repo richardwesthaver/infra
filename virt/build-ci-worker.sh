@@ -7,7 +7,7 @@ id=$(buildah from alpine-base)
 buildah add $id etc/skel /etc/skel
 buildah run $id adduser alik -D -k /etc/skel
 buildah run $id adduser demon -D -k /etc/skel
-buildah run $id apk add build-base zstd-dev sbcl curl make git linux-headers cargo openssl perl
+buildah run $id apk add build-base zstd-dev sbcl curl make git linux-headers cargo openssl perl llvm
 buildah config --workingdir /home/demon $id
 buildah config --volume /mnt/y $id
 buildah run --net host $id hg clone https://vc.compiler.company/comp/infra
