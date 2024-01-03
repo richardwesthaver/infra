@@ -170,7 +170,8 @@ dist/rust/bin:scripts/cargo-install.sh comp
 
 dist/emacs:emacs-build $(D);
 
-dist/lisp/fasl:scripts/sbcl-save-core.sh quicklisp-install
+# requires quicklisp loaded in .skelrc
+dist/lisp/fasl:scripts/sbcl-save-core.sh # quicklisp-install
 	mkdir -pv $@
 	$< "$@/std.core"
 	$< "$@/prelude.core" "(mapc #'ql:quickload \

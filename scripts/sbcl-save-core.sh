@@ -1,8 +1,4 @@
 #!/bin/sh
 # save an sbcl core image
-FORM="(progn (ql:quickload :std) "
-FORM+="${2}"
-FORM+=" (save-lisp-and-die \""
-FORM+="${1:-std.core}"
-FORM+="\"))"
+FORM="(progn (ql:quickload :std) ${2} (save-lisp-and-die \"${1:-std.core}\"))"
 sbcl --noinform --non-interactive --eval "$FORM"
