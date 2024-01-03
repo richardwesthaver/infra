@@ -14,6 +14,7 @@ buildah run $id mkdir /usr/local/share/lisp
 buildah config --volume /store $id
 buildah run --net host $id hg clone https://vc.compiler.company/comp/infra
 buildah config --workingdir /infra $id 
+buildah config --env QUICKLISP_ADD_TO_INIT_FILE=true
 buildah run --net host $id sh -c 'make worker -j4'
 buildah run --net host $id sh -c 'scripts/install-cargo-tools.sh'
 buildah run --net host $id sh -c 'make clean'
