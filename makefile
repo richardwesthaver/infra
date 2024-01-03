@@ -19,7 +19,8 @@ D:=dist
 SRC:=comp
 HG_COMMIT:=$(shell hg id -i)
 
-worker:rocksdb-install sbcl-install ts-langs-install emacs-install quicklisp-install
+# requires emacs-build-minimal
+worker:rocksdb-install sbcl-install ts-langs-install quicklisp-install
 # init:sbcl rust emacs rocksdb comp virt;
 # dist/linux dist/rust dist/bundle
 all:dist/cdn dist/comp dist/lisp dist/rust dist/sbcl dist/rocksdb dist/emacs
