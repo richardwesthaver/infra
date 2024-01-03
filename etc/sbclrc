@@ -5,6 +5,9 @@
 
 ;;; Code:
 (in-package :cl-user)
+
+(require :asdf)
+
 (setq *debug-beginner-help-p* nil
       *print-case* :downcase
       *print-level* 50
