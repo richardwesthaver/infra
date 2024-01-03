@@ -84,9 +84,9 @@ sbcl-docs:sbcl;## REQUIRES TEXLIVE
 	cd $(SBCL_TARGET)/doc/manual && make
 sbcl-install:sbcl;cd $(SBCL_TARGET) && ./install.sh
 clean-sbcl:$(SBCL_TARGET);cd $(SBCL_TARGET) && ./clean.sh
-build/quicklisp.lisp:;curl -o build/quicklisp.lisp -O https://beta.quicklisp.org/quicklisp.lisp
+build/quicklisp.lisp:$(B);cd $< && curl -O https://beta.quicklisp.org/quicklisp.lisp
 quicklisp-install:build/quicklisp.lisp
-	sbcl --script $< --eval '(quicklisp-quickstart:install)'
+	sbcl --load $< --eval '(quicklisp-quickstart:install)'
 ### Rust
 RUST_TARGET:=build/src/rust
 $(RUST_TARGET):scripts/get-rust.sh $(B);$<
