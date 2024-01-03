@@ -19,6 +19,7 @@ D:=dist
 SRC:=comp
 HG_COMMIT:=$(shell hg id -i)
 
+worker:rocksdb-install sbcl-install ts-langs-install emacs-install quicklisp-install
 # init:sbcl rust emacs rocksdb comp virt;
 # dist/linux dist/rust dist/bundle
 all:dist/cdn dist/comp dist/lisp dist/rust dist/sbcl dist/rocksdb dist/emacs
@@ -171,7 +172,7 @@ dist/lisp/fasl:scripts/sbcl-save-core.sh quicklisp-install
 	mkdir -pv $@
 	$< "$@/std.core"
 	$< "$@/prelude.core" "(mapc #'ql:quickload \
-	(list :nlp :rdb :organ :packy :skel :obj :net :parse :pod :dat :log :packy :rt :syn :xdb))"
+	(list :nlp :rdb :organ :packy :skel :obj :net :parse :pod :dat :log :packy :rt :syn :xdb :doc :vc :rt))"
 
 dist/lisp/bin:scripts/sbcl-make-bin.sh comp
 	$< bin/skel

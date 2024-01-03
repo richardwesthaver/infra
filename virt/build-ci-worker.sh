@@ -5,18 +5,16 @@
 
 id=$(buildah from alpine-base)
 buildah add $id etc/skel /etc/skel
-buildah run $id adduser alik -D -k /etc/skel
-buildah run $id adduser demon -D -k /etc/skel
+buildah run $id adduser worker -D
 buildah run $id apk add build-base zstd-dev sbcl curl make git linux-headers cargo openssl perl llvm
-buildah config --workingdir /home/demon $id
-buildah config --volume /mnt/y $id
+buildah run $id mkdir /store
+buildah run $id mkdir /stash
+buildah config --volume /store $id
 buildah run --net host $id hg clone https://vc.compiler.company/comp/infra
-buildah run --net host $id sh -c 'make -C infra rocksdb-install'
-buildah run --net host $id sh -c 'make -C infra sbcl-install'
-buildah run --net host $id sh -c 'make -C infra ts-langs-install'
-buildah run --net host $id sh -c 'make -C infra dist/lisp/fasl'
-buildah run --net host $id sh -c 'mv infra/dist/lisp/fasl/* /usr/local/lib/sbcl/'
-buildah run --net host $id sh -c './infra/scripts/install-cargo-tools.sh'
-buildah run --net host $id sh -c 'make -C infra clean'
-buildah config --entrypoint '["/usr/local/bin/sbcl", "--core", "/usr/local/lib/sbcl/prelude.fasl"]' $id
+buildah config --workingdir  $id infra
+buildah run --net host $id sh -c 'make worker'
+buildah run --net host $id sh -c 'scripts/install-cargo-tools.sh'
+buildah run --net host $id sh -c 'make clean'
+buildah config --entrypoint '["/usr/local/bin/sbcl"]' $id
+buildah config --workingdir /stash
 buildah commit $id ci-worker
