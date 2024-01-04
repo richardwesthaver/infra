@@ -187,20 +187,20 @@ dist/lisp/fasl:scripts/sbcl-save-core.sh # quicklisp-install
 CORE_SRC=/usr/local/share/lisp/core
 dist/lisp/bin:scripts/sbcl-make-bin.sh
 	$< bin/skel
-	cp $(CORE_SRC)/core/lisp/app/bin/skel $@
-	rm -f $(CORE_SRC)/core/lisp/app/bin/skel.fasl
+	cp $(CORE_SRC)/lisp/app/bin/skel $@
+	rm -f $(CORE_SRC)/lisp/app/bin/skel.fasl
 	$< bin/organ
-	cp $(CORE_SRC)/core/lisp/app/bin/organ $@
-	rm -f $(CORE_SRC)/core/lisp/app/bin/organ.fasl
+	cp $(CORE_SRC)/lisp/app/bin/organ $@
+	rm -f $(CORE_SRC)/lisp/app/bin/organ.fasl
 	$< bin/homer
-	cp $(CORE_SRC)/core/lisp/app/bin/homer $@
-	rm -f $(CORE_SRC)/core/lisp/app/bin/homer.fasl
+	cp $(CORE_SRC)/lisp/app/bin/homer $@
+	rm -f $(CORE_SRC)/lisp/app/bin/homer.fasl
 	$< bin/packy
-	cp $(CORE_SRC)/core/lisp/app/bin/packy $@
-	rm -f $(CORE_SRC)/core/lisp/app/bin/packy.fasl
+	cp $(CORE_SRC)/lisp/app/bin/packy $@
+	rm -f $(CORE_SRC)/lisp/app/bin/packy.fasl
 	$< bin/rdb
-	cp $(CORE_SRC)/core/lisp/app/bin/rdb $@
-	rm -f $(CORE_SRC)/core/lisp/app/bin/rdb.fasl
+	cp $(CORE_SRC)/lisp/app/bin/rdb $@
+	rm -f $(CORE_SRC)/lisp/app/bin/rdb.fasl
 
 dist/lisp:dist/lisp/fasl dist/lisp/bin
 
