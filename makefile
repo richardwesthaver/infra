@@ -51,10 +51,10 @@ EMACS_DIST:=$(D)/src/emacs
 $(EMACS_TARGET):scripts/get-emacs.sh $(B);
 	$<
 emacs:$(EMACS_TARGET)
-emacs-build:scripts/build-emacs.sh emcas;
+emacs-build:scripts/build-emacs.sh emacs;
 	cd $(EMACS_TARGET) && ./autogen.sh
 	$< $(EMACS_TARGET)
-emacs-build-mini:scripts/build-emacs-mini.sh
+emacs-build-mini:scripts/build-emacs-mini.sh emacs
 	cd $(EMACS_TARGET) && ./autogen.sh
 	$< $(EMACS_TARGET)
 emacs-install:emacs-build;
@@ -188,7 +188,7 @@ CORE_SRC=/usr/local/share/lisp/core
 dist/lisp/bin:scripts/sbcl-make-bin.sh
 	mkdir -pv $@
 	$< bin/skel
-	cp $(CORE_SRC)/lisp/app/bin/skel $@
+	mv $(CORE_SRC)/lisp/app/bin/skel $@
 	rm -f $(CORE_SRC)/lisp/app/bin/skel.fasl
 	$< bin/organ
 	cp $(CORE_SRC)/lisp/app/bin/organ $@
