@@ -186,6 +186,7 @@ dist/lisp/fasl:scripts/sbcl-save-core.sh # quicklisp-install
 
 CORE_SRC=/usr/local/share/lisp/core
 dist/lisp/bin:scripts/sbcl-make-bin.sh
+	mkdir -pv $@
 	$< bin/skel
 	cp $(CORE_SRC)/lisp/app/bin/skel $@
 	rm -f $(CORE_SRC)/lisp/app/bin/skel.fasl
