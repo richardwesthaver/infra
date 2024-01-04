@@ -20,7 +20,7 @@ SRC:=comp
 HG_COMMIT:=$(shell hg id -i)
 DESTINATION:=/mnt/y/data/packy
 # requires emacs-build-minimal
-worker:rocksdb-install sbcl-install ts-langs-install quicklisp-install dist/lisp/fasl
+worker:rocksdb-install sbcl-install ts-langs-install quicklisp-install comp
 # artifacts can deploy to dist/TARGET - need target triple first
 # init:sbcl rust emacs rocksdb comp virt;
 # dist/linux dist/rust dist/bundle
