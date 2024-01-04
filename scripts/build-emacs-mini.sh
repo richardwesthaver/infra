@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 CPUS=$(getconf _NPROCESSORS_ONLN)
-TARGETDIR=${1:-build/src/emacs}
+TARGETDIR=${1:-./build/src/emacs}
 CONFIG=(--without-pop
 	--without-sound
 	--with-json
