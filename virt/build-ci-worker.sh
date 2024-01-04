@@ -19,5 +19,7 @@ buildah run --net host $id sh -c 'scripts/install-cargo-tools.sh'
 buildah run --net host $id sh -c 'make clean'
 buildah copy $id etc/skel/ /root/
 buildah copy $id etc/sbclrc /etc/sbclrc
-buildah config --workingdir /stash $id
+buildah config --workingdir /usr/local/share/lisp/ $id
+buildah run --net host $id hg clone https://vc.compiler.company/comp/core
+buildah config --workingdir / $id
 buildah commit $id ci-worker
