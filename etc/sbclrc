@@ -12,6 +12,7 @@
       *print-level* 50
       *print-length* 200)
 
+(pushnew #P"/usr/local/src/" asdf:*central-registry*)
 (pushnew #P"/usr/share/lisp/" asdf:*central-registry*)
 (pushnew #P"/usr/local/share/lisp/" asdf:*central-registry*)
 #-quicklisp
@@ -21,3 +22,4 @@
 
 #+quicklisp (pushnew #P"/usr/share/lisp/" ql:*local-project-directories* )
 #+quicklisp (pushnew #P"/usr/local/share/lisp/" ql:*local-project-directories*)
+#+quicklisp (pushnew #P"/usr/local/src/" ql:*local-project-directories*)
