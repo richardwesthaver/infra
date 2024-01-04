@@ -1,11 +1,9 @@
 #!/usr/bin/env bash
 CPUS=$(getconf _NPROCESSORS_ONLN)
 TARGETDIR="${1:-build/src/emacs}"
-CONFIG=(--without-pop
-	--without-sound
-	--with-json
+CONFIG=(--without-all
 	--enable-link-time-optimization
-        --without-x
-	--with-modules)
-$TARGETDIR/configure ${CONFIG[@]} 
-NATIVE_FULL_AOT=1 make -j$CPUS
+	--with-json
+	--with-modules
+        --prefix=/usr/local)
+cd $TARGETDIR &&./configure ${CONFIG[@]} && NATIVE_FULL_AOT=1 make -j$CPUS
