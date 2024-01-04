@@ -24,6 +24,8 @@ worker:rocksdb-install sbcl-install ts-langs-install quicklisp-install
 # artifacts can deploy to dist/TARGET - need target triple first
 # init:sbcl rust emacs rocksdb comp virt;
 # dist/linux dist/rust dist/bundle
+quick:comp
+operator:core-install emacs-build-mini emacs-install
 all:dist/cdn dist/comp dist/lisp dist/rust dist/sbcl dist/rocksdb dist/emacs
 clean:;rm -rf $(B) $(D)
 $(B):;mkdir -pv $@/src
@@ -49,9 +51,12 @@ EMACS_DIST:=$(D)/src/emacs
 $(EMACS_TARGET):scripts/get-emacs.sh $(B);
 	$<
 emacs:$(EMACS_TARGET)
-emacs-build:emacs scripts/build-emacs.sh;
+emacs-build:scripts/build-emacs.sh emcas;
 	cd $(EMACS_TARGET) && ./autogen.sh
-	scripts/build-emacs.sh $(EMACS_TARGET)
+	$< $(EMACS_TARGET)
+emacs-build-mini:scripts/build-emacs-mini.sh
+	cd $(EMACS_TARGET) && ./autogen.sh
+	$< $(EMACS_TARGET)
 emacs-install:emacs-build;
 	cd $(EMACS_TARGET) && make install
 
@@ -179,28 +184,32 @@ dist/lisp/fasl:scripts/sbcl-save-core.sh # quicklisp-install
 	$< "$@/prelude.core" "(mapc #'ql:quickload \
 	(list :nlp :rdb :organ :packy :skel :obj :net :parse :pod :dat :log :packy :rt :syn :xdb :doc :vc :rt))"
 
-dist/lisp/bin:scripts/sbcl-make-bin.sh comp
+CORE_SRC=/usr/local/share/lisp/core
+dist/lisp/bin:scripts/sbcl-make-bin.sh
 	$< bin/skel
-	cp $(COMP_TARGET)/core/lisp/app/bin/skel $@
-	rm -f $(COMP_TARGET)/core/lisp/app/bin/skel.fasl
+	cp $(CORE_SRC)/core/lisp/app/bin/skel $@
+	rm -f $(CORE_SRC)/core/lisp/app/bin/skel.fasl
 	$< bin/organ
-	cp $(COMP_TARGET)/core/lisp/app/bin/organ $@
-	rm -f $(COMP_TARGET)/core/lisp/app/bin/organ.fasl
+	cp $(CORE_SRC)/core/lisp/app/bin/organ $@
+	rm -f $(CORE_SRC)/core/lisp/app/bin/organ.fasl
 	$< bin/homer
-	cp $(COMP_TARGET)/core/lisp/app/bin/homer $@
-	rm -f $(COMP_TARGET)/core/lisp/app/bin/homer.fasl
+	cp $(CORE_SRC)/core/lisp/app/bin/homer $@
+	rm -f $(CORE_SRC)/core/lisp/app/bin/homer.fasl
 	$< bin/packy
-	cp $(COMP_TARGET)/core/lisp/app/bin/packy $@
-	rm -f $(COMP_TARGET)/core/lisp/app/bin/packy.fasl
+	cp $(CORE_SRC)/core/lisp/app/bin/packy $@
+	rm -f $(CORE_SRC)/core/lisp/app/bin/packy.fasl
 	$< bin/rdb
-	cp $(COMP_TARGET)/core/lisp/app/bin/rdb $@
-	rm -f $(COMP_TARGET)/core/lisp/app/bin/rdb.fasl
+	cp $(CORE_SRC)/core/lisp/app/bin/rdb $@
+	rm -f $(CORE_SRC)/core/lisp/app/bin/rdb.fasl
+
+dist/lisp:dist/lisp/fasl dist/lisp/bin
+
+core-install:dist/lisp
+	install -m 755 $</bin/* /usr/local/bin/
+	install -m 755 $</fasl/* /usr/local/lib/sbcl/
 
 dist/comp:comp
 	mkdir -pv $@
 	cp -r $(COMP_TARGET)/{org,core,infra,demo,nas-t} $@
 clean-dist:;rm -rf $(D)
 clean-build:;rm -rf $(B)
-
-### Quickstart
-quick:comp
