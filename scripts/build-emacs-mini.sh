@@ -4,7 +4,7 @@ TARGETDIR="${1:-build/src/emacs}"
 CONFIG=(--without-all
         --without-x
 	--enable-link-time-optimization
-	--with-json
+	--with-json=ifavailable
 	--with-modules
         --prefix=/usr/local)
 cd $TARGETDIR &&./configure ${CONFIG[@]} && NATIVE_FULL_AOT=1 make -j$CPUS
