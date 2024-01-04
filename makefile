@@ -57,8 +57,8 @@ emacs-build:scripts/build-emacs.sh emacs;
 emacs-build-mini:scripts/build-emacs-mini.sh emacs
 	cd $(EMACS_TARGET) && ./autogen.sh
 	$< $(EMACS_TARGET)
-emacs-install:emacs-build;
-	cd $(EMACS_TARGET) && make install
+emacs-install:$(EMACS_TARGET);
+	cd $< && make install
 
 ### RocksDB
 ROCKSDB_TARGET:=build/src/rocksdb
