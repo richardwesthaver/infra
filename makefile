@@ -28,7 +28,7 @@ all:dist/cdn dist/comp dist/lisp dist/rust dist/sbcl dist/rocksdb dist/emacs
 clean:;rm -rf $(B) $(D)
 $(B):;mkdir -pv $@/src
 $(D):;mkdir -pv $@
-$(DESTINATION):$(D);cp -rf $</* $@
+$(DESTINATION):$(D);cd $< && cp -rf ./* $@
 deploy:$(DESTINATION)
 ### Linux
 LINUX_TARGET:=linux-$(LINUX_VERSION)
