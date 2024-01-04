@@ -9,8 +9,5 @@ CONFIG=(--with-mailutils
 	--with-json
 	--enable-link-time-optimization
 	--with-modules)
-pushd $TARGETDIR
-./autogen.sh
 $TARGETDIR/configure ${CONFIG[@]} 
 NATIVE_FULL_AOT=1 make -j$CPUS
-popd
