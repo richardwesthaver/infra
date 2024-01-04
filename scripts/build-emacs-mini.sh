@@ -5,6 +5,7 @@ CONFIG=(--without-pop
 	--without-sound
 	--with-json
 	--enable-link-time-optimization
+        --without-x
 	--with-modules)
 pushd $TARGETDIR
 ./autogen.sh
