@@ -184,7 +184,7 @@ dist/lisp/fasl:scripts/sbcl-save-core.sh # quicklisp-install
 	$< "$@/prelude.core" "(mapc #'ql:quickload \
 	(list :nlp :rdb :organ :packy :skel :obj :net :parse :pod :dat :log :packy :rt :syn :xdb :doc :vc :rt))"
 
-CORE_SRC=/usr/local/share/lisp/core
+CORE_SRC=/usr/local/src/core
 dist/lisp/bin:scripts/sbcl-make-bin.sh
 	mkdir -pv $@
 	$< bin/skel
