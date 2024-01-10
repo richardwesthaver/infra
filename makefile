@@ -22,7 +22,7 @@ DESTINATION:=/mnt/y/data/packy
 # requires emacs-build-minimal
 worker:rocksdb-install sbcl-install ts-langs-install quicklisp-install
 # artifacts can deploy to dist/TARGET - need target triple first
-# init:sbcl rust emacs rocksdb comp virt;
+# init:sbcl rust emacs rocksdb comp
 # dist/linux dist/rust dist/bundle
 quick:comp
 operator:core-install emacs-build-mini emacs-install
@@ -120,26 +120,6 @@ comp:scripts/get-comp.sh $(B)
 	$< $(SRC)
 
 clean-comp::;rm -rf $(COMP_TARGET)
-
-### Virt
-dev-pod:virt/build-pod.sh
-	$<
-archlinux:virt/build-archlinux-base.sh
-	$<
-fedora:virt/build-fedora-base.sh
-	$<
-box:virt/build-box-base.sh
-	$<
-bbdb:virt/build-bbdb-base.sh
-	$<
-heptapod:virt/build-heptapod.sh
-	$<
-heptapod-runner:virt/build-heptapod-runner.sh
-	$<
-
-vc-pod:heptapod heptapod-runner
-
-virt:pod box bbdb vc
 
 ### Dist
 dist/bundle:scripts/bundle-dir.sh comp
