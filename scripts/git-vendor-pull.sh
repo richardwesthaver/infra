@@ -6,7 +6,7 @@ NAME="${1}"
 DOMAIN="${2}"
 REMOTE="https://$DOMAIN/$NAME"
 BRANCH="${2:-master}"
-REPO="ssh://git@vc.compiler.company/packy/shed/vendor/${1}"
+REPO="ssh://git@vc.compiler.company/packy/${1}"
 OUT="${3:-build/src/${1}}"
 mkdir -pv build/src
 git clone $REPO $OUT
