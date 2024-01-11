@@ -1,0 +1,10 @@
+FROM archlinux:latest AS archlinux-base
+COPY etc/skel/ /etc/
+RUN --network=host pacman -Syu gnupg openssh mercurial sqlite tmux btrfs-progs liburing wireguard-tools --noconfirm
+RUN useradd -u 1000 demon
+RUN useradd -u 1001 alik
+RUN mkdir /usr/share/lisp
+RUN mkdir /usr/local/share/lisp
+COPY etc/sbclrc /etc/sbclrc
+ENV XDG_RUNTIME_DIR=/run/user/1000
+EXPOSE 8080

@@ -1,0 +1,3 @@
+FROM heptapod:latest as vc
+RUN gitlab-ctl upgrade
+COPY etc/gitlab/gitlab.rb /etc/gitlab/gitlab.rb

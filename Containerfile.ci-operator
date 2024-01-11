@@ -1,0 +1,7 @@
+FROM ci-worker as ci-operator
+RUN adduser -D $USER
+RUN apk add --no-cache tree-sitter-dev autoconf texinfo libgccjit-dev zlib-dev gnutls-dev sysprof gpg bash json-c-dev ncurses-dev
+WORKDIR /usr/local/src/core
+RUN hg pull -u
+WORKDIR /infra
+RUN hg pull -u
