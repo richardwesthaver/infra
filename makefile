@@ -16,20 +16,20 @@ VERSION="0.1.0"
 LINUX_VERSION:=$(shell uname -r | cut -d- -f1)
 B:=build
 D:=dist
-SRC:=comp
+SRC:=code
 HG_COMMIT:=$(shell hg id -i)
 DESTINATION:=/mnt/y/data/packy
 # requires emacs-build-minimal
 worker:rocksdb-install sbcl-install ts-langs-install quicklisp-install
 # artifacts can deploy to dist/TARGET - need target triple first
-# init:sbcl rust emacs rocksdb comp
+# init:sbcl rust emacs rocksdb code
 # dist/linux dist/rust dist/bundle
-quick:comp
+quick:code
 operator:core-install emacs-build-mini emacs-install
-all:dist/cdn dist/comp dist/lisp dist/rust dist/sbcl dist/rocksdb dist/emacs
+all:dist/cdn dist/code dist/lisp dist/rust dist/sbcl dist/rocksdb dist/emacs
 clean:;rm -rf $(B) $(D)
 $(B):;mkdir -pv $@/src
-$(D):;mkdir -pv $@
+$(D):;mkdir -pv $@/bin $@/lib $@/include $@/bundle $@/share
 $(DESTINATION):$(D);cd $< && cp -rf ./* $@
 deploy:$(DESTINATION)
 ### Linux
@@ -64,13 +64,16 @@ emacs-install:$(EMACS_TARGET);
 ROCKSDB_TARGET:=build/src/rocksdb
 $(ROCKSDB_TARGET):scripts/get-rocksdb.sh $(B)
 	$<
-	cd $(ROCKSDB_TARGET) && \
-	make shared_lib DISABLE_JEMALLOC=1
 rocksdb:$(ROCKSDB_TARGET)
 
+rocksdb-build-shared:$(ROCKSDB_TARGET)
+	cd $< && make shared_lib DISABLE_JEMALLOC=1
+
+rocksdb-build-static:$(ROCKSDB_TARGET)
+	cd $< && make static_lib DISABLE_JEMALLOC=1
+
 rocksdb-install:$(ROCKSDB_TARGET)
-	cp -rf $(ROCKSDB_TARGET)/include/* /usr/local/include/
-	cp -f $(ROCKSDB_TARGET)/librocksdb.* /usr/local/lib/
+	cd $< && make install
 
 # TODO: separate params
 #	--without-gencgc \
@@ -114,15 +117,15 @@ rust-install:rust-build;
 TS_LANGS_TARGET:=build/src/ts-langs
 ts-langs-install:scripts/ts-install-langs.sh
 	$<
-### Comp
-COMP_TARGET:=build/src/$(SRC)
-comp:scripts/get-comp.sh $(B)
+### Code
+CODE_TARGET:=build/src/$(SRC)
+$(CODE_TARGET):scripts/get-code.sh $(B)
 	$< $(SRC)
-
-clean-comp::;rm -rf $(COMP_TARGET)
+code:$(CODE_TARGET)
+clean-code::;rm -rf $(CODE_TARGET)
 
 ### Dist
-dist/bundle:scripts/bundle-dir.sh comp
+dist/bundle:scripts/bundle-code.sh $(CODE_TARGET)
 	mkdir -pv $@
 	$<
 
@@ -140,23 +143,24 @@ dist/sbcl:sbcl $(D);
 
 dist/linux:linux $(D);
 
-dist/rocksdb:rocksdb $(D);
-	mkdir -pv $@
-	cp -rf $(ROCKSDB_TARGET)/include/* $@
-	cp -f $(ROCKSDB_TARGET)/librocksdb.* $@
+dist/rocksdb:$(D) rocksdb;
+	cp -rf $(ROCKSDB_TARGET)/include/* $</include/
+	cp -f $(ROCKSDB_TARGET)/librocksdb.* $</lib/
 
 dist/rust:rust-build $(D);
 	cd $(RUST_TARGET) && x dist
-dist/rust/bin:scripts/cargo-install.sh comp
+dist/rust/bin:scripts/cargo-install.sh code
 	mkdir -pv $@
-	$< "$(COMP_TARGET)/core/rust/app/cli/alik" "dist/rust"
-	$< "$(COMP_TARGET)/core/rust/app/cli/krypt" "dist/rust"
-	$< "$(COMP_TARGET)/core/rust/app/cli/tz" "dist/rust"
-	$< "$(COMP_TARGET)/core/rust/app/cli/cc-init" "dist/rust"
-	$< "$(COMP_TARGET)/core/rust/app/cli/mailman" "dist/rust"
+	$< "$(CODE_TARGET)/core/rust/app/cli/alik" "dist/rust"
+	$< "$(CODE_TARGET)/core/rust/app/cli/krypt" "dist/rust"
+	$< "$(CODE_TARGET)/core/rust/app/cli/tz" "dist/rust"
+	$< "$(CODE_TARGET)/core/rust/app/cli/cc-init" "dist/rust"
+	$< "$(CODE_TARGET)/core/rust/app/cli/mailman" "dist/rust"
 
 dist/emacs:emacs-build $(D);
 
+dist/ts:scripts/ts-install-langs.sh $(D)
+	PREFIX=$(D) $<
 # requires quicklisp loaded in .skelrc
 dist/lisp/fasl:scripts/sbcl-save-core.sh # quicklisp-install
 	mkdir -pv $@
@@ -189,8 +193,8 @@ core-install:dist/lisp
 	install -m 755 $</bin/* /usr/local/bin/
 	install -m 755 $</fasl/* /usr/local/lib/sbcl/
 
-dist/comp:comp
+dist/code:code
 	mkdir -pv $@
-	cp -r $(COMP_TARGET)/{org,core,infra,demo,nas-t} $@
+	cp -r $(CODE_TARGET)/{org,core,infra,demo} $@
 clean-dist:;rm -rf $(D)
 clean-build:;rm -rf $(B)
