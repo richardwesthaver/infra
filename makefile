@@ -53,6 +53,7 @@ $(EMACS_TARGET):scripts/get-emacs.sh $(B);
 emacs:$(EMACS_TARGET)
 emacs-build:scripts/build-emacs.sh $(EMACS_TARGET)
 	cd $(EMACS_TARGET) && ./autogen.sh
+	$<
 emacs-build-mini:scripts/build-emacs-mini.sh emacs
 	cd $(EMACS_TARGET) && ./autogen.sh
 	$< $(EMACS_TARGET)
