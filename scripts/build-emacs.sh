@@ -9,5 +9,6 @@ CONFIG=(--with-mailutils
 	--with-json
 	--enable-link-time-optimization
 	--with-modules)
-$TARGETDIR/configure ${CONFIG[@]} 
+cd $TARGETDIR
+./configure ${CONFIG[@]} 
 NATIVE_FULL_AOT=1 make -j$CPUS
