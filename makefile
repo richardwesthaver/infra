@@ -84,12 +84,13 @@ $(ECL_TARGET):scripts/get-ecl.sh
 ecl:$(ECL_TARGET)
 ecl-install:$(ECL_TARGET)
 	cd $< && make install 
+/usr/local/bin/ecl:ecl-install
 # TODO: separate params
 #	--without-gencgc \
 #	--with-mark-region-gc \
 ### SBCL
 SBCL_TARGET:=build/src/sbcl
-$(SBCL_TARGET):scripts/get-sbcl.sh $(B);
+$(SBCL_TARGET):scripts/get-sbcl.sh $(B) /usr/local/bin/ecl;
 	$<
 	cd $(SBCL_TARGET) && \
 	echo '"2.4.1+main"' > version.lisp-expr && \
