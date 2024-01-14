@@ -95,7 +95,7 @@ $(SBCL_TARGET):scripts/get-sbcl.sh $(B) /usr/local/bin/ecl;
 	cd $(SBCL_TARGET) && \
 	echo '"2.4.1+main"' > version.lisp-expr && \
 	sh make.sh \
-	--xc-host='/usr/local/bin/ecl --norc'
+	--xc-host='/usr/local/bin/ecl --norc' \
 	--with-sb-xref-for-internals \
 	--with-core-compression \
 	--dynamic-space-size=8Gb \
