@@ -1,4 +1,4 @@
-FROM archlinux:latest AS archlinux-base
+FROM archlinux:latest
 COPY etc/skel/ /etc/
 RUN --network=host pacman -Syu gnupg openssh mercurial sqlite tmux btrfs-progs liburing wireguard-tools --noconfirm
 RUN useradd -u 1000 demon

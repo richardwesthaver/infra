@@ -1,5 +1,5 @@
-FROM ci-worker as ci-operator
-RUN adduser -D $USER
+FROM localhost/ci-worker
+RUN adduser -D operator
 RUN apk add --no-cache tree-sitter-dev autoconf texinfo libgccjit-dev zlib-dev gnutls-dev sysprof gpg bash json-c-dev ncurses-dev
 WORKDIR /usr/local/src/core
 RUN hg pull -u

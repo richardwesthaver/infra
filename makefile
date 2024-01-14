@@ -20,7 +20,7 @@ SRC:=code
 HG_COMMIT:=$(shell hg id -i)
 DESTINATION:=/mnt/y/data/packy
 # requires emacs-build-minimal
-worker:rocksdb-install sbcl-install ts-langs-install quicklisp-install
+worker:rocksdb-install ecl-install sbcl-install ts-langs-install quicklisp-install
 # artifacts can deploy to dist/TARGET - need target triple first
 # init:sbcl rust emacs rocksdb code
 # dist/linux dist/rust dist/bundle
@@ -75,6 +75,15 @@ rocksdb-build-static:$(ROCKSDB_TARGET)
 rocksdb-install:$(ROCKSDB_TARGET)
 	cd $< && make install
 
+### ECL
+ECL_TARGET:=build/src/ecl
+$(ECL_TARGET):scripts/get-ecl.sh
+	$<
+	cd $@ && ./configure --prefix=/usr/local && \
+	make
+ecl:$(ECL_TARGET)
+ecl-install:$(ECL_TARGET)
+	cd $< && make install 
 # TODO: separate params
 #	--without-gencgc \
 #	--with-mark-region-gc \
@@ -85,6 +94,7 @@ $(SBCL_TARGET):scripts/get-sbcl.sh $(B);
 	cd $(SBCL_TARGET) && \
 	echo '"2.4.1+main"' > version.lisp-expr && \
 	sh make.sh \
+	--xc-host='/usr/local/bin/ecl --norc'
 	--with-sb-xref-for-internals \
 	--with-core-compression \
 	--dynamic-space-size=8Gb \
