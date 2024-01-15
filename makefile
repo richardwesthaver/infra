@@ -20,7 +20,7 @@ SRC:=code
 HG_COMMIT:=$(shell hg id -i)
 DESTINATION:=/mnt/y/data/packy
 # requires emacs-build-minimal
-worker:rocksdb-build-shared rocksdb-install ecl-install sbcl-install ts-langs-install quicklisp-install
+worker:ecl-install sbcl-install quicklisp-install rocksdb-build-shared rocksdb-install ts-langs-install
 # artifacts can deploy to dist/TARGET - need target triple first
 # init:sbcl rust emacs rocksdb code
 # dist/linux dist/rust dist/bundle
@@ -93,7 +93,7 @@ $(SBCL_TARGET):scripts/get-sbcl.sh $(B) /usr/local/bin/ecl;
 	$<
 	cd $(SBCL_TARGET) && \
 	echo '"2.4.1+main"' > version.lisp-expr && \
-	sh make.sh \
+	./make.sh \
 	--xc-host='/usr/local/bin/ecl --norc' \
 	--with-sb-xref-for-internals \
 	--with-core-compression \
