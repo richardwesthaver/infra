@@ -204,7 +204,7 @@ dist/lisp/bin:scripts/sbcl-make-bin.sh
 
 dist/lisp:dist/lisp/fasl dist/lisp/bin
 
-core-install:dist/lisp
+core-install:dist/lisp sbcl-install
 	install -m 755 $</bin/* /usr/local/bin/
 	install -m 755 $</fasl/* /usr/local/lib/sbcl/
 

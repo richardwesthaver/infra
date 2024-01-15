@@ -1,5 +1,5 @@
 FROM localhost/ci-worker
-RUN apk add --no-cache tree-sitter-dev autoconf texinfo libgccjit-dev zlib-dev gnutls-dev sysprof gpg bash json-c-dev ncurses-dev
+RUN apk add --no-cache tree-sitter-dev autoconf texinfo libgccjit-dev zlib-dev gnutls-dev sysprof gpg bash json-c-dev ncurses-dev zstd-dev
 WORKDIR /usr/local/src/core
 RUN hg pull -u
 WORKDIR /usr/local/src/infra
