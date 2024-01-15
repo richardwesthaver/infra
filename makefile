@@ -20,7 +20,8 @@ SRC:=code
 HG_COMMIT:=$(shell hg id -i)
 DESTINATION:=/mnt/y/data/packy
 # requires emacs-build-minimal
-worker:sbcl-install quicklisp-install ts-langs-install # rocksdb-build-shared rocksdb-install
+worker:sbcl-install quicklisp-install
+box:sbcl-install quicklisp-install ts-langs-install rocksdb-build-shared rocksdb-build-static rocksdb-install emacs-build emacs-install core-install cargo-tools-install
 # artifacts can deploy to dist/TARGET - need target triple first
 # init:sbcl rust emacs rocksdb code
 # dist/linux dist/rust dist/bundle
@@ -125,7 +126,8 @@ rust-build-full:rust-build;
 	cd $(RUST_TARGET) && x build --stage 2 compiler/rustc
 rust-install:rust-build;
 	cd $(RUST_TARGET) && x install
-
+cargo-tools-install:scripts/install-cargo-tools.sh
+	$<
 ### Tree-sitter Langs
 TS_LANGS_TARGET:=build/src/ts-langs
 ts-langs-install:scripts/ts-install-langs.sh

@@ -1,0 +1,18 @@
+FROM localhost/archlinux
+VOLUME /store
+VOLUME /stash
+COPY etc/skel /etc/
+RUN mkdir /usr/share/lisp
+RUN mkdir /usr/local/share/lisp
+RUN --network=host pacman -Syu gnupg openssh mercurial sqlite tmux btrfs-progs liburing wireguard-tools --noconfirm
+WORKDIR /usr/local/src
+RUN hg clone https://vc.compiler.company/comp/infra
+RUN hg clone https://vc.compiler.company/comp/demo
+RUN hg clone https://vc.compiler.company/comp/org
+RUN hg clone https://vc.compiler.company/comp/core
+WORKDIR infra
+RUN make box -j4
+RUN make clean
+COPY etc/sbclrc /etc/sbclrc
+EXPOSE 8080
+
