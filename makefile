@@ -20,7 +20,7 @@ SRC:=code
 HG_COMMIT:=$(shell hg id -i)
 DESTINATION:=/mnt/y/data/packy
 # requires emacs-build-minimal
-worker:ecl-install sbcl-install quicklisp-install rocksdb-build-shared rocksdb-install ts-langs-install
+worker:sbcl-install quicklisp-install rocksdb-build-shared rocksdb-install ts-langs-install
 # artifacts can deploy to dist/TARGET - need target triple first
 # init:sbcl rust emacs rocksdb code
 # dist/linux dist/rust dist/bundle
@@ -82,27 +82,30 @@ $(ECL_TARGET):scripts/get-ecl.sh
 	cd $@ && ./configure --prefix=/usr/local && \
 	make
 ecl:$(ECL_TARGET)
-ecl-install:$(ECL_TARGET)
+/usr/local/bin/ecl:$(ECL_TARGET)
 	cd $< && make install 
+
 # TODO: separate params
 #	--without-gencgc \
 #	--with-mark-region-gc \
 ### SBCL
 SBCL_TARGET:=build/src/sbcl
-$(SBCL_TARGET):scripts/get-sbcl.sh $(B) /usr/local/bin/ecl;
+$(SBCL_TARGET):scripts/get-sbcl.sh $(B)
 	$<
 	cd $(SBCL_TARGET) && \
-	echo '"2.4.1+main"' > version.lisp-expr && \
+	echo '"2.4.1+main"' > version.lisp-expr
+sbcl:$(SBCL_TARGET)
+sbcl-build:$(SBCL_TARGET) /usr/local/bin/ecl
+	cd $< && \
 	./make.sh \
 	--xc-host='/usr/local/bin/ecl --norc' \
 	--with-sb-xref-for-internals \
 	--with-core-compression \
 	--dynamic-space-size=8Gb \
 	--fancy
-sbcl:$(SBCL_TARGET)
-sbcl-docs:sbcl;## REQUIRES TEXLIVE
+sbcl-docs:sbcl-build;## REQUIRES TEXLIVE
 	cd $(SBCL_TARGET)/doc/manual && make
-sbcl-install:sbcl;cd $(SBCL_TARGET) && ./install.sh
+sbcl-install:sbcl-build;cd $(SBCL_TARGET) && ./install.sh
 clean-sbcl:$(SBCL_TARGET);cd $(SBCL_TARGET) && ./clean.sh
 
 build/quicklisp.lisp:$(B);cd $< && curl -O https://beta.quicklisp.org/quicklisp.lisp
@@ -143,7 +146,7 @@ dist/cdn:cdn $(D)
 	mkdir -pv $@
 	cp -r $</* $@
 
-dist/sbcl:sbcl $(D);
+dist/sbcl:sbcl-build $(D);
 	mkdir -pv $@
 	cp $(SBCL_TARGET)/src/runtime/sbcl $@
 	cp $(SBCL_TARGET)/output/sbcl.core $@
