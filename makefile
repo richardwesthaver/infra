@@ -177,14 +177,14 @@ dist/emacs:emacs-build $(D);
 dist/ts:scripts/ts-install-langs.sh $(D)
 	PREFIX=$(D) $<
 # requires quicklisp loaded in .skelrc
-dist/lisp/fasl:scripts/sbcl-save-core.sh # quicklisp-install
+dist/lisp/fasl:scripts/sbcl-save-core.sh sbcl-install # quicklisp-install
 	mkdir -pv $@
 	$< "$@/std.core"
 	$< "$@/prelude.core" "(mapc #'ql:quickload \
 	(list :nlp :rdb :organ :packy :skel :obj :net :parse :pod :dat :log :packy :rt :syn :xdb :doc :vc :rt))"
 
 CORE_SRC=/usr/local/src/core
-dist/lisp/bin:scripts/sbcl-make-bin.sh
+dist/lisp/bin:scripts/sbcl-make-bin.sh sbcl-install
 	mkdir -pv $@
 	$< bin/skel
 	mv $(CORE_SRC)/lisp/app/bin/skel $@
