@@ -20,7 +20,7 @@ SRC:=code
 HG_COMMIT:=$(shell hg id -i)
 DESTINATION:=/mnt/y/data/packy
 # requires emacs-build-minimal
-worker:rocksdb-install ecl-install sbcl-install ts-langs-install quicklisp-install
+worker:rocksdb-build-shared rocksdb-install ecl-install sbcl-install ts-langs-install quicklisp-install
 # artifacts can deploy to dist/TARGET - need target triple first
 # init:sbcl rust emacs rocksdb code
 # dist/linux dist/rust dist/bundle
@@ -84,7 +84,6 @@ $(ECL_TARGET):scripts/get-ecl.sh
 ecl:$(ECL_TARGET)
 ecl-install:$(ECL_TARGET)
 	cd $< && make install 
-/usr/local/bin/ecl:ecl-install
 # TODO: separate params
 #	--without-gencgc \
 #	--with-mark-region-gc \
