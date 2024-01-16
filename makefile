@@ -25,7 +25,7 @@ worker:sbcl-install quicklisp-install
 # init:sbcl rust emacs rocksdb code
 # dist/linux dist/rust dist/bundle
 quick:code
-operator:core-install emacs-build-mini emacs-install
+operator:core-lisp-install emacs-build-mini emacs-install
 all:dist/cdn dist/code dist/lisp dist/rust dist/sbcl dist/rocksdb dist/emacs
 clean:;rm -rf $(B) $(D)
 $(B):;mkdir -pv $@/src
@@ -172,14 +172,14 @@ dist/emacs:emacs-build $(D);
 dist/ts:scripts/ts-install-langs.sh $(D)
 	PREFIX=$(D) $<
 # requires quicklisp loaded in .skelrc
-dist/lisp/fasl:scripts/sbcl-save-core.sh sbcl-install # quicklisp-install
+dist/lisp/fasl:scripts/sbcl-save-core.sh quicklisp-install
 	mkdir -pv $@
 	$< "$@/std.core"
 	$< "$@/prelude.core" "(mapc #'ql:quickload \
 	(list :nlp :rdb :organ :packy :skel :obj :net :parse :pod :dat :log :packy :rt :syn :xdb :doc :vc :rt))"
 
 CORE_SRC=/usr/local/src/core
-dist/lisp/bin:scripts/sbcl-make-bin.sh sbcl-install
+dist/lisp/bin:scripts/sbcl-make-bin.sh quicklisp-install
 	mkdir -pv $@
 	$< bin/skel
 	mv $(CORE_SRC)/lisp/app/bin/skel $@
@@ -199,7 +199,7 @@ dist/lisp/bin:scripts/sbcl-make-bin.sh sbcl-install
 
 dist/lisp:dist/lisp/fasl dist/lisp/bin
 
-core-install:dist/lisp sbcl-install
+core-lisp-install:dist/lisp
 	install -m 755 $</bin/* /usr/local/bin/
 	install -m 755 $</fasl/* /usr/local/lib/sbcl/
 
