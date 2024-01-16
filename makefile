@@ -155,7 +155,8 @@ dist/sbcl:sbcl-build $(D);
 dist/linux:linux $(D);
 
 dist/rocksdb:$(D) rocksdb;
-	tar -I 'zstd' -cf $</rocksdb-binary.tar.zst $(ROCKSDB_TARGET)/include/* $(ROCKSDB_TARGET)/librocksdb.*
+	cd build/src && \
+	tar -I 'zstd' -cf ../../$</rocksdb-binary.tar.zst rocksdb/include/* rocksdb/librocksdb.*
 
 dist/rust:rust-build $(D);
 	cd $(RUST_TARGET) && x dist
