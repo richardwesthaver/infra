@@ -1,6 +1,7 @@
-#!/usr/bin/env bash
+#!/bin/sh
 cd build/src 
-curl -O https://packy.compiler.company/dist/x86_64-unknown-linux-gnu/sbcl-2.4.0-x86-64-linux-binary.tar.bz2
-bzip2 -cd sbcl-2.4.0-x86-64-linux-binary.tar.bz2 | tar xvf -
-cd sbcl-2.4.0-x86-64-linux
+curl -O https://packy.compiler.company/dist/x86_64-unknown-linux-gnu/sbcl-binary.tar.zst
+unzstd sbcl-binary.tar.zst
+tar -xvf sbcl-binary.tar.zst
+cd sbcl
 sh install.sh

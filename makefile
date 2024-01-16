@@ -95,13 +95,13 @@ $(SBCL_TARGET):scripts/get-sbcl.sh $(B)
 	cd $(SBCL_TARGET) && \
 	echo '"2.4.1+main"' > version.lisp-expr
 sbcl:$(SBCL_TARGET)
-sbcl-build:$(SBCL_TARGET) /usr/local/bin/ecl
+sbcl-build:$(SBCL_TARGET)
 	cd $< && \
 	./make.sh \
-	--xc-host='/usr/local/bin/ecl --norc' \
-	--with-sb-xref-for-internals \
+	--without-gencgc \
+	--with-mark-region-gc \
 	--with-core-compression \
-	--dynamic-space-size=8Gb \
+	--dynamic-space-size=4Gb \
 	--fancy
 sbcl-docs:sbcl-build;## REQUIRES TEXLIVE
 	cd $(SBCL_TARGET)/doc/manual && make
@@ -148,18 +148,14 @@ dist/cdn:cdn $(D)
 	cp -r $</* $@
 
 dist/sbcl:sbcl-build $(D);
-	mkdir -pv $@
-	cp $(SBCL_TARGET)/src/runtime/sbcl $@
-	cp $(SBCL_TARGET)/output/sbcl.core $@
-	cp -r $(SBCL_TARGET)/contrib $@
-	cd $(SBCL_TARGET) && ./clean.sh
-	tar -I 'zstd' -cf $@/sbcl-source.tar.zst --exclude .git $(SBCL_TARGET)
+	scripts/dist-sbcl-binary.sh $(SBCL_TARGET) $(D)
+	cd $(SBCL_TARGET) && ./distclean.sh
+	scripts/dist-sbcl-source.sh $(SBCL_TARGET) $(D)
 
 dist/linux:linux $(D);
 
 dist/rocksdb:$(D) rocksdb;
-	cp -rf $(ROCKSDB_TARGET)/include/* $</include/
-	cp -f $(ROCKSDB_TARGET)/librocksdb.* $</lib/
+	tar -I 'zstd' -cf $</rocksdb-binary.tar.zst $(ROCKSDB_TARGET)/include/* $(ROCKSDB_TARGET)/librocksdb.*
 
 dist/rust:rust-build $(D);
 	cd $(RUST_TARGET) && x dist
