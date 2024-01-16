@@ -13,8 +13,9 @@ RUN hg clone https://vc.compiler.company/comp/core
 WORKDIR infra
 RUN sh scripts/install-sbcl-pack.sh
 # RUN sh scripts/install-rocksdb-pack.sh
+RUN make quicklisp-install
+COPY etc/sbclrc /etc/sbclrc
 RUN make core-lisp-install
 RUN make clean
-COPY etc/sbclrc /etc/sbclrc
 EXPOSE 8080
 WORKDIR /
