@@ -11,8 +11,8 @@ RUN hg clone https://vc.compiler.company/comp/demo
 RUN hg clone https://vc.compiler.company/comp/org
 RUN hg clone https://vc.compiler.company/comp/core
 WORKDIR infra
-RUN make box -j4
+RUN sh scripts/install-sbcl-pack.sh
 RUN make clean
 COPY etc/sbclrc /etc/sbclrc
 EXPOSE 8080
-
+WORKDIR /

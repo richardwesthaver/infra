@@ -21,7 +21,6 @@ HG_COMMIT:=$(shell hg id -i)
 DESTINATION:=/mnt/y/data/packy
 # requires emacs-build-minimal
 worker:sbcl-install quicklisp-install
-box:sbcl-install quicklisp-install rocksdb-build-shared rocksdb-install emacs-build-mini emacs-install core-install cargo-tools-install
 # artifacts can deploy to dist/TARGET - need target triple first
 # init:sbcl rust emacs rocksdb code
 # dist/linux dist/rust dist/bundle
@@ -106,7 +105,7 @@ sbcl-build:$(SBCL_TARGET) /usr/local/bin/ecl
 	--fancy
 sbcl-docs:sbcl-build;## REQUIRES TEXLIVE
 	cd $(SBCL_TARGET)/doc/manual && make
-sbcl-install:sbcl-build;cd $(SBCL_TARGET) && ./install.sh
+sbcl-install:sbcl-build;cd $(SBCL_TARGET) && INSTALL_ROOT=/usr/local sh install.sh
 clean-sbcl:$(SBCL_TARGET);cd $(SBCL_TARGET) && ./clean.sh
 
 build/quicklisp.lisp:$(B);cd $< && curl -O https://beta.quicklisp.org/quicklisp.lisp
