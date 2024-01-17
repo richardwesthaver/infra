@@ -25,7 +25,7 @@ worker:sbcl-install quicklisp-install
 # init:sbcl rust emacs rocksdb code
 # dist/linux dist/rust dist/bundle
 quick:code
-operator:core-lisp-install emacs-build-mini emacs-install
+operator:core-lisp-install core-rust-install emacs-build-mini emacs-install
 all:dist/cdn dist/code dist/lisp dist/rust dist/sbcl dist/rocksdb dist/emacs
 clean:;rm -rf $(B) $(D)
 $(B):;mkdir -pv $@/src
@@ -125,6 +125,7 @@ rust-build-full:rust-build;
 	cd $(RUST_TARGET) && x build --stage 2 compiler/rustc
 rust-install:rust-build;
 	cd $(RUST_TARGET) && x install
+rustup-install:;curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 cargo-tools-install:scripts/install-cargo-tools.sh
 	$<
 ### Tree-sitter
@@ -211,6 +212,11 @@ dist/lisp:dist/lisp/fasl dist/lisp/bin
 core-lisp-install:dist/lisp
 	install -m 755 $</bin/* /usr/local/bin/
 	install -m 755 $</fasl/* /usr/local/lib/sbcl/
+
+core-rust-install:dist/rust/bin
+	install -m 755 $</* /usr/local/bin/
+
+core-install:core-lisp-install core-rust-install
 
 dist/code:code
 	mkdir -pv $@
