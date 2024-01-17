@@ -167,15 +167,17 @@ dist/rocksdb:$(D) rocksdb;
 	cd build/src && \
 	tar -I 'zstd' -cf ../../$</rocksdb-binary.tar.zst rocksdb/include/* rocksdb/librocksdb.*
 
+CORE_SRC=/usr/local/src/core
+
 dist/rust:rust-build $(D);
 	cd $(RUST_TARGET) && x dist
-dist/rust/bin:scripts/cargo-install.sh code
+dist/rust/bin:scripts/cargo-install.sh
 	mkdir -pv $@
-	$< "$(CODE_TARGET)/core/rust/app/cli/alik" "dist/rust"
-	$< "$(CODE_TARGET)/core/rust/app/cli/krypt" "dist/rust"
-	$< "$(CODE_TARGET)/core/rust/app/cli/tz" "dist/rust"
-	$< "$(CODE_TARGET)/core/rust/app/cli/cc-init" "dist/rust"
-	$< "$(CODE_TARGET)/core/rust/app/cli/mailman" "dist/rust"
+	$< "$(CORE_SRC)/rust/app/cli/alik" dist/rust
+	$< "$(CORE_SRC)/rust/app/cli/krypt" dist/rust
+	$< "$(CORE_SRC)/rust/app/cli/tz" dist/rust
+	$< "$(CORE_SRC)/rust/app/cli/cc-init" dist/rust
+	$< "$(CORE_SRC)/rust/app/cli/mailman" dist/rust
 
 dist/emacs:emacs-build $(D);
 	cd $(EMACS_TARGET) && ./make-dist --no-info --no-changelog && \
@@ -191,7 +193,6 @@ dist/lisp/fasl:scripts/sbcl-save-core.sh
 	$< "$@/prelude.core" "(mapc #'ql:quickload \
 	(list :nlp :rdb :organ :packy :skel :obj :net :parse :pod :dat :log :packy :rt :syn :xdb :doc :vc :rt))"
 
-CORE_SRC=/usr/local/src/core
 dist/lisp/bin:scripts/sbcl-make-bin.sh
 	mkdir -pv $@
 	$< bin/skel
