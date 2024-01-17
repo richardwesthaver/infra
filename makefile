@@ -178,6 +178,9 @@ dist/rust/bin:scripts/cargo-install.sh code
 	$< "$(CODE_TARGET)/core/rust/app/cli/mailman" "dist/rust"
 
 dist/emacs:emacs-build $(D);
+	cd $(EMACS_TARGET) && ./make-dist --no-info --no-changelog && \
+	mv emacs-*.*.* emacs && \
+	tar -I 'zstd' -cf ../../../dist/emacs-binary.tar.zst emacs
 
 dist/tree-sitter:scripts/tree-sitter-install-langs.sh $(D)
 	PREFIX=$(D) $<

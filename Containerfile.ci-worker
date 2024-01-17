@@ -3,7 +3,7 @@ VOLUME /store
 VOLUME /stash
 COPY etc/skel /etc/
 RUN adduser -D worker
-RUN apk add build-base zstd-dev sbcl curl make git linux-headers cargo openssl-dev perl llvm pkgconf clang m4
+RUN apk add build-base zstd-dev sbcl curl make git linux-headers cargo openssl-dev perl llvm pkgconf clang m4 tree-sitter
 RUN mkdir /usr/share/lisp
 RUN mkdir /usr/local/share/lisp
 WORKDIR /usr/local/src
