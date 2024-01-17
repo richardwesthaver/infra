@@ -127,9 +127,17 @@ rust-install:rust-build;
 	cd $(RUST_TARGET) && x install
 cargo-tools-install:scripts/install-cargo-tools.sh
 	$<
+### Tree-sitter
+TREE_SITTER_TARGET:=build/src/tree-sitter
+$(TREE_SITTER_TARGET):scripts/get-tree-sitter.sh
+	$<
+tree-sitter:$(TREE_SITTER_TARGET)
+tree-sitter-build:$(TREE_SITTER_TARGET)
+tree-sitter-install:$(TREE_SITTER_TARGET) tree-sitter-build
+
 ### Tree-sitter Langs
-TS_LANGS_TARGET:=build/src/ts-langs
-ts-langs-install:scripts/ts-install-langs.sh
+TREE_SITTER_LANGS_TARGET:=build/src/tree-sitter-langs
+tree-sitter-langs-install:scripts/tree-sitter-install-langs.sh
 	$<
 ### Code
 CODE_TARGET:=build/src/$(SRC)
@@ -170,7 +178,7 @@ dist/rust/bin:scripts/cargo-install.sh code
 
 dist/emacs:emacs-build $(D);
 
-dist/ts:scripts/ts-install-langs.sh $(D)
+dist/tree-sitter:scripts/tree-sitter-install-langs.sh $(D)
 	PREFIX=$(D) $<
 # requires quicklisp loaded in .skelrc
 dist/lisp/fasl:scripts/sbcl-save-core.sh

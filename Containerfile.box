@@ -4,7 +4,7 @@ VOLUME /stash
 COPY etc/skel /etc/
 RUN mkdir /usr/share/lisp
 RUN mkdir /usr/local/share/lisp
-RUN --network=host pacman -Syu base-devel gnupg openssh mercurial git sqlite tmux btrfs-progs liburing wireguard-tools cargo clang llvm --noconfirm
+RUN --network=host pacman -Syu base-devel gnupg openssh mercurial git sqlite tmux btrfs-progs liburing wireguard-tools cargo clang llvm tree-sitter --noconfirm
 WORKDIR /usr/local/src
 RUN hg clone https://vc.compiler.company/comp/infra
 RUN hg clone https://vc.compiler.company/comp/demo
@@ -15,7 +15,7 @@ RUN make build
 RUN sh scripts/install-sbcl-pack.sh
 RUN sh scripts/install-rocksdb-pack.sh
 RUN make quicklisp-install
-RUN make ts-langs-install
+RUN make tree-sitter-langs-install
 COPY etc/sbclrc /etc/sbclrc
 RUN make core-lisp-install
 RUN make clean
