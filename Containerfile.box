@@ -12,7 +12,11 @@ RUN hg clone https://vc.compiler.company/comp/org
 RUN hg clone https://vc.compiler.company/comp/core
 WORKDIR infra
 RUN make build
+ENV CARGO_HOME="/usr/local/share/cargo"
+ENV RUSTUP_HOME="/usr/local/share/rustup"
 RUN make rustup-install
+ENV PATH="$PATH:/usr/local/share/cargo/bin"
+RUN rustup update && rustup default nightly
 RUN sh scripts/install-emacs-pack.sh
 RUN sh scripts/install-sbcl-pack.sh
 RUN sh scripts/install-rocksdb-pack.sh
