@@ -2,6 +2,7 @@ FROM localhost/archlinux
 VOLUME /store
 VOLUME /stash
 COPY etc/skel /etc/
+COPY etc/nu /etc/
 RUN mkdir /usr/share/lisp
 RUN mkdir /usr/local/share/lisp
 RUN --network=host pacman -Syu base-devel gnupg openssh mercurial git sqlite tmux btrfs-progs liburing wireguard-tools cargo clang llvm tree-sitter --noconfirm
@@ -15,6 +16,7 @@ RUN make build
 ENV CARGO_HOME="/usr/local/share/cargo"
 ENV RUSTUP_HOME="/usr/local/share/rustup"
 RUN make rustup-install
+RUN sh scripts/install-nu-pack.sh
 ENV PATH="$PATH:/usr/local/share/cargo/bin"
 RUN rustup update && rustup default nightly
 RUN sh scripts/install-emacs-pack.sh
@@ -26,3 +28,4 @@ COPY etc/sbclrc /etc/sbclrc
 RUN make core-install
 RUN make clean
 WORKDIR /
+ENTRYPOINT /usr/local/bin/nu -i --config /etc/nu/config.nu --env-config /etc/nu/env.nu

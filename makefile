@@ -24,6 +24,7 @@ worker:ecl-install sbcl-install quicklisp-install rocksdb-build-shared rocksdb-i
 # artifacts can deploy to dist/TARGET - need target triple first
 # init:sbcl rust emacs rocksdb code
 # dist/linux dist/rust dist/bundle
+box:Containerfile.box;podman build -f $< -t localhost/infra/box
 quick:code
 operator:core-lisp-install core-rust-install
 all:dist/cdn dist/code dist/lisp dist/rust dist/sbcl dist/rocksdb dist/emacs
