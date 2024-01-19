@@ -10,6 +10,5 @@ WORKDIR /usr/local/src
 RUN hg clone https://vc.compiler.company/comp/infra
 RUN hg clone https://vc.compiler.company/comp/core
 WORKDIR infra
-RUN make worker -j4
-RUN make clean
+RUN make worker # -j4
 COPY etc/sbclrc /etc/sbclrc

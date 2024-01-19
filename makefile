@@ -20,18 +20,17 @@ SRC:=code
 HG_COMMIT:=$(shell hg id -i)
 DESTINATION:=/mnt/y/data/packy
 # requires emacs-build-minimal
-worker:sbcl-install quicklisp-install
+worker:ecl-install sbcl-install quicklisp-install rocksdb-build-shared rocksdb-install emacs-build-mini rustup-install tree-sitter-langs-install
 # artifacts can deploy to dist/TARGET - need target triple first
 # init:sbcl rust emacs rocksdb code
 # dist/linux dist/rust dist/bundle
 quick:code
-operator:core-lisp-install core-rust-install emacs-build-mini emacs-install
+operator:core-lisp-install core-rust-install
 all:dist/cdn dist/code dist/lisp dist/rust dist/sbcl dist/rocksdb dist/emacs
 clean:;rm -rf $(B) $(D)
 $(B):;mkdir -pv $@/src
 $(D):;mkdir -pv $@/bin $@/lib $@/include $@/bundle $@/share
 $(DESTINATION):$(D);cd $< && cp -rf ./* $@
-deploy:$(DESTINATION)
 ### Linux
 LINUX_TARGET:=linux-$(LINUX_VERSION)
 linux:$(LINUX_TARGET) linux-config;
