@@ -1,8 +1,8 @@
 FROM localhost/archlinux
 VOLUME /store
 VOLUME /stash
-COPY etc/skel /etc/
-COPY etc/nu /etc/
+ADD etc/skel /etc/
+ADD etc/nu /etc/
 RUN mkdir /usr/share/lisp
 RUN mkdir /usr/local/share/lisp
 RUN --network=host pacman -Syu base-devel gnupg openssh mercurial git sqlite tmux btrfs-progs liburing wireguard-tools clang tree-sitter libxcb --noconfirm
@@ -24,7 +24,7 @@ RUN sh scripts/install-sbcl-pack.sh
 RUN sh scripts/install-rocksdb-pack.sh
 RUN make quicklisp-install
 RUN make tree-sitter-langs-install
-COPY etc/sbclrc /etc/sbclrc
+ADD etc/sbclrc /etc/sbclrc
 RUN make core-install
 RUN make clean
 WORKDIR /
