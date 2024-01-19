@@ -28,4 +28,4 @@ ADD etc/sbclrc /etc/sbclrc
 RUN make core-install
 RUN make clean
 WORKDIR /
-ENTRYPOINT /usr/local/bin/nu -i --config /etc/nu/config.nu --env-config /etc/nu/env.nu
+ENTRYPOINT ["/usr/local/bin/nu", "-i", "--config", "/etc/nu/config.nu", "--env-config", "/etc/nu/env.nu"]
