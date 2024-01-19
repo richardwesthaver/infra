@@ -98,10 +98,8 @@ sbcl:$(SBCL_TARGET)
 sbcl-build:$(SBCL_TARGET)
 	cd $< && \
 	./make.sh \
-	--without-gencgc \
-	--with-mark-region-gc \
 	--with-core-compression \
-	--dynamic-space-size=4Gb \
+	--dynamic-space-size=8Gb \
 	--fancy
 sbcl-docs:sbcl-build;## REQUIRES TEXLIVE
 	cd $(SBCL_TARGET)/doc/manual && make
@@ -156,9 +154,9 @@ dist/cdn:cdn $(D)
 	mkdir -pv $@
 	cp -r $</* $@
 
-dist/sbcl:sbcl-build $(D);
+dist/sbcl:$(D);
 	scripts/dist-sbcl-binary.sh $(SBCL_TARGET) $(D)
-	cd $(SBCL_TARGET) && ./distclean.sh
+	cd $(SBCL_TARGET) && sh ./clean.sh
 	scripts/dist-sbcl-source.sh $(SBCL_TARGET) $(D)
 
 dist/linux:linux $(D);
