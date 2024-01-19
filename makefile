@@ -85,9 +85,6 @@ ecl:$(ECL_TARGET)
 /usr/local/bin/ecl:$(ECL_TARGET)
 	cd $< && make install 
 
-# TODO: separate params
-#	--without-gencgc \
-#	--with-mark-region-gc \
 ### SBCL
 SBCL_TARGET:=build/src/sbcl
 $(SBCL_TARGET):scripts/get-sbcl.sh $(B)
@@ -96,6 +93,15 @@ $(SBCL_TARGET):scripts/get-sbcl.sh $(B)
 	echo '"2.4.1+main"' > version.lisp-expr
 sbcl:$(SBCL_TARGET)
 sbcl-build:$(SBCL_TARGET)
+	cd $< && \
+	./make.sh \
+	--without-gencgc \
+	--with-mark-region-gc \
+	--with-core-compression \
+	--dynamic-space-size=8Gb \
+	--fancy
+
+sbcl-build-gencgc:$(SBCL_TARGET)
 	cd $< && \
 	./make.sh \
 	--with-core-compression \
