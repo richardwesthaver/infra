@@ -3,7 +3,7 @@ set -e
 img="${1:-localhost/infra/box}"
 rule="${2:-sbcl-build}"
 # in nushell
-cmd="cd /usr/local/src/infra; make clean $rule"
+cmd="cd /usr/local/src/infra; hg pull -u; make clean $rule"
 podman run --name "$rule" --replace -it "$img" $cmd
 make dist
 podman cp --overwrite $rule:/usr/local/src/infra/dist .
