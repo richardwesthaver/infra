@@ -5,7 +5,7 @@ COPY etc/skel /etc/
 COPY etc/nu /etc/
 RUN mkdir /usr/share/lisp
 RUN mkdir /usr/local/share/lisp
-RUN --network=host pacman -Syu base-devel gnupg openssh mercurial git sqlite tmux btrfs-progs liburing wireguard-tools clang tree-sitter --noconfirm
+RUN --network=host pacman -Syu base-devel gnupg openssh mercurial git sqlite tmux btrfs-progs liburing wireguard-tools clang tree-sitter libxcb --noconfirm
 WORKDIR /usr/local/src
 RUN hg clone https://vc.compiler.company/comp/infra
 RUN hg clone https://vc.compiler.company/comp/demo
