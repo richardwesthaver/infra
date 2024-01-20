@@ -1,5 +1,2 @@
 FROM archlinux:latest
 COPY etc/skel/ /etc/
-RUN useradd -u 1000 demon
-RUN useradd -u 1001 alik
-ENV XDG_RUNTIME_DIR=/run/user/1000

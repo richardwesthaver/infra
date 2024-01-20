@@ -1,11 +1,9 @@
 FROM localhost/archlinux
 VOLUME /store
 VOLUME /stash
-ADD etc/skel /etc/
-ADD etc/nu /etc/
-RUN mkdir /usr/share/lisp
-RUN mkdir /usr/local/share/lisp
-RUN --network=host pacman -Syu base-devel gnupg openssh mercurial git sqlite tmux btrfs-progs liburing wireguard-tools clang tree-sitter libxcb --noconfirm
+ADD etc/nu/* /etc/nu/
+RUN mkdir -p /usr/share/lisp /usr/local/share/lisp
+RUN --network=host pacman -Syu base-devel openssh mercurial git sqlite tmux btrfs-progs liburing wireguard-tools clang tree-sitter libxcb --noconfirm
 WORKDIR /usr/local/src
 RUN hg clone https://vc.compiler.company/comp/infra
 RUN hg clone https://vc.compiler.company/comp/core
