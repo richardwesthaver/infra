@@ -8,8 +8,6 @@ RUN mkdir /usr/local/share/lisp
 RUN --network=host pacman -Syu base-devel gnupg openssh mercurial git sqlite tmux btrfs-progs liburing wireguard-tools clang tree-sitter libxcb --noconfirm
 WORKDIR /usr/local/src
 RUN hg clone https://vc.compiler.company/comp/infra
-RUN hg clone https://vc.compiler.company/comp/demo
-RUN hg clone https://vc.compiler.company/comp/org
 RUN hg clone https://vc.compiler.company/comp/core
 WORKDIR infra
 RUN make build

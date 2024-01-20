@@ -20,11 +20,12 @@ SRC:=code
 HG_COMMIT:=$(shell hg id -i)
 DESTINATION:=/mnt/y/data/packy
 # requires emacs-build-minimal
-worker:ecl-install sbcl-install quicklisp-install rocksdb-build-shared rocksdb-install emacs-build-mini rustup-install tree-sitter-langs-install
 # artifacts can deploy to dist/TARGET - need target triple first
 # init:sbcl rust emacs rocksdb code
 # dist/linux dist/rust dist/bundle
 box:Containerfile.box;podman build -f $< -t localhost/infra/box
+worker:Containerfile.worker;podman build -f $< -t localhost/infra/worker
+operator:Containerfile.operator;podman build -f $< -t localhost/infra/operator
 quick:code
 operator:core-lisp-install core-rust-install
 all:dist/cdn dist/code dist/lisp dist/rust dist/sbcl dist/rocksdb dist/emacs

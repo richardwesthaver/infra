@@ -1,0 +1,18 @@
+FROM localhost/alpine
+VOLUME /store
+VOLUME /stash
+ADD etc/skel /etc/
+RUN adduser -D worker
+RUN apk add build-base zstd-dev curl make git linux-headers openssl-dev pkgconf clang m4 tree-sitter
+RUN mkdir /usr/share/lisp
+RUN mkdir /usr/local/share/lisp
+WORKDIR /usr/local/src
+RUN hg clone https://vc.compiler.company/comp/infra
+RUN hg clone https://vc.compiler.company/comp/core
+WORKDIR infra
+ENV CARGO_HOME="/usr/local/share/cargo"
+ENV RUSTUP_HOME="/usr/local/share/rustup"
+RUN make build rustup-install tree-sitter-langs-install
+ENV PATH="$PATH:/usr/local/share/cargo/bin"
+RUN rustup update && rustup default nightly
+ADD etc/sbclrc /etc/sbclrc

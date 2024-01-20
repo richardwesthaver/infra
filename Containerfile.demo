@@ -1,3 +1,0 @@
-FROM registry.compiler.company/comp/infra/box:latest
-WORKDIR /usr/local/src/demo
-RUN hg pull -u
