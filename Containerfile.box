@@ -14,7 +14,7 @@ ENV RUSTUP_HOME="/usr/local/share/rustup"
 RUN make rustup-install
 ENV PATH="$PATH:/usr/local/share/cargo/bin"
 RUN rustup update && rustup default nightly
-RUN sh scripts/install-nu-pack.sh
+RUN sh scripts/install-nushell-pack.sh
 RUN sh scripts/install-emacs-pack.sh
 RUN sh scripts/install-sbcl-pack.sh
 RUN sh scripts/install-rocksdb-pack.sh
@@ -24,4 +24,4 @@ ADD etc/sbclrc /etc/sbclrc
 RUN make core-install
 RUN make clean
 WORKDIR /
-ENTRYPOINT ["/usr/local/bin/nu", "-i", "--config", "/etc/nushell/config.nu", "--env-config", "/etc/nushell/env.nu"]
+ENTRYPOINT ["/usr/local/bin/nu", "--config", "/etc/nushell/config.nu", "--env-config", "/etc/nushell/env.nu", "-i"]

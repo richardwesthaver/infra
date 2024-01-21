@@ -81,9 +81,9 @@ NUSHELL_TARGET:=build/src/nushell
 $(NUSHELL_TARGET):scripts/get-nushell.sh;$<
 nushell:$(NUSHELL_TARGET)
 nushell-build:$(NUSHELL_TARGET)
-	cd $< && cargo build --release --features default-no-clipboard,extra,dataframe,sqlite,wasi
+	cd $< && cargo build --workspace --release --features dataframe
 nushell-install:nushell-build
-	cd $< && cargo install --path .
+	cd $< && ./scripts/install-all.sh
 ### SBCL
 SBCL_TARGET:=build/src/sbcl
 $(SBCL_TARGET):scripts/get-sbcl.sh $(B)
@@ -187,8 +187,11 @@ dist/emacs:emacs-build $(D);
 	mv emacs-*.*.* emacs && \
 	tar -I 'zstd' -cf ../../../dist/emacs-binary.tar.zst emacs
 
-dist/nu:$(D) nushell-build;zstd $(NUSHELL_TARGET)/target/release/nu -o $</nu.zst
-
+dist/nushell:$(D) nushell-build
+	cd $(NUSHELL_TARGET)/target/release/ && \
+	tar -I 'zstd' -cf ../../../../../$</nushell.tar.zst \
+	nu nu_plugin_custom_values nu_plugin_formats nu_plugin_gstat \
+	nu_plugin_inc nu_plugin_query utils
 dist/tree-sitter:scripts/tree-sitter-install-langs.sh $(D)
 	PREFIX=$(D) $<
 # requires quicklisp loaded in .skelrc

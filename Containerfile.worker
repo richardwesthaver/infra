@@ -1,4 +1,4 @@
-FROM localhost/alpine
+FROM infra/alpine
 VOLUME /store
 VOLUME /stash
 ADD etc/skel /etc/

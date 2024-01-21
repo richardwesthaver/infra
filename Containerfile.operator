@@ -1,9 +1,9 @@
-FROM localhost/ci-worker
+FROM infra/worker
 RUN apk add --no-cache tree-sitter-dev autoconf texinfo libgccjit-dev zlib-dev gnutls-dev sysprof gpg bash json-c-dev ncurses-dev zstd-dev
 WORKDIR /usr/local/src/core
 RUN hg pull -u
+RUN hg clean
 WORKDIR /usr/local/src/infra
 RUN hg pull -u
-RUN make -j4 operator
 RUN make clean
 WORKDIR /
