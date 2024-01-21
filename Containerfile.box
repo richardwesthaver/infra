@@ -13,7 +13,8 @@ ENV RUSTUP_HOME="/usr/local/share/rustup"
 RUN make rustup-install
 ENV PATH="$PATH:/usr/local/share/cargo/bin"
 RUN rustup update && rustup default nightly
-RUN sh scripts/install-nushell-pack.sh
+# RUN sh scripts/install-nushell-pack.sh # not workin in container..
+RUN make nushell-install
 RUN sh scripts/install-emacs-pack.sh
 RUN sh scripts/install-sbcl-pack.sh
 RUN sh scripts/install-rocksdb-pack.sh
