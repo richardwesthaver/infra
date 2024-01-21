@@ -1,4 +1,4 @@
-FROM docker.io/octobus/heptapod-runner:latest as vc-runner
+FROM docker.io/octobus/heptapod-runner:latest
 VOLUME /stash
 VOLUME /store
-# RUN gitlab-runner register
+RUN gitlab-runner register

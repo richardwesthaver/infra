@@ -81,7 +81,7 @@ NUSHELL_TARGET:=build/src/nushell
 $(NUSHELL_TARGET):scripts/get-nushell.sh;$<
 nushell:$(NUSHELL_TARGET)
 nushell-build:$(NUSHELL_TARGET)
-	cd $< && cargo build --release --features default,extra,dataframe,sqlite,wasi
+	cd $< && cargo build --release --features default-no-clipboard,extra,dataframe,sqlite,wasi
 nushell-install:nushell-build
 	cd $< && cargo install --path .
 ### SBCL

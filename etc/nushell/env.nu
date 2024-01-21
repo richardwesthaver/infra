@@ -11,4 +11,3 @@ $env.NU_PLUGIN_DIRS = [
 $env.ESHELL = '/bin/bash'
 $env.ORGANIZATION = 'The Compiler Company'
 $env.EDITOR = "emacsclient -c -a=''"
-$env.SSH_AUTH_SOCK = $"($env.XDG_RUNTIME_DIR)/ssh-agent.socket"
