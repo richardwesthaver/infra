@@ -76,16 +76,14 @@ rocksdb-build-static:$(ROCKSDB_TARGET)
 rocksdb-install:$(ROCKSDB_TARGET)
 	cd $< && make install
 
-### ECL
-ECL_TARGET:=build/src/ecl
-$(ECL_TARGET):scripts/get-ecl.sh
-	$<
-	cd $@ && ./configure --prefix=/usr/local && \
-	make
-ecl:$(ECL_TARGET)
-/usr/local/bin/ecl:$(ECL_TARGET)
-	cd $< && make install 
-
+### Nushell
+NUSHELL_TARGET:=build/src/nushell
+$(NUSHELL_TARGET):scripts/get-nushell.sh;$<
+nushell:$(NUSHELL_TARGET)
+nushell-build:$(NUSHELL_TARGET)
+	cd $< && cargo build --release --features default,extra,dataframe,sqlite,wasi
+nushell-install:nushell-build
+	cd $< && cargo install --path .
 ### SBCL
 SBCL_TARGET:=build/src/sbcl
 $(SBCL_TARGET):scripts/get-sbcl.sh $(B)
@@ -188,6 +186,8 @@ dist/emacs:emacs-build $(D);
 	cd $(EMACS_TARGET) && ./make-dist --no-info --no-changelog && \
 	mv emacs-*.*.* emacs && \
 	tar -I 'zstd' -cf ../../../dist/emacs-binary.tar.zst emacs
+
+dist/nu:$(D) nushell-build;zstd $(NUSHELL_TARGET)/target/release/nu -o $</nu.zst
 
 dist/tree-sitter:scripts/tree-sitter-install-langs.sh $(D)
 	PREFIX=$(D) $<

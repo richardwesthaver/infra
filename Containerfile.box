@@ -1,7 +1,7 @@
-FROM localhost/archlinux
+FROM infra/archlinux
 VOLUME /store
 VOLUME /stash
-ADD etc/nu/* /etc/nu/
+ADD etc/nushell/* /etc/nushell/
 RUN mkdir -p /usr/share/lisp /usr/local/share/lisp
 RUN --network=host pacman -Syu base-devel openssh mercurial git sqlite tmux btrfs-progs liburing wireguard-tools clang tree-sitter libxcb --noconfirm
 WORKDIR /usr/local/src
@@ -24,4 +24,4 @@ ADD etc/sbclrc /etc/sbclrc
 RUN make core-install
 RUN make clean
 WORKDIR /
-ENTRYPOINT ["/usr/local/bin/nu", "-i", "--config", "/etc/nu/config.nu", "--env-config", "/etc/nu/env.nu"]
+ENTRYPOINT ["/usr/local/bin/nu", "-i", "--config", "/etc/nushell/config.nu", "--env-config", "/etc/nushell/env.nu"]
