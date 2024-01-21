@@ -82,7 +82,7 @@ $(NUSHELL_TARGET):scripts/get-nushell.sh;$<
 nushell:$(NUSHELL_TARGET)
 nushell-build:$(NUSHELL_TARGET)
 	cd $< && cargo build --workspace --release --features=dataframe,extra --locked
-nushell-install:nushell-build
+nushell-install:$(NUSHELL_TARGET) nushell-build
 	cd $< && ./scripts/install-all.sh
 ### SBCL
 SBCL_TARGET:=build/src/sbcl
