@@ -3,7 +3,7 @@ VOLUME /store
 VOLUME /stash
 ADD etc/nushell/* /etc/nushell/
 RUN mkdir -p /usr/share/lisp /usr/local/share/lisp
-RUN --network=host pacman -Syu base-devel openssh mercurial git sqlite tmux btrfs-progs liburing wireguard-tools clang tree-sitter libxcb glibc openssl-devel --noconfirm
+RUN --network=host pacman -Syu base-devel openssh mercurial git sqlite tmux btrfs-progs liburing wireguard-tools clang tree-sitter libxcb glibc openssl --noconfirm
 WORKDIR /usr/local/src
 RUN hg clone https://vc.compiler.company/comp/infra
 RUN hg clone https://vc.compiler.company/comp/core
