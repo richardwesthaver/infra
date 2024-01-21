@@ -1,6 +1,6 @@
 #!/bin/sh
 set -e
-img="${1:-localhost/infra/box}"
+img="${1:-infra/box}"
 rule="${2:-sbcl-build}"
 # in nushell
 cmd="cd /usr/local/src/infra; hg pull -u; make clean $rule"

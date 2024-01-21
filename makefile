@@ -81,7 +81,7 @@ NUSHELL_TARGET:=build/src/nushell
 $(NUSHELL_TARGET):scripts/get-nushell.sh;$<
 nushell:$(NUSHELL_TARGET)
 nushell-build:$(NUSHELL_TARGET)
-	cd $< && cargo build --workspace --release --features dataframe
+	cd $< && cargo build --workspace --release --features=dataframe,extra --locked
 nushell-install:nushell-build
 	cd $< && ./scripts/install-all.sh
 ### SBCL
