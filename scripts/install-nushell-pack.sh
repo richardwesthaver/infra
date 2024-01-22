@@ -6,5 +6,5 @@ curl -O https://packy.compiler.company/dist/x86_64-unknown-linux-gnu/nushell.tar
 unzstd nushell.tar.zst
 tar -xvf nushell.tar
 rm -rf nushell.tar*
-install -m 755 ./* /usr/local/bin/
+install -m 755 ./nu* /usr/local/bin/
 

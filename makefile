@@ -80,8 +80,9 @@ rocksdb-install:$(ROCKSDB_TARGET)
 NUSHELL_TARGET:=build/src/nushell
 $(NUSHELL_TARGET):scripts/get-nushell.sh;$<
 nushell:$(NUSHELL_TARGET)
+# build without clipboard to avoid errors at runtime in container env
 nushell-build:$(NUSHELL_TARGET)
-	cd $< && cargo build --workspace --release --features=dataframe,extra --locked
+	cd $< && cargo build --workspace --release --no-default-features --features=default-no-clipboard,dataframe,extra --locked
 nushell-install:$(NUSHELL_TARGET) nushell-build
 	cd $< && ./scripts/install-all.sh
 ### SBCL
@@ -191,9 +192,11 @@ dist/nushell:$(D) nushell-build
 	cd $(NUSHELL_TARGET)/target/release/ && \
 	tar -I 'zstd' -cf ../../../../../$</nushell.tar.zst \
 	nu nu_plugin_custom_values nu_plugin_formats nu_plugin_gstat \
-	nu_plugin_inc nu_plugin_query utils
+	nu_plugin_inc nu_plugin_query
+
 dist/tree-sitter:scripts/tree-sitter-install-langs.sh $(D)
 	PREFIX=$(D) $<
+
 # requires quicklisp loaded in .skelrc
 dist/lisp/fasl:scripts/sbcl-save-core.sh
 	mkdir -pv $@
