@@ -180,7 +180,7 @@ dist/rust/bin:scripts/cargo-install.sh
 	$< "$(CORE_SRC)/rust/app/cli/alik" dist/rust
 	$< "$(CORE_SRC)/rust/app/cli/krypt" dist/rust
 	$< "$(CORE_SRC)/rust/app/cli/tz" dist/rust
-	$< "$(CORE_SRC)/rust/app/cli/cc-init" dist/rust
+	$< "$(CORE_SRC)/rust/app/cli/cc-install" dist/rust
 	$< "$(CORE_SRC)/rust/app/cli/mailman" dist/rust
 
 dist/emacs:emacs-build $(D);
