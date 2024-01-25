@@ -6,8 +6,9 @@ set -eux
 declare -ar default_langs=(
   commonlisp bash c cpp css go html java javascript jsdoc json python regex rust
   typescript/tsx typescript/typescript yaml
-) # more langs: agda c-sharp julia ocaml/interface ocaml/ocaml php ql ruby scala
-
+) 
+# see https://tree-sitter.github.io/tree-sitter/#parsers for a
+# complete list of parsers available
 TARGETDIR="${1:-build/src/tree-sitter-langs}"
 PREFIX=${PREFIX:-/usr/local}
 CC=${CC:-clang}
@@ -17,7 +18,7 @@ if [ $(uname) == "Darwin" ];then
 else
    EXT=so
 fi
-# Declared repositories.
+
 declare -A repos
 repos[commonlisp]=https://github.com/theHamsta/tree-sitter-commonlisp.git
 repos[yaml]=https://github.com/ikatyang/tree-sitter-yaml.git

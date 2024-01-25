@@ -1,7 +1,14 @@
 FROM infra/archlinux
 VOLUME /store
 VOLUME /stash
+ADD etc/skel/* /etc/skel/
 ADD etc/nushell/* /etc/nushell/
+ADD etc/shells /etc/
+# custom
+ARG DEV=dev
+ARG DEV_HOME=/home/${DEV}
+ARG ID=808
+# stage0
 RUN mkdir -p /usr/share/lisp /usr/local/share/lisp
 WORKDIR /usr/local/src
 RUN hg clone https://vc.compiler.company/comp/infra
@@ -10,18 +17,23 @@ WORKDIR infra
 RUN make build
 ENV CARGO_HOME="/usr/local/share/cargo"
 ENV RUSTUP_HOME="/usr/local/share/rustup"
+# stage1
 RUN make rustup-install
 ENV PATH="$PATH:/usr/local/share/cargo/bin"
 RUN rustup update && rustup default nightly
-# RUN sh scripts/install-nushell-pack.sh # not workin in container..
-RUN make nushell-install
+RUN sh scripts/install-nushell-pack.sh
 RUN sh scripts/install-emacs-pack.sh
 RUN sh scripts/install-sbcl-pack.sh
 RUN sh scripts/install-rocksdb-pack.sh
+RUN sh scripts/install-cargo-tools.sh
 RUN make quicklisp-install
 RUN make tree-sitter-langs-install
 ADD etc/sbclrc /etc/sbclrc
 RUN make core-install
-RUN make clean
-WORKDIR /
-# ENTRYPOINT ["/usr/local/bin/nu", "--config", "/etc/nushell/config.nu", "--env-config", "/etc/nushell/env.nu", "-i"]
+RUN cd .. && rm -rf infra core
+WORKDIR /usr/local/src
+RUN useradd --system -s /usr/local/bin/nu -u ${ID} ${DEV}
+RUN groupadd -g 128 engineer -U ${DEV}
+RUN groupadd -g 256 operator -U ${DEV}
+WORKDIR ${DEV_HOME}
+ENTRYPOINT ["/usr/local/bin/nu", "--config", "/etc/nushell/config.nu", "--env-config", "/etc/nushell/env.nu"]

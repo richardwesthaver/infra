@@ -2,7 +2,9 @@ FROM infra/alpine
 VOLUME /store
 VOLUME /stash
 ADD etc/skel /etc/
-RUN adduser -D worker
+ARG ID=901
+ARG WORKER=worker
+RUN adduser -u ${ID} ${WORKER}
 RUN apk add build-base zstd-dev curl make git linux-headers openssl-dev pkgconf clang m4 tree-sitter
 RUN mkdir /usr/share/lisp
 RUN mkdir /usr/local/share/lisp
