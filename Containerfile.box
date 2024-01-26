@@ -32,7 +32,7 @@ ADD etc/sbclrc /etc/sbclrc
 RUN make core-install
 RUN cd .. && rm -rf infra core
 WORKDIR /usr/local/src
-RUN useradd --system -s /usr/local/bin/nu -u ${ID} ${DEV}
+RUN useradd --system -s /usr/local/bin/nu -u ${ID} -k /etc/skel -m ${DEV}
 RUN groupadd -g 128 engineer -U ${DEV}
 RUN groupadd -g 256 operator -U ${DEV}
 WORKDIR ${DEV_HOME}
