@@ -1,8 +1,8 @@
 #!/bin/sh
 
-# run the compiler.company core installer (cc-init)
+# run the compiler.company core installer (cc-install)
 
-# this script downloads and calls the 'cc-init' installer for the
+# this script downloads and calls the 'cc-install' installer for the
 # current host. Follow the prompts and read the documentation to build
 # a fully compliant operator system.
 
@@ -13,11 +13,11 @@ COMPANY_UPDATE_ROOT="${COMPANY_UPDATE_ROOT:-https://packy.compiler.company/dist}
 # this is copy/pasted from the actual release build.
 usage() {
     cat <<EOF
-cc-init 0.10 (0941fa04c53d+ 2023-12-03)
+cc-install 0.1.0 (0941fa04c53d+ 2023-12-03)
 The compiler.company installer
 
 USAGE:
-    cc-init [OPTIONS]
+    cc-install [OPTIONS]
 
 OPTIONS:
     -y Disable confirmation prompt.
@@ -48,15 +48,14 @@ main() {
             ;;
     esac
 
-    local _url="${COMPANY_UPDATE_ROOT}/${_arch}/cc-init${_ext}"
-
+    local _url="${COMPANY_UPDATE_ROOT}/${_arch}/cc-install${_ext}"
     local _dir
     if ! _dir="$(ensure mktemp -d)"; then
         # Because the previous command ran in a subshell, we must manually
         # propagate exit status.
         exit 1
     fi
-    local _file="${_dir}/cc-init${_ext}"
+    local _file="${_dir}/cc-install${_ext}"
 
     local _ansi_escapes_are_valid=false
     if [ -t 2 ]; then
@@ -114,7 +113,7 @@ main() {
     ensure chmod u+x "$_file"
     if [ ! -x "$_file" ]; then
         printf '%s\n' "Cannot execute $_file (likely because of mounting /tmp as noexec)." 1>&2
-        printf '%s\n' "Please copy the file to a location where you can execute binaries and run ./cc-init${_ext}." 1>&2
+        printf '%s\n' "Please copy the file to a location where you can execute binaries and run ./cc-install${_ext}." 1>&2
         exit 1
     fi
 
