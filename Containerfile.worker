@@ -1,10 +1,10 @@
 FROM infra/alpine
 VOLUME /store
 VOLUME /stash
-ADD etc/skel /etc/
-ARG ID=901
+ADD etc/skel/* /etc/skel/
+ARG ID=908
 ARG WORKER=worker
-RUN adduser -u ${ID} ${WORKER}
+ARG WORKER_HOME=/home/${WORKER}
 RUN apk add build-base zstd-dev curl make git linux-headers openssl-dev pkgconf clang m4 tree-sitter
 RUN mkdir /usr/share/lisp
 RUN mkdir /usr/local/share/lisp
@@ -18,3 +18,9 @@ RUN make build rustup-install tree-sitter-langs-install
 ENV PATH="$PATH:/usr/local/share/cargo/bin"
 RUN rustup update && rustup default nightly
 ADD etc/sbclrc /etc/sbclrc
+RUN cd .. && rm -rf infra core
+RUN adduser -D -u ${ID} -k /etc/skel ${WORKER}
+RUN addgroup -g 512 worker -U ${WORKER}
+USER ${WORKER}
+WORKDIR ${WORKER_HOME}
+ENTRYPOINT ["sh"]

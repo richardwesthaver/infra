@@ -4,6 +4,9 @@
 # https://www.nushell.sh/book/coloring_and_theming.html
 # And here is the theme collection
 # https://github.com/nushell/nu_scripts/tree/main/themes
+
+alias e = emacsclient -a=''
+
 def create_left_prompt [] {
     mut home = ""
     try {
