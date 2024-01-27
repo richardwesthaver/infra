@@ -5,7 +5,9 @@
 # And here is the theme collection
 # https://github.com/nushell/nu_scripts/tree/main/themes
 
-alias e = emacsclient -a=''
+def ec  [input?: string] {
+  if $input != null {emacsclient -a='' $input} else {emacsclient -a='' .}
+}
 
 def create_left_prompt [] {
     mut home = ""
