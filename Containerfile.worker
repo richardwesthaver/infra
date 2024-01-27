@@ -20,7 +20,6 @@ RUN rustup update && rustup default nightly
 ADD etc/sbclrc /etc/sbclrc
 RUN cd .. && rm -rf infra core
 RUN adduser -D -u ${ID} -k /etc/skel ${WORKER}
-RUN addgroup -g 512 ${WORKER} worker
 USER ${WORKER}
 WORKDIR ${WORKER_HOME}
 ENTRYPOINT ["sh"]
