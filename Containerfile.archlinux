@@ -1,3 +1,2 @@
 FROM archlinux:latest
-COPY etc/skel/ /etc/
 RUN --network=host pacman -Syu base-devel openssh mercurial git sqlite btrfs-progs liburing wireguard-tools clang tree-sitter libxcb glibc openssl --noconfirm

@@ -1,5 +1,8 @@
-FROM docker.io/octobus/heptapod-runner:latest
-ARG RUNNER_TOKEN=0
-VOLUME /stash
-VOLUME /store
-RUN gitlab-runner register --non-interactive -u https://vc.compiler.company -t "${RUNNER_TOKEN}"
+FROM infra/worker
+USER root
+RUN curl -L --output /usr/local/bin/gitlab-runner https://download.heptapod.net/runner/runner/latest/binaries/heptapod-runner-linux-amd64
+ARG RUNNER_TOKEN
+RUN chmod +x /usr/local/bin/gitlab-runner
+RUN echo ${WORKER_USER}
+RUN echo ${WORKER_HOME}
+RUN gitlab-runner install --user=${WORKER_USER} --working-directory=${WORKER_HOME}
