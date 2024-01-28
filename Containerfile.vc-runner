@@ -1,4 +1,5 @@
 FROM docker.io/octobus/heptapod-runner:latest
+ARG RUNNER_TOKEN=0
 VOLUME /stash
 VOLUME /store
-RUN gitlab-runner register
+RUN gitlab-runner register --non-interactive -u https://vc.compiler.company -t "${RUNNER_TOKEN}"

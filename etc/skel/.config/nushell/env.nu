@@ -11,3 +11,5 @@ $env.NU_PLUGIN_DIRS = [
 $env.ESHELL = '/bin/bash'
 $env.ORGANIZATION = 'The Compiler Company'
 $env.EDITOR = "emacsclient -c -a=''"
+$env.LISP = "sbcl"
+$env.ALTERNATE_EDITOR = ''

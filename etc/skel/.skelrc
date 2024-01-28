@@ -1,0 +1,6 @@
+;;; .skelrc @ 2024-01-28.00:39:30 -*- mode:skel; -*-
+:vc :hg
+:fmt :collapsed
+:tags ("auto")
+:auto-insert t
+:log-level nil
