@@ -26,21 +26,23 @@ RUN sh scripts/install-cargo-tools.sh
 RUN make quicklisp-install
 RUN make tree-sitter-langs-install
 ADD etc/sbclrc /etc/sbclrc
-RUN make core-install
-WORKDIR /usr/local/src
-RUN rm -rf ./*
 COPY etc/skel/ /etc/skel/
 ADD etc/shells /etc/
 RUN useradd --system -s /usr/local/bin/nu -u ${ID} -k /etc/skel -m ${DEV}
 RUN groupadd -g 128 engineer -U ${DEV}
 RUN groupadd -g 256 operator -U ${DEV}
-RUN setfacl -R -m u:${DEV}:rwx /usr/local/share/lisp
-RUN setfacl -R -m u:${DEV}:rwx /usr/local/share/cargo
-RUN setfacl -R -m u:${DEV}:rwx /usr/local/share/rustup
+RUN chown -R ${DEV}:engineer /usr/local/share/
+RUN chown -R ${DEV}:engineer /usr/local/src/
+RUN chown -R ${DEV}:engineer /usr/local/bin/
+RUN chown -R ${DEV}:engineer /usr/local/etc/
+RUN chown -R ${DEV}:engineer /usr/local/man/
 USER ${DEV}
+RUN make core-install
+WORKDIR /usr/local/src
+RUN rm -rf ./*
 WORKDIR ${DEV_HOME}
 RUN hg clone https://vc.compiler.company/comp/infra
-ENV DEV_USER=${DEV}
+ENV DEV=${DEV}
 ENV DEV_ID=${ID}
 ENTRYPOINT ["/usr/local/bin/nu"]
 CMD ["-i"]

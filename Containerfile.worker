@@ -22,7 +22,7 @@ RUN cd .. && rm -rf infra core
 RUN adduser -D -u ${ID} -k /etc/skel ${WORKER}
 USER ${WORKER}
 WORKDIR ${WORKER_HOME}
-ENV WORKER_USER=${DEV}
+ENV WORKER=${WORKER}
 ENV WORKER_ID=${ID}
 ENV WORKER_HOME=${WORKER_HOME}
 ENTRYPOINT ["sh"]
