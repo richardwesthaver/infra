@@ -51,3 +51,31 @@ export def vc-projects [
     vc-call "projects/"
   }
 }
+
+export def vc-update [] {
+  if ('.git/' | path exists) == true {
+    git pull origin HEAD
+  } else if ('.hg/' | path exists) == true {
+    hg pull -u
+  } else { error make {msg: $"directory $(pwd) not tracked by VC"} }
+}
+
+export def vc-update* [] {
+  ls | where type == dir | par-each { |it|
+    cd $it.name; vc-update
+  }
+}
+
+export def vc-mirror-update [] {
+  git fetch upstream
+  git pull upstream HEAD
+  git push origin
+}
+
+export def vc-mirror-update* [] {
+  ls | where type == dir | par-each { |it|
+    if ($"($it.name)/.git" | path exists) == true {
+      cd $it.name; vc-mirror-update
+    }
+  }
+}

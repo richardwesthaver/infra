@@ -31,15 +31,15 @@ ADD etc/shells /etc/
 RUN useradd --system -s /usr/local/bin/nu -u ${ID} -k /etc/skel -m ${DEV}
 RUN groupadd -g 128 engineer -U ${DEV}
 RUN groupadd -g 256 operator -U ${DEV}
+RUN make core-install
+WORKDIR /usr/local/src
+RUN cp -rf core/lisp /usr/local/share/lisp/core
+RUN rm -rf ./*
 RUN chown -R ${DEV}:engineer /usr/local/share/
 RUN chown -R ${DEV}:engineer /usr/local/src/
 RUN chown -R ${DEV}:engineer /usr/local/bin/
 RUN chown -R ${DEV}:engineer /usr/local/etc/
 RUN chown -R ${DEV}:engineer /usr/local/man/
-RUN make core-install
-WORKDIR /usr/local/src
-RUN cp -rf core/lisp /usr/local/share/lisp/core
-RUN rm -rf ./*
 USER ${DEV}
 WORKDIR ${DEV_HOME}
 RUN hg clone https://vc.compiler.company/comp/infra
