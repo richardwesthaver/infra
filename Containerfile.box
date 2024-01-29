@@ -36,10 +36,11 @@ RUN chown -R ${DEV}:engineer /usr/local/src/
 RUN chown -R ${DEV}:engineer /usr/local/bin/
 RUN chown -R ${DEV}:engineer /usr/local/etc/
 RUN chown -R ${DEV}:engineer /usr/local/man/
-USER ${DEV}
 RUN make core-install
 WORKDIR /usr/local/src
+RUN cp -rf core/lisp /usr/local/share/lisp/core
 RUN rm -rf ./*
+USER ${DEV}
 WORKDIR ${DEV_HOME}
 RUN hg clone https://vc.compiler.company/comp/infra
 ENV DEV=${DEV}

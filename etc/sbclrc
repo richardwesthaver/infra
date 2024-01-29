@@ -17,6 +17,4 @@
 (let ((quicklisp-init #P"/usr/local/share/quicklisp/setup.lisp"))
   (when (probe-file quicklisp-init)
     (load quicklisp-init)))
-(pushnew #P"/usr/local/lisp/" ql:*local-project-directories*)
-(pushnew #P"/usr/share/lisp/" ql:*local-project-directories*)
 (pushnew #P"/usr/local/share/lisp/" ql:*local-project-directories*)
