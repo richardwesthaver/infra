@@ -1,0 +1,2 @@
+FROM --platform=linux/riscv64 riscfive/archlinux
+RUN pacman -Syu
