@@ -2,10 +2,10 @@
 CPUS=$(getconf _NPROCESSORS_ONLN)
 TARGETDIR="${1:-build/src/emacs}"
 CONFIG=(--without-all
+        --with-x-toolkit=no
         --without-x
 	--enable-link-time-optimization
 	--with-json=ifavailable
 	--with-modules
-        --with-x-toolkit=no
         --prefix=/usr/local)
 cd $TARGETDIR &&./configure ${CONFIG[@]} && NATIVE_FULL_AOT=1 make -j$CPUS
