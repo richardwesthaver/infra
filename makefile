@@ -87,24 +87,23 @@ nushell-install:$(NUSHELL_TARGET) nushell-build
 	cd $< && ./scripts/install-all.sh
 ### SBCL
 SBCL_TARGET:=build/src/sbcl
+SBCL_VERSION:=2.4.1+
 $(SBCL_TARGET):scripts/get-sbcl.sh $(B)
 	$<
 	cd $(SBCL_TARGET) && \
-	echo '"2.4.1+main"' > version.lisp-expr
+	echo '"$(SBCL_VERSION)"' > version.lisp-expr
 sbcl:$(SBCL_TARGET)
+#### --with-sb-fasteval --without-sb-eval < broken
 sbcl-build:$(SBCL_TARGET)
 	cd $< && \
 	./make.sh \
 	--without-gencgc \
 	--with-mark-region-gc \
-	--with-core-compression \
 	--dynamic-space-size=8Gb \
-	--fancy
-
+	--fancy 
 sbcl-build-gencgc:$(SBCL_TARGET)
 	cd $< && \
 	./make.sh \
-	--with-core-compression \
 	--dynamic-space-size=8Gb \
 	--fancy
 sbcl-docs:sbcl-build;## REQUIRES TEXLIVE
