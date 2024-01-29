@@ -187,6 +187,11 @@ dist/emacs:emacs-build $(D);
 	mv emacs-*.*.* emacs && \
 	tar -I 'zstd' -cf ../../../dist/emacs-binary.tar.zst emacs
 
+dist/emacs-mini:emacs-build-mini $(D);
+	cd $(EMACS_TARGET) && ./make-dist --no-info --no-changelog && \
+	mv emacs-*.*.* emacs && \
+	tar -I 'zstd' -cf ../../../dist/emacs-mini-binary.tar.zst emacs
+
 dist/nushell:$(D) nushell-build
 	cd $(NUSHELL_TARGET)/target/release/ && \
 	tar -I 'zstd' -cf ../../../../../$</nushell.tar.zst \
