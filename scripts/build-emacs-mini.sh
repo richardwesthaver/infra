@@ -6,6 +6,7 @@ CONFIG=(--without-all
         --without-x
 	--enable-link-time-optimization
 	--with-json=ifavailable
+        --with-gif=ifavailable
 	--with-modules
         --prefix=/usr/local)
 cd $TARGETDIR &&./configure ${CONFIG[@]} && NATIVE_FULL_AOT=1 make -j$CPUS

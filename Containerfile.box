@@ -1,4 +1,5 @@
 FROM infra/archlinux
+RUN --network=host pacman -Sy imagemagick giflib libgccjit libxaw --noconfirm
 VOLUME /store
 VOLUME /stash
 # custom
