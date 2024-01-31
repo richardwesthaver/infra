@@ -170,7 +170,7 @@ dist/rocksdb:$(D) rocksdb;
 	cd build/src && \
 	tar -I 'zstd' -cf ../../$</rocksdb-binary.tar.zst rocksdb/include/* rocksdb/librocksdb.*
 
-CORE_SRC=/usr/local/src/core
+CORE_SRC?=/usr/local/src/core
 
 dist/rust:rust-build $(D);
 	cd $(RUST_TARGET) && x dist
@@ -237,6 +237,11 @@ core-rust-install:dist/rust/bin
 
 core-install:core-lisp-install core-rust-install
 
+dist/core:dist/rust/bin dist/lisp
+	mkdir -pv $@
+	cp -rf dist/lisp/fasl dist/lisp/bin $@
+	cp -rf $< $@
+	cd dist && tar -I 'zstd' -cf core.tar.zst core
 dist/code:code
 	mkdir -pv $@
 	cp -r $(CODE_TARGET)/{org,core,infra,demo} $@
