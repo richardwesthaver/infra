@@ -1,2 +1,2 @@
-FROM archlinux:latest
-RUN --network=host pacman -Syu base-devel openssh mercurial git sqlite btrfs-progs liburing wireguard-tools clang tree-sitter libxcb glibc openssl --noconfirm
+FROM archlinux:base-devel
+RUN --network=host pacman -Syu openssh mercurial git sqlite btrfs-progs liburing wireguard-tools clang tree-sitter libxcb glibc openssl --noconfirm
