@@ -1,3 +1,4 @@
 FROM ubuntu:latest
-RUN apt -y update
-RUN apt -y install git mercurial openssh
+RUN apt-get update
+RUN apt -y install git ssh python3-pip
+RUN pip install mercurial --upgrade
