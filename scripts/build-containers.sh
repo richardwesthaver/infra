@@ -2,24 +2,18 @@
 set -e
 podman build -f Containerfile.alpine --squash --platform linux/amd64 -t comp/infra/alpine
 # podman build -f Containerfile.alpine --squash --platform linux/arm64 --manifest comp/infra/alpine -t comp/infra/alpine
-podman push comp/infra/alpine registry.compiler.company/comp/infra/alpine
 
 # podman build -f Containerfile.archriscv --squash -t infra/archriscv --platform linux/riscv64 --manifest infra/archlinux
 # podman build -f Containerfile.archarm --squash -t infra/archarm --platform linux/arm64 --manifest infra/archlinux
 podman build -f Containerfile.archlinux --squash --platform linux/amd64 -t comp/infra/archlinux
-podman push comp/infra/archlinux registry.compiler.company/comp/infra/archlinux
 
 podman build -f Containerfile.box --squash -t comp/infra/box
-podman push comp/infra/box registry.compiler.company/comp/infra/box
 
 podman build -f Containerfile.ubuntu --squash -t comp/infra/ubuntu
-podman push comp/infra/ubuntu registry.compiler.company/comp/infra/ubuntu
 
 podman build -f Containerfile.worker --squash -t comp/infra/worker
-podman push comp/infra/worker registry.compiler.company/comp/infra/worker
 
 podman build -f Containerfile.operator --squash -t comp/infra/operator
-podman push comp/infra/operator registry.compiler.company/comp/infra/operator
 
 # podman build -f Containerfile.vc-runner --squash -t infra/vc-runner
 # podman push infra/vc-runner registry.compiler.company/comp/infra/vc-runner
