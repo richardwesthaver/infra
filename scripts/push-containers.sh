@@ -6,4 +6,3 @@ podman push comp/infra/box registry.compiler.company/comp/infra/box
 podman push comp/infra/ubuntu registry.compiler.company/comp/infra/ubuntu
 podman push comp/infra/worker registry.compiler.company/comp/infra/worker
 podman push comp/infra/operator registry.compiler.company/comp/infra/operator
-
