@@ -1,4 +1,3 @@
 FROM archlinux:latest
 RUN --network=host pacman-key --init
-RUN --network=host pacman -Sy base-devel openssh mercurial git sqlite btrfs-progs liburing wireguard-tools clang tree-sitter libxcb glibc openssl --noconfirm
-RUN --network=host pacman -Syu
+RUN --network=host pacman -Syu base-devel openssh mercurial git sqlite btrfs-progs liburing wireguard-tools clang tree-sitter libxcb glibc openssl --noconfirm

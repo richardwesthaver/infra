@@ -1,4 +1,2 @@
-FROM infra/box
-USER root
-RUN /home/${DEV_USER}/infra/scripts/wg-gen-keys.sh /etc/wireguard/private.key /etc/wireguard/public.key
-USER ${DEV_USER}
+FROM comp/infra/box
+RUN infra/scripts/wg-gen-keys.sh private.key public.key
