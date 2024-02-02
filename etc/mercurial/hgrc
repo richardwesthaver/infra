@@ -1,0 +1,20 @@
+[paths]
+core = https://vc.compiler.company/comp/core
+core:pushurl = ssh://git@vc.compiler.company/comp/core
+infra = https://vc.compiler.company/comp/infra
+infra:pushurl = ssh://git@vc.compiler.company/comp/infra
+demo = https://vc.compiler.company/comp/demo
+demo:pushurl = ssh://git@vc.compiler.company/comp/demo
+[extensions]
+clonebundles = 
+git = 
+share = 
+[subrepos]
+allowed = true
+hg:allowed = true
+git:allowed = true
+svn:allowed = true
+[rhg]
+on-unsupported = fallback
+fallback-executable = /bin/hg
+allowed-extensions = clonebundles,git
