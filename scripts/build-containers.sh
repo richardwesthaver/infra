@@ -7,9 +7,11 @@ podman build -f Containerfile.alpine --squash --platform linux/amd64 -t comp/inf
 # podman build -f Containerfile.archarm --squash -t infra/archarm --platform linux/arm64 --manifest infra/archlinux
 podman build -f Containerfile.archlinux --squash --platform linux/amd64 -t comp/infra/archlinux
 
-podman build -f Containerfile.box --squash -t comp/infra/box
+podman build -f Containerfile.box --squash -t comp/infra/box --no-cache # technically doesn't need to be no-cache, but w/e
 
 podman build -f Containerfile.ubuntu --squash -t comp/infra/ubuntu
+
+podman build -f Containerfile.fedora.arm64v8 --squash -t comp/infra/fedora:arm64v8
 
 podman build -f Containerfile.worker --squash -t comp/infra/worker
 
