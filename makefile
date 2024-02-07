@@ -27,7 +27,6 @@ box:Containerfile.box;podman build -f $< -t localhost/infra/box
 worker:Containerfile.worker;podman build -f $< -t localhost/infra/worker
 operator:Containerfile.operator;podman build -f $< -t localhost/infra/operator
 quick:code
-operator:core-lisp-install core-rust-install
 all:dist/cdn dist/code dist/lisp dist/rust dist/sbcl dist/rocksdb dist/emacs
 clean:;rm -rf $(B) $(D)
 $(B):;mkdir -pv $@/src
