@@ -5,6 +5,7 @@ cargo install cargo-asm --root /usr/local/
 cargo install bottom --root /usr/local/
 cargo install tokio-console --root /usr/local/
 cargo install zellij --root /usr/local/
+cargo install cargo-bloat --root /usr/local/
 # cargo install t-rec # requires -lX11
 #cargo install trunk --root /usr/local/
 # cargo install cross --git https://github.com/cross-rs/cross --root /usr/local/
