@@ -18,7 +18,8 @@ ENV RUSTUP_HOME="/usr/local/share/rustup"
 # stage1
 RUN make rustup-install
 ENV PATH="$PATH:/usr/local/share/cargo/bin"
-RUN rustup update && rustup default nightly
+RUN rustup update 
+#RUN rustup default nightly # disabled due to issue with zellij build
 RUN sh scripts/install-nushell-pack.sh
 RUN sh scripts/install-emacs-pack.sh
 RUN sh scripts/install-sbcl-pack.sh

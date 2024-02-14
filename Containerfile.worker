@@ -16,7 +16,8 @@ ENV CARGO_HOME="/usr/local/share/cargo"
 ENV RUSTUP_HOME="/usr/local/share/rustup"
 RUN make build rustup-install tree-sitter-langs-install
 ENV PATH="$PATH:/usr/local/share/cargo/bin"
-RUN rustup update && rustup default nightly
+RUN rustup update 
+#RUN rustup default nightly # disabled due to issue with zellij build
 ADD etc/sbclrc /etc/sbclrc
 RUN cd .. && rm -rf infra core
 RUN adduser -D -u ${ID} -k /etc/skel ${WORKER}
