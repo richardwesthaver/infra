@@ -4,6 +4,17 @@
 # https://www.nushell.sh/book/coloring_and_theming.html
 # And here is the theme collection
 # https://github.com/nushell/nu_scripts/tree/main/themes
+
+# summon Emacs via `emacsclient`
+def ec  [input?: string] {
+  if $input != null {emacsclient -c $input -a=''} else {emacsclient -c . -a=''}
+}
+
+# open Emacs IRC client
+def erc [] {
+  emacsclient -c -e '(erc)'
+}
+
 def create_left_prompt [] {
     mut home = ""
     try {
