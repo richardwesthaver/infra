@@ -86,7 +86,7 @@ nushell-install:$(NUSHELL_TARGET) nushell-build
 	cd $< && ./scripts/install-all.sh
 ### SBCL
 SBCL_TARGET:=build/src/sbcl
-SBCL_VERSION:=2.4.1+
+SBCL_VERSION:=2.4.2+
 $(SBCL_TARGET):scripts/get-sbcl.sh $(B)
 	$<
 	cd $(SBCL_TARGET) && \
@@ -205,7 +205,7 @@ dist/lisp/fasl:scripts/sbcl-save-core.sh
 	mkdir -pv $@
 	$< "$@/std.core"
 	$< "$@/prelude.core" "(mapc #'ql:quickload \
-	(list :nlp :rdb :organ :packy :skel :obj :net :parse :pod :dat :log :packy :rt :syn :xdb :doc :vc :rt))"
+	(list :nlp :rdb :organ :packy :skel :obj :net :parse :pod :dat :log :packy :rt :syn :xdb :doc :vc))"
 
 dist/lisp/bin:scripts/sbcl-make-bin.sh
 	mkdir -pv $@
