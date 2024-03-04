@@ -99,7 +99,10 @@ sbcl-build:$(SBCL_TARGET)
 	--without-gencgc \
 	--with-mark-region-gc \
 	--dynamic-space-size=8Gb \
-	--fancy 
+	--fancy
+sbcl-build-shared:$(SBCL_TARGET) sbcl-build
+	cd $< && \
+	./make-shared-library.sh \
 sbcl-build-gencgc:$(SBCL_TARGET)
 	cd $< && \
 	./make.sh \
