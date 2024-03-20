@@ -115,7 +115,14 @@ clean-sbcl:$(SBCL_TARGET);cd $(SBCL_TARGET) && ./clean.sh
 
 build/quicklisp.lisp:$(B);cd $< && curl -O https://beta.quicklisp.org/quicklisp.lisp
 quicklisp-install:scripts/quicklisp-install.sh build/quicklisp.lisp;$<
+STUMPWM_TARGET:=build/src/stumpwm
 
+$(STUMPWM_TARGET):scripts/get-stumpwm.sh $(B);$<
+stumpwm:$(STUMPWM_TARGET);
+stumpwm-build:stumpwm;
+	cd $(STUMPWM_TARGET) && ./autogen.sh && ./configure && make
+stumpwm-install:stumpwm-build;
+	cd $(STUMPWM_TARGET) && make install
 ### Rust
 RUST_TARGET:=build/src/rust
 $(RUST_TARGET):scripts/get-rust.sh $(B);$<
