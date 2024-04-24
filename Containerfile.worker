@@ -1,4 +1,4 @@
-FROM comp/infra/alpine
+FROM localhost/alpine:latest
 VOLUME /store
 VOLUME /stash
 ADD etc/skel/* /etc/skel/

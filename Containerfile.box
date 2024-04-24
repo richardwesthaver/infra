@@ -1,5 +1,5 @@
-FROM comp/infra/archlinux
-RUN --network=host pacman -Sy uutils-coreutils sysstat iotop imagemagick giflib libgccjit libxaw --noconfirm
+FROM localhost/archlinux:latest
+RUN --network=host pacman -Sy uutils-coreutils sysstat iotop imagemagick giflib libgccjit libxaw snappy sbcl --noconfirm
 VOLUME /store
 VOLUME /stash
 # custom
@@ -22,20 +22,23 @@ RUN rustup update
 # dev rustc components
 RUN rustup default nightly
 RUN rustup component add --toolchain nightly rust-src rust-analyzer rustc-dev llvm-tools-preview
-RUN sh scripts/install-nushell-pack.sh
-RUN sh scripts/install-emacs-pack.sh
-RUN sh scripts/install-sbcl-pack.sh
-RUN sh scripts/install-rocksdb-pack.sh
+# RUN sh scripts/install-nushell-pack.sh
+# RUN sh scripts/install-emacs-pack.sh
+# RUN sh scripts/install-sbcl-pack.sh
+# RUN sh scripts/install-rocksdb-pack.sh
 RUN sh scripts/install-cargo-tools.sh
+RUN make sbcl-install
 RUN make quicklisp-install
 RUN make tree-sitter-langs-install
+RUN make emacs-build-mini
+RUN make emacs-install
 ADD etc/sbclrc /etc/sbclrc
 COPY etc/skel/ /etc/skel/
 ADD etc/shells /etc/
-RUN useradd --system -s /usr/local/bin/nu -u ${ID} -k /etc/skel -m ${DEV}
+RUN useradd --system -s /usr/bin/bash -u ${ID} -k /etc/skel -m ${DEV}
 RUN groupadd -g 128 engineer -U ${DEV}
 RUN groupadd -g 256 operator -U ${DEV}
-RUN make core-install
+# RUN make core-install
 WORKDIR /usr/local/src
 RUN cp -rf core/lisp /usr/local/share/lisp/core
 RUN rm -rf ./*
@@ -49,5 +52,5 @@ WORKDIR ${DEV_HOME}
 RUN hg clone https://vc.compiler.company/comp/infra
 ENV DEV=${DEV}
 ENV DEV_ID=${ID}
-ENTRYPOINT ["/usr/local/bin/nu"]
+ENTRYPOINT ["/usr/bin/bash"]
 CMD ["-i"]
