@@ -73,7 +73,7 @@ rocksdb-build-static:$(ROCKSDB_TARGET)
 	cd $< && make static_lib DISABLE_JEMALLOC=1
 
 rocksdb-install:$(ROCKSDB_TARGET)
-	cd $< && make install
+	cd $< && make install LIB_MODE=shared
 
 ### Nushell
 NUSHELL_TARGET:=build/src/nushell
@@ -86,7 +86,7 @@ nushell-install:$(NUSHELL_TARGET) nushell-build
 	cd $< && ./scripts/install-all.sh
 ### SBCL
 SBCL_TARGET:=build/src/sbcl
-SBCL_VERSION:=2.4.2+
+SBCL_VERSION:=2.4.3+
 $(SBCL_TARGET):scripts/get-sbcl.sh $(B)
 	$<
 	cd $(SBCL_TARGET) && \
@@ -102,7 +102,7 @@ sbcl-build:$(SBCL_TARGET)
 	--fancy
 sbcl-build-shared:$(SBCL_TARGET) sbcl-build
 	cd $< && \
-	./make-shared-library.sh \
+	./make-shared-library.sh
 sbcl-build-gencgc:$(SBCL_TARGET)
 	cd $< && \
 	./make.sh \
@@ -183,6 +183,7 @@ CORE_SRC?=/usr/local/src/core
 
 dist/rust:rust-build $(D);
 	cd $(RUST_TARGET) && x dist
+
 dist/rust/bin:scripts/cargo-install.sh
 	mkdir -pv $@
 	$< "$(CORE_SRC)/rust/app/cli/alik" dist/rust

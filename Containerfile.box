@@ -20,8 +20,8 @@ RUN make rustup-install
 ENV PATH="$PATH:/usr/local/share/cargo/bin"
 RUN rustup update
 # dev rustc components
+RUN rustup default nightly
 RUN rustup component add --toolchain nightly rust-src rust-analyzer rustc-dev llvm-tools-preview
-#RUN rustup default nightly # disabled due to issue with zellij build
 RUN sh scripts/install-nushell-pack.sh
 RUN sh scripts/install-emacs-pack.sh
 RUN sh scripts/install-sbcl-pack.sh
