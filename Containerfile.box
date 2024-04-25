@@ -1,7 +1,7 @@
 FROM localhost/archlinux:latest
-RUN --network=host pacman -Sy uutils-coreutils sysstat iotop imagemagick giflib libgccjit libxaw snappy sbcl --noconfirm
-VOLUME /store
-VOLUME /stash
+RUN --network=host pacman -Sy uutils-coreutils sysstat iotop imagemagick giflib libgccjit libxaw snappy sbcl liburing --noconfirm
+VOLUME /opt/store
+VOLUME /opt/stash
 # custom
 ARG DEV=dev
 ARG DEV_HOME=/home/${DEV}
@@ -26,7 +26,7 @@ RUN rustup component add --toolchain nightly rust-src rust-analyzer rustc-dev ll
 # RUN sh scripts/install-emacs-pack.sh
 # RUN sh scripts/install-sbcl-pack.sh
 # RUN sh scripts/install-rocksdb-pack.sh
-RUN sh scripts/install-cargo-tools.sh
+# RUN sh scripts/install-cargo-tools.sh
 RUN make sbcl-install
 RUN make quicklisp-install
 RUN make tree-sitter-langs-install

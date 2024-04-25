@@ -1,2 +1,2 @@
 FROM alpine:latest
-RUN apk add --no-cache openssh mercurial wireguard-tools
+RUN apk add --no-cache openssh mercurial wireguard-tools liburing

@@ -1,6 +1,6 @@
 FROM localhost/alpine:latest
-VOLUME /store
-VOLUME /stash
+VOLUME /opt/store
+VOLUME /opt/stash
 ADD etc/skel/* /etc/skel/
 ARG ID=908
 ARG WORKER=worker
