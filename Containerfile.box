@@ -1,7 +1,7 @@
 FROM localhost/archlinux:latest
 RUN --network=host pacman -Sy uutils-coreutils sysstat iotop imagemagick giflib libgccjit libxaw snappy sbcl liburing --noconfirm
-VOLUME /opt/store
-VOLUME /opt/stash
+# VOLUME /opt/store
+# VOLUME /opt/stash
 # custom
 ARG DEV=dev
 ARG DEV_HOME=/home/${DEV}

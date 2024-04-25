@@ -27,9 +27,11 @@ archlinux:Containerfile.archlinux;podman build -f $< -t archlinux
 box:Containerfile.box archlinux;podman build -f $< -t box
 alpine:Containerfile.alpine;podman build -f $< -t alpine
 ubuntu:Containerfile.ubuntu;podman build -f $< -t ubuntu
+vc:Containerfile.vc ubuntu;podman build -f $< -t vc
+vc-runner:Containerfile.vc-runner ubuntu;podman build -f $< -t vc-runner
 worker:Containerfile.worker alpine;podman build -f $< -t worker
 operator:Containerfile.operator box;podman build -f $< -t operator
-pods:archlinux alpine ubuntu box worker operator
+pods:archlinux alpine ubuntu box worker operator vc vc-runner
 quick:code
 all:dist/cdn dist/code dist/lisp dist/rust dist/sbcl dist/rocksdb dist/emacs dist/pods
 clean:;rm -rf $(B) $(D)
@@ -261,7 +263,7 @@ dist/code:code
 	cp -r $(CODE_TARGET)/{org,core,infra,demo} $@
 dist/pods:pods
 	mkdir -pv $@
-	podman image save -o $@/all.tar archlinux alpine ubuntu box worker operator
-	cd $@ && zstd --ultra -T4 --rm all.tar -o all.tar.zst
+	podman image save -o $@/all.tar archlinux alpine ubuntu box worker operator vc vc-runner
+	cd $@ && zstd --ultra -T8 --rm all.tar -o all.tar.zst
 clean-dist:;rm -rf $(D)
 clean-build:;rm -rf $(B)
