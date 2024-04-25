@@ -177,7 +177,7 @@ dist/linux:linux $(D);
 
 dist/rocksdb:$(D) rocksdb;
 	cd build/src && \
-	tar -I 'zstd' -cf ../../$</rocksdb-binary.tar.zst rocksdb/include/* rocksdb/librocksdb.*
+	tar -I 'zstd' -cf ../../$</rocksdb.tar.zst rocksdb/include/* rocksdb/librocksdb.*
 
 CORE_SRC?=/usr/local/src/core
 
