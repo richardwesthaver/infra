@@ -32,6 +32,8 @@ RUN make quicklisp-install
 RUN make tree-sitter-langs-install
 RUN make emacs-build-mini
 RUN make emacs-install
+RUN make rocksdb-build-shared
+RUN make rocksdb-install
 ADD etc/sbclrc /etc/sbclrc
 COPY etc/skel/ /etc/skel/
 ADD etc/shells /etc/
@@ -50,7 +52,6 @@ RUN chown -R ${DEV}:engineer /usr/local/man/
 USER ${DEV}
 WORKDIR ${DEV_HOME}
 RUN hg clone https://vc.compiler.company/comp/infra
+RUN hg clone https://vc.compiler.company/comp/core
 ENV DEV=${DEV}
 ENV DEV_ID=${ID}
-ENTRYPOINT ["/usr/bin/bash"]
-CMD ["-i"]
