@@ -73,7 +73,7 @@ rocksdb-build-static:$(ROCKSDB_TARGET)
 	cd $< && make static_lib DISABLE_JEMALLOC=1
 
 rocksdb-install:$(ROCKSDB_TARGET)
-	cd $< && make install LIB_MODE=shared && make install-headers
+	cd $< && make install LIB_MODE=shared && cp -r include/* /usr/local/include/
 
 ### Nushell
 NUSHELL_TARGET:=build/src/nushell
