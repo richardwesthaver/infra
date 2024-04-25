@@ -23,9 +23,9 @@ DESTINATION:=/mnt/y/data/packy
 # artifacts can deploy to dist/TARGET - need target triple first
 # init:sbcl rust emacs rocksdb code
 # dist/linux dist/rust dist/bundle
-box:Containerfile.box;podman build -f $< -t localhost/infra/box
-worker:Containerfile.worker;podman build -f $< -t localhost/infra/worker
-operator:Containerfile.operator;podman build -f $< -t localhost/infra/operator
+box:Containerfile.box;podman build -f $< -t box
+worker:Containerfile.worker;podman build -f $< -t worker
+operator:Containerfile.operator;podman build -f $< -t operator
 quick:code
 all:dist/cdn dist/code dist/lisp dist/rust dist/sbcl dist/rocksdb dist/emacs
 clean:;rm -rf $(B) $(D)
@@ -73,7 +73,7 @@ rocksdb-build-static:$(ROCKSDB_TARGET)
 	cd $< && make static_lib DISABLE_JEMALLOC=1
 
 rocksdb-install:$(ROCKSDB_TARGET)
-	cd $< && make install LIB_MODE=shared
+	cd $< && make install LIB_MODE=shared && make install-headers
 
 ### Nushell
 NUSHELL_TARGET:=build/src/nushell
