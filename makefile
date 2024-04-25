@@ -23,11 +23,15 @@ DESTINATION:=/mnt/y/data/packy
 # artifacts can deploy to dist/TARGET - need target triple first
 # init:sbcl rust emacs rocksdb code
 # dist/linux dist/rust dist/bundle
-box:Containerfile.box;podman build -f $< -t box
-worker:Containerfile.worker;podman build -f $< -t worker
-operator:Containerfile.operator;podman build -f $< -t operator
+archlinux:Containerfile.archlinux;podman build -f $< -t archlinux
+box:Containerfile.box archlinux;podman build -f $< -t box
+alpine:Containerfile.alpine;podman build -f $< -t alpine
+ubuntu:Containerfile.ubuntu;podman build -f $< -t ubuntu
+worker:Containerfile.worker alpine;podman build -f $< -t worker
+operator:Containerfile.operator box;podman build -f $< -t operator
+pods:archlinux alpine ubuntu box worker operator
 quick:code
-all:dist/cdn dist/code dist/lisp dist/rust dist/sbcl dist/rocksdb dist/emacs
+all:dist/cdn dist/code dist/lisp dist/rust dist/sbcl dist/rocksdb dist/emacs dist/pods
 clean:;rm -rf $(B) $(D)
 $(B):;mkdir -pv $@/src
 $(D):;mkdir -pv $@/bin $@/lib $@/include $@/bundle $@/share
@@ -255,5 +259,9 @@ dist/core:dist/rust/bin dist/lisp
 dist/code:code
 	mkdir -pv $@
 	cp -r $(CODE_TARGET)/{org,core,infra,demo} $@
+dist/pods:pods
+	mkdir -pv $@
+	podman image save -o $@/all.tar archlinux alpine ubuntu box worker operator
+	cd $@ && zstd --ultra -T4 --rm all.tar -o all.tar.zst
 clean-dist:;rm -rf $(D)
 clean-build:;rm -rf $(B)
