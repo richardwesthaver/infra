@@ -1,5 +1,5 @@
 FROM localhost/archlinux:latest
-RUN --network=host pacman -Sy uutils-coreutils sysstat iotop imagemagick giflib libgccjit libxaw snappy sbcl liburing --noconfirm
+RUN --network=host pacman -Sy uutils-coreutils sysstat iotop imagemagick giflib libgccjit libxaw snappy sbcl liburing libxkbcommon --noconfirm
 # VOLUME /opt/store
 # VOLUME /opt/stash
 # custom
@@ -29,6 +29,7 @@ RUN rustup component add --toolchain nightly rust-src rust-analyzer rustc-dev ll
 # RUN sh scripts/install-cargo-tools.sh
 RUN make sbcl-install
 RUN make quicklisp-install
+RUN make tree-sitter-install
 RUN make tree-sitter-langs-install
 RUN make emacs-build-mini
 RUN make emacs-install
