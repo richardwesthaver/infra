@@ -31,7 +31,7 @@ vc:Containerfile.vc ubuntu;podman build -f $< -t vc
 vc-runner:Containerfile.vc-runner ubuntu;podman build -f $< -t vc-runner
 worker:Containerfile.worker alpine;podman build -f $< -t worker
 operator:Containerfile.operator box;podman build -f $< -t operator
-pods:archlinux alpine ubuntu box worker operator vc vc-runner
+pods:archlinux alpine ubuntu box worker operator vc # vc-runner ## requires token
 quick:code
 all:dist/cdn dist/code dist/lisp dist/rust dist/sbcl dist/rocksdb dist/emacs dist/pods
 clean:;rm -rf $(B) $(D)
@@ -259,11 +259,11 @@ dist/core:dist/rust/bin dist/lisp
 	cp -rf $< $@
 	cd dist && tar -I 'zstd' -cf core.tar.zst core
 dist/code:code
-	mkdir -pv $@
+	mkdir -pv $(D)/code
 	cp -r $(CODE_TARGET)/{org,core,infra,demo} $@
 dist/pods:pods
-	mkdir -pv $@
-	podman image save -o $@/all.tar archlinux alpine ubuntu box worker operator vc vc-runner
-	cd $@ && zstd --ultra -T8 --rm all.tar -o all.tar.zst
-clean-dist:;rm -rf $(D)
+	mkdir -pv $(D)/pods
+	podman image save -o $(D)/pods/all.tar archlinux alpine ubuntu box worker operator vv
+	cd $(D)/pods && zstd --ultra -T8 --rm all.tar -o all.tar.zst
+clean-dist:;rm -rf dist
 clean-build:;rm -rf $(B)
