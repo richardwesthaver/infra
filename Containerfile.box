@@ -1,5 +1,5 @@
 FROM localhost/archlinux:latest
-RUN --network=host pacman -Sy uutils-coreutils sysstat iotop imagemagick giflib libgccjit libxaw snappy sbcl liburing libxkbcommon --noconfirm
+RUN --network=host pacman -Sy uutils-coreutils sysstat iotop imagemagick giflib libgccjit libxaw snappy sbcl liburing libxkbcommon nuklear --noconfirm
 # VOLUME /opt/store
 # VOLUME /opt/stash
 # custom
