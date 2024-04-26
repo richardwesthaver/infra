@@ -1,5 +1,5 @@
 [shell]
-program = "/usr/local/bin/nu"
+program = "/usr/bin/bash"
 [window]
 padding = { x = 2, y = 2 }
 dynamic_padding = true
@@ -14,7 +14,6 @@ hide_when_typing = true
 [colors.primary]
 background = '#000000'
 foreground = '#eaeaea'
-
 # Normal colors
 [colors.normal]
 black   = '#000000'

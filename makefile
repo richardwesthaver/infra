@@ -154,7 +154,7 @@ tree-sitter:$(TREE_SITTER_TARGET)
 tree-sitter-build:$(TREE_SITTER_TARGET)
 	cd $< && make all
 tree-sitter-install:$(TREE_SITTER_TARGET) tree-sitter-build
-	cd $< && make install
+	cd $< && make install && cp -r lib/include/* /usr/local/include/
 ### Tree-sitter Langs
 TREE_SITTER_LANGS_TARGET:=build/src/tree-sitter-langs
 tree-sitter-langs-install:scripts/tree-sitter-install-langs.sh
