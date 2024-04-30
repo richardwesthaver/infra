@@ -27,11 +27,9 @@ archlinux:Containerfile.archlinux;podman build -f $< -t archlinux
 box:Containerfile.box archlinux;podman build -f $< -t box
 alpine:Containerfile.alpine;podman build -f $< -t alpine
 ubuntu:Containerfile.ubuntu;podman build -f $< -t ubuntu
-vc:Containerfile.vc ubuntu;podman build -f $< -t vc
-vc-runner:Containerfile.vc-runner ubuntu;podman build -f $< -t vc-runner
 worker:Containerfile.worker alpine;podman build -f $< -t worker
 operator:Containerfile.operator box;podman build -f $< -t operator
-pods:archlinux alpine ubuntu box worker operator vc # vc-runner ## requires token
+pods:archlinux alpine ubuntu box worker operator
 quick:code
 all:dist/cdn dist/code dist/lisp dist/rust dist/sbcl dist/rocksdb dist/emacs dist/pods
 clean:;rm -rf $(B) $(D)
@@ -92,7 +90,7 @@ nushell-install:$(NUSHELL_TARGET) nushell-build
 	cd $< && ./scripts/install-all.sh
 ### SBCL
 SBCL_TARGET:=build/src/sbcl
-SBCL_VERSION:=2.4.3+
+SBCL_VERSION:=2.4.4+
 $(SBCL_TARGET):scripts/get-sbcl.sh $(B)
 	$<
 	cd $(SBCL_TARGET) && \
@@ -152,13 +150,18 @@ $(TREE_SITTER_TARGET):scripts/get-tree-sitter.sh
 	$<
 tree-sitter:$(TREE_SITTER_TARGET)
 tree-sitter-build:$(TREE_SITTER_TARGET)
-	cd $< && make all
 tree-sitter-install:$(TREE_SITTER_TARGET) tree-sitter-build
-	cd $< && make install && cp -r lib/include/* /usr/local/include/
+
 ### Tree-sitter Langs
 TREE_SITTER_LANGS_TARGET:=build/src/tree-sitter-langs
 tree-sitter-langs-install:scripts/tree-sitter-install-langs.sh
 	$<
+### Etc
+ETC_TARGET:=build/etc
+$(ETC_TARGET):scripts/get-etc.sh
+	$<
+etc:$(ETC_TARGET)
+
 ### Code
 CODE_TARGET:=build/src/$(SRC)
 $(CODE_TARGET):scripts/get-code.sh $(B)
@@ -255,16 +258,23 @@ core-rust-install:dist/rust/bin
 core-install:core-lisp-install core-rust-install
 
 dist/core:dist/rust/bin dist/lisp
-	mkdir -pv $@
-	cp -rf dist/lisp/fasl dist/lisp/bin $@
-	cp -rf $< $@
-	cd dist && tar -I 'zstd' -cf core.tar.zst core
+	mkdir -pv $(D)/core
+	cp -rf $(D)/lisp/fasl $(D)/lisp/bin $(D)/core
+	cp -rf $< $(D)/core
+	cd $(D) && tar -I 'zstd' -cf core.tar.zst core
+
+ETC:=$(USER)
+
+dist/etc:$(ETC_TARGET)
+	cd $(ETC_TARGET) && hg up $(ETC)
+	cp -rf $(ETC_TARGET) $(D)/etc
+
 dist/code:code
-	mkdir -pv $(D)/code
-	cp -r $(CODE_TARGET)/{org,core,infra,demo} $@
+	mkdir -pv $@
+	cp -r $(CODE_TARGET)/{org,core,infra,demo,etc} $@
 dist/pods:pods
-	mkdir -pv $(D)/pods
-	podman image save -o $(D)/pods/all.tar archlinux alpine ubuntu box worker operator vv
-	cd $(D)/pods && zstd --ultra -T8 --rm all.tar -o all.tar.zst
-clean-dist:;rm -rf dist
+	mkdir -pv $@
+	podman image save -o $@/all.tar archlinux alpine ubuntu box worker operator
+	cd $@ && zstd --ultra -T4 --rm all.tar -o all.tar.zst
+clean-dist:;rm -rf $(D)
 clean-build:;rm -rf $(B)

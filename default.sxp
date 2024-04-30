@@ -1,0 +1,13 @@
+;; -*- mode:skel -*-
+:sbcl-version "2.4.4"
+:stash ".stash"
+:dist nil
+:install-root "/usr/local"
+:log-level :debug
+:features
+(:sbcl
+ :sbcl-docs
+ :rust :cargo-tools
+ :tree-sitter :tree-sitter-langs
+ :skel :packy
+ :emacs-mini)
