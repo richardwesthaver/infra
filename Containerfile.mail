@@ -1,0 +1,1 @@
+FROM stalwartlabs/mail-server:latest

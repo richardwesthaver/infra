@@ -12,9 +12,10 @@
         :cli/shell :std/hash-table :std/alien))
 (in-package :infra/bootstrap)
 (in-readtable :shell)
+
 (eval-when (:compile-toplevel)
   (defstruct host name cpus mem os kernel core)
-  (defparameter *config-file* #P"config.sxp")
+  (defparameter *config-file* (or (pathname (sb-posix:getenv "BUILD_PROFILE")) #P"default.sxp"))
   (defparameter *build-config* (read-sxp-file *config-file*))
   (defparameter *host-config* (make-host :name (sb-unix:unix-gethostname) :cpus (num-cpus) :mem #+nil (mem-total) 15815828
                                    :os "archlinux" :kernel "linux" :core sb-ext:*core-pathname*))
