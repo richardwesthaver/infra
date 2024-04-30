@@ -1,3 +1,4 @@
 FROM octobus/heptapod:latest
 RUN gitlab-ctl upgrade
-COPY etc/gitlab/gitlab.rb /etc/gitlab/gitlab.rb
+# TODO: configure instance here, pull from comp/etc
+# COPY etc/gitlab/gitlab.rb /etc/gitlab/gitlab.rb
