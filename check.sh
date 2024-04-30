@@ -17,7 +17,7 @@ main() {
   need_cmd head
   need_cmd tail
   host_config_file=host.sxp
-  rm $host_config_file
+  rm -f $host_config_file
   check_mem
   check_disk
   check_mod kvm
@@ -352,14 +352,14 @@ check_mem () {
 
 disk_free () {
   local _disk_free
-  _disk_free=$(df -kh . | tail -n1 | awk '{print $4}')
-  RETVAL="${_disk_free%?}"
+  _disk_free=$(df . | tail -n1 | awk '{print $4}')
+  RETVAL="${_disk_free}"
 }
 
 check_disk () {
   disk_free
   local _disk_free="$RETVAL"
-  local _disk_min=32 # in Gigabytes
+  local _disk_min=33554432 # in bytes
   if [ "$_disk_free" -lt "$_disk_min" ]; then
     err "not enough disk space: $_disk_free < $_disk_min"
   fi
