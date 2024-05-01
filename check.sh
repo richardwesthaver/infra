@@ -19,6 +19,7 @@ main() {
   host_config_file=host.sxp
   rm -f $host_config_file
   check_mem
+  local _mem_total="$RETVAL"
   check_disk
   check_mod kvm
   get_architecture || return 1
@@ -32,6 +33,7 @@ main() {
   check_cpus
   local _num_cpus="$RETVAL"
   _write ":cpus $_num_cpus"
+  _write ":mem $_mem_total"
   case "$_arch" in
     *windows*)
       _write ":ext \"exe\""
