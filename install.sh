@@ -2,21 +2,18 @@
 set -eu
 main() {
   downloader --check
-  need_cmd uname
-  need_cmd mktemp
-  need_cmd chmod
-  need_cmd mkdir
-  need_cmd rm
-  need_cmd rmdir
+
   get_architecture || return 1
   local _arch="$RETVAL"
   assert_nz "$_arch" "arch"
+
   local _ext=""
   case "$_arch" in
     *windows*)
       _ext=".exe"
       ;;
   esac
+
   local _url="https://packy.compiler.company/dist/${_arch}/cc-install${_ext}"
   local _dir
   if ! _dir="$(ensure mktemp -d)"; then
@@ -25,7 +22,8 @@ main() {
     exit 1
   fi
   local _file="${_dir}/cc-install${_ext}"
-  printf '%s\n' 'info: installing artifacts...' 1>&2
+
+  printf '%s\n' 'info: starting cc-install...' 1>&2
   ensure mkdir -p "$_dir"
   ensure downloader "$_url" "$_file" "$_arch"
   ensure chmod u+x "$_file"

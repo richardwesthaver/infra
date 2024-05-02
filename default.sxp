@@ -1,13 +1,12 @@
 ;; -*- mode:skel -*-
-:sbcl-version "2.4.4"
-:stash ".stash"
-:dist nil
-:install-root "/usr/local"
-:log-level :debug
-:features
-(:sbcl
- :sbcl-docs
- :rust :cargo-tools
- :tree-sitter :tree-sitter-langs
- :skel :packy
- :emacs-mini)
+:sbcl-version "2.4.4" ;; SBCL is always required for bootstrap
+
+:stash ".stash" ;; local build stash
+
+:dist nil ;; remote distribution directory, or nil to use the stash
+          ;; instead
+
+:install-root "/usr/local" ;; default installation directory
+
+:log-level :debug ;; should usually be set to at least :DEBUG, set to
+                  ;; :TRACE or T for verbose output

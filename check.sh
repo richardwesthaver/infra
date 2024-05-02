@@ -11,12 +11,12 @@ main() {
   need_cmd zstd
   need_cmd hg
   need_cmd git
-  need_cmd clang
+  # need_cmd clang
   need_cmd grep
   need_cmd awk
   need_cmd head
   need_cmd tail
-  host_config_file=host.sxp
+  host_config_file=$(cat /proc/sys/kernel/hostname).sxp
   rm -f $host_config_file
   check_mem
   local _mem_total="$RETVAL"
@@ -41,10 +41,15 @@ main() {
     *)
       _write ":ext nil"
   esac
+  print_env
 }
 
 say() {
   printf '%s\n' "$1"
+}
+
+say_var() {
+  say "$1=$(eval echo "\$$1" 2> /dev/null)"
 }
 
 _write() {
@@ -393,6 +398,31 @@ check_cpus () {
   if [ "$_num_cpus" -lt "$_min_cpus" ]; then
     err "not enough cpu threads ($_num_cpus < $_min_cpus)"
   fi
+}
+
+print_env () {
+  say_var STASH
+  say_var STORE
+  say_var DIST
+  say_var PACKY_URL
+  say_var VC_URL
+  say_var INSTALL_PREFIX
+  say_var CC
+  say_var AR
+  say_var HG
+  say_var GIT
+  say_var LISP
+  say_var RUST
+  say_var LD
+  say_var SHELL
+  say_var DEV
+  say_var DEV_HOME
+  say_var ID
+  say_var WORKER
+  say_var WORKER_ID
+  say_var WORKER_HOME
+  say_var CARGO_HOME
+  say_var RUSTUP_HOME
 }
 
 main "$@" || exit 1
