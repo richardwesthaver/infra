@@ -1,5 +1,6 @@
 #!/bin/sh
 cargo install cargo-add --root /usr/local/
+cargo install cargo-edit --root /usr/local/
 cargo install cbindgen --root /usr/local/
 cargo install cargo-asm --root /usr/local/
 cargo install bottom --root /usr/local/
