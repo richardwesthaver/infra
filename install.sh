@@ -14,29 +14,20 @@ main() {
       ;;
   esac
 
-  local _url="https://packy.compiler.company/dist/${_arch}/cc-install${_ext}"
+  local _url="https://packy.compiler.company/dist/${_arch}"
   local _stash
   if ! _stash=".stash"; then
     # Because the previous command ran in a subshell, we must manually
     # propagate exit status.
     exit 1
   fi
-  local _file="${_stash}/cc-install${_ext}"
   ensure mkdir -p "$_stash"
-  printf '%s\n' 'info: starting cc-install...' 1>&2
-  ensure downloader "$_url" "$_file" "$_arch"
-  ensure chmod u+x "$_file"
-  if [ ! -x "$_file" ]; then
-    printf '%s\n' "Cannot execute $_file (likely because of mounting /tmp as noexec)." 1>&2
-    printf '%s\n' "Please copy the file to a location where you can execute binaries and run ./cc-install${_ext}." 1>&2
-    exit 1
-  fi
-  "$_file" "$@"
-  local _retval=$?
-  rm "$_file"
-  local _core_url="https://packy.compiler.company/dist/${_arch}/lisp/infra.core"
-  ensure downloader "$_core_url" "${_stash}/infra.core" "$_arch"
-  return "$_retval"
+  local _cc_url="${_url}/cc-install"
+  local _sbcl_url="${_url}/pack/sbcl.tar.zst"
+  local _rocksdb_url="${_url}/pack/rocksdb.tar.zst"
+  ensure downloader "$_sbcl_url" "${_stash}/sbcl.tar.zst" "$_arch"
+  ensure downloader "$_rocksdb_url" "${_stash}/rocksdb.tar.zst" "$_arch"
+  ensure downloader "$_cc_url" "${_stash}/cc-install" "$_arch"
 }
 
 say() {
