@@ -90,7 +90,7 @@ nushell-install:$(NUSHELL_TARGET) nushell-build
 	cd $< && ./scripts/install-all.sh
 ### SBCL
 SBCL_TARGET:=build/src/sbcl
-SBCL_VERSION:=2.4.4+
+SBCL_VERSION:=2.4.4a
 $(SBCL_TARGET):scripts/get-sbcl.sh $(B)
 	$<
 	cd $(SBCL_TARGET) && \

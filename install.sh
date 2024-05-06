@@ -15,16 +15,15 @@ main() {
   esac
 
   local _url="https://packy.compiler.company/dist/${_arch}/cc-install${_ext}"
-  local _dir
-  if ! _dir="$(ensure mktemp -d)"; then
+  local _stash
+  if ! _stash=".stash"; then
     # Because the previous command ran in a subshell, we must manually
     # propagate exit status.
     exit 1
   fi
-  local _file="${_dir}/cc-install${_ext}"
-
+  local _file="${_stash}/cc-install${_ext}"
+  ensure mkdir -p "$_stash"
   printf '%s\n' 'info: starting cc-install...' 1>&2
-  ensure mkdir -p "$_dir"
   ensure downloader "$_url" "$_file" "$_arch"
   ensure chmod u+x "$_file"
   if [ ! -x "$_file" ]; then
@@ -35,12 +34,13 @@ main() {
   "$_file" "$@"
   local _retval=$?
   rm "$_file"
-  rmdir "$_dir"
+  local _core_url="https://packy.compiler.company/dist/${_arch}/lisp/infra.core"
+  ensure downloader "$_core_url" "${_stash}/infra.core" "$_arch"
   return "$_retval"
 }
 
 say() {
-  printf 'compiler.company: %s\n' "$1"
+  printf 'install.sh: %s\n' "$1"
 }
 
 err() {
