@@ -1,3 +1,0 @@
-;;; ~/.sbclrc --- sbcl user init file -*- mode: common-lisp; -*-
-
-#+aclrepl (require :sb-aclrepl)
