@@ -3,18 +3,24 @@
 :author "Richard Westhaver <ellis@rwest.io>"
 :version "0.1.0"
 :description "The Compiler Company Infrastructure"
+:tags (:infra)
 :license "MPL"
 :vc (:hg "https://vc.compiler.company/comp/infra")
 :docs ((:org "readme"))
-:tags (:infra)
 :scripts ((:lisp "scripts/get-sbcl.sh"))
 :snippets 
 ((init #$curl --proto '=https' --tlsv1.2 -sSf https://packy.compiler.company/do/init.sh | sh$#)
  (autogen "scripts/autogen.lisp"))
 :rules 
 ((default (emacs rocksdb sbcl rust))
- (emacs () #$make emacs$#)
- (rocksdb () #$make rocksdb$#)
- (sbcl () #$make sbcl$#)
+ (emacs () #$make emacs-build$#)
+ (emacs () #$make emacs-build-mini$#)
+ (rocksdb () #$make rocksdb-build-shared$#)
+ (rocksdb-static () #$make rocksdb-build-static$#)
+ (sbcl () #$make sbcl-build-shared$#)
+ (quicklisp () #$make quicklisp-install$#)
+ (stumpwm () #$make stumpwm-build$#)
+ (tree-sitter () #$make tree-sitter-build$#)
+ (linux () #$make linux$#)
  (clean () #$make clean$#)
  (rust () #$make rust$#))

@@ -39,14 +39,13 @@ $(DESTINATION):$(D);cd $< && cp -rf ./* $@
 ### Linux
 LINUX_TARGET:=linux-$(LINUX_VERSION)
 linux:$(LINUX_TARGET) linux-config;
-	mv build/$< dist/$<
 $(LINUX_TARGET):scripts/get-linux.sh;
 	mkdir -pv build/$@
 	gpg --export autosigner@ torvalds@ gregkh@ > build/$@/keyring.gpg
 	$< $(LINUX_VERSION) build build/$@/keyring.gpg
 	cd build && unxz $@.tar.xz && tar -xvf $@.tar $(LINUX_TARGET)
 linux-config:$(LINUX_TARGET);
-	cd build/$< && make mrproper -j && zcat /proc/config.gz > .config && yes N | make localmodconfig
+        cd build/$< && make mrproper -j && zcat /proc/config.gz > .config && yes N | make localmodconfig
 clean-linux::;rm -rf build/$(LINUX_TARGET)
 
 ### Emacs
@@ -119,8 +118,8 @@ clean-sbcl:$(SBCL_TARGET);cd $(SBCL_TARGET) && ./clean.sh
 
 build/quicklisp.lisp:$(B);cd $< && curl -O https://beta.quicklisp.org/quicklisp.lisp
 quicklisp-install:scripts/quicklisp-install.sh build/quicklisp.lisp;$<
-STUMPWM_TARGET:=build/src/stumpwm
 
+STUMPWM_TARGET:=build/src/stumpwm
 $(STUMPWM_TARGET):scripts/get-stumpwm.sh $(B);$<
 stumpwm:$(STUMPWM_TARGET);
 stumpwm-build:stumpwm;
