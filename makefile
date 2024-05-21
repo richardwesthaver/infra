@@ -173,10 +173,6 @@ dist/bundle:scripts/bundle-code.sh $(CODE_TARGET)
 	mkdir -pv $@
 	$<
 
-dist/cdn:cdn $(D)
-	mkdir -pv $@
-	cp -r $</* $@
-
 dist/sbcl:$(D);
 	scripts/dist-sbcl-binary.sh $(SBCL_TARGET) $(D)
 	cd $(SBCL_TARGET) && sh ./clean.sh
