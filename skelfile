@@ -7,10 +7,7 @@
 :license "MPL"
 :vc (:hg "https://vc.compiler.company/comp/infra")
 :docs ((:org "readme"))
-:scripts ((:lisp "scripts/get-sbcl.sh"))
-:snippets 
-((init #$curl --proto '=https' --tlsv1.2 -sSf https://packy.compiler.company/do/init.sh | sh$#)
- (autogen "scripts/autogen.lisp"))
+:scripts "scripts"
 :rules 
 ((default (emacs rocksdb sbcl rust))
  (emacs () #$make emacs-build$#)
