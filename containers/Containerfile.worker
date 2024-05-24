@@ -12,13 +12,14 @@ WORKDIR /usr/local/src
 RUN hg clone https://vc.compiler.company/comp/infra
 RUN hg clone https://vc.compiler.company/comp/core
 WORKDIR infra
+# RUN hg clone https://vc.compiler.company/comp/etc
 ENV CARGO_HOME="/usr/local/share/cargo"
 ENV RUSTUP_HOME="/usr/local/share/rustup"
 RUN make rustup-install tree-sitter-langs-install
 ENV PATH="$PATH:/usr/local/share/cargo/bin"
 RUN rustup update 
 #RUN rustup default nightly # disabled due to issue with zellij build
-ADD etc/sbclrc /etc/sbclrc
+# ADD etc/sbclrc /etc/sbclrc
 RUN cd .. && rm -rf infra core
 RUN adduser -D -u ${ID} -k /etc/skel ${WORKER}
 USER ${WORKER}
