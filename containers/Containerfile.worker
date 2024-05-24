@@ -1,7 +1,7 @@
 FROM localhost/alpine:latest
 # VOLUME /opt/store
 # VOLUME /opt/stash
-ADD etc/skel/* /etc/skel/
+# ADD etc/skel/* /etc/skel/
 ARG ID=908
 ARG WORKER=worker
 ARG WORKER_HOME=/home/${WORKER}
@@ -14,7 +14,7 @@ RUN hg clone https://vc.compiler.company/comp/core
 WORKDIR infra
 ENV CARGO_HOME="/usr/local/share/cargo"
 ENV RUSTUP_HOME="/usr/local/share/rustup"
-RUN make build rustup-install tree-sitter-langs-install
+RUN make rustup-install tree-sitter-langs-install
 ENV PATH="$PATH:/usr/local/share/cargo/bin"
 RUN rustup update 
 #RUN rustup default nightly # disabled due to issue with zellij build

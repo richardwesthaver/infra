@@ -17,21 +17,22 @@ LINUX_VERSION:=$(shell uname -r | cut -d- -f1)
 B:=build
 D:=dist
 SRC:=code
+CONTAINERS:=containers
 HG_COMMIT:=$(shell hg id -i)
 DESTINATION:=/mnt/y/data/packy
 # requires emacs-build-minimal
 # artifacts can deploy to dist/TARGET - need target triple first
 # init:sbcl rust emacs rocksdb code
 # dist/linux dist/rust dist/bundle
-archlinux:Containerfile.archlinux;podman build -f $< -t archlinux
-box:Containerfile.box archlinux;podman build -f $< -t box
-alpine:Containerfile.alpine;podman build -f $< -t alpine
-ubuntu:Containerfile.ubuntu;podman build -f $< -t ubuntu
-worker:Containerfile.worker alpine;podman build -f $< -t worker
-operator:Containerfile.operator box;podman build -f $< -t operator
+archlinux:$(CONTAINERS)/Containerfile.archlinux;podman build -f $< -t archlinux
+box:$(CONTAINERS)/Containerfile.box archlinux;podman build -f $< -t box
+alpine:$(CONTAINERS)/Containerfile.alpine;podman build -f $< -t alpine
+ubuntu:$(CONTAINERS)/Containerfile.ubuntu;podman build -f $< -t ubuntu
+worker:$(CONTAINERS)/Containerfile.worker alpine;podman build -f $< -t worker
+operator:$(CONTAINERS)/Containerfile.operator box;podman build -f $< -t operator
 pods:archlinux alpine ubuntu box worker operator
 quick:code
-all:dist/cdn dist/code dist/lisp dist/rust dist/sbcl dist/rocksdb dist/emacs dist/pods
+all:dist/code dist/lisp dist/rust dist/sbcl dist/rocksdb dist/emacs dist/pods
 clean:;rm -rf $(B) $(D)
 $(B):;mkdir -pv $@/src
 $(D):;mkdir -pv $@/bin $@/lib $@/include $@/bundle $@/share
@@ -45,7 +46,7 @@ $(LINUX_TARGET):scripts/get-linux.sh;
 	$< $(LINUX_VERSION) build build/$@/keyring.gpg
 	cd build && unxz $@.tar.xz && tar -xvf $@.tar $(LINUX_TARGET)
 linux-config:$(LINUX_TARGET);
-        cd build/$< && make mrproper -j && zcat /proc/config.gz > .config && yes N | make localmodconfig
+	cd build/$< && make mrproper -j && zcat /proc/config.gz > .config && yes N | make localmodconfig
 clean-linux::;rm -rf build/$(LINUX_TARGET)
 
 ### Emacs
