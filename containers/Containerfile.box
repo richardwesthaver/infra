@@ -13,11 +13,11 @@ RUN hg clone https://vc.compiler.company/comp/infra
 RUN hg clone https://vc.compiler.company/comp/core
 WORKDIR infra
 RUN mkdir .stash
-RUN scripts/get-sk.sh
+RUN sh scripts/get-sk.sh
 ENV CARGO_HOME="/usr/local/share/cargo"
 ENV RUSTUP_HOME="/usr/local/share/rustup"
 # stage1
-RUN .stash/sk make rustup-install
+RUN .stash/sk make rustup
 ENV PATH="$PATH:/usr/local/share/cargo/bin"
 RUN rustup update
 # dev rustc components
@@ -28,14 +28,15 @@ RUN rustup component add --toolchain nightly rust-src rust-analyzer rustc-dev ll
 # RUN sh scripts/install-sbcl-pack.sh
 # RUN sh scripts/install-rocksdb-pack.sh
 # RUN sh scripts/install-cargo-tools.sh
+RUN .stash/sk make sbcl
+RUN .stash/sk make quicklisp
 RUN .stash/sk make sbcl-install
-RUN .stash/sk make quicklisp-install
-RUN make tree-sitter-install
-RUN make tree-sitter-langs-install
-RUN make emacs-build-mini
-RUN make emacs-install
+RUN .stash/sk make tree-sitter
+RUN .stash/sk make tree-sitter-langs
+RUN .stash/sk make emacs-mini
+RUN .stash/sk make emacs-install
 RUN .stash/sk make rocksdb
-RUN make rocksdb-install
+RUN .stash/sk make rocksdb-install
 #ADD etc/sbclrc /etc/sbclrc
 #COPY etc/skel/ /etc/skel/
 #ADD etc/shells /etc/

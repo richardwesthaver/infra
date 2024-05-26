@@ -21,7 +21,7 @@
  (emacs (src) #$./scripts/get-emacs.sh$#
         #$cd .stash/src/emacs && ./autogen.sh$#
         #$./scripts/build-emacs.sh$#)
- (emacs-mini (src)
+ (emacs-mini (src) #$./scripts/get-emacs.sh$#
              #$cd .stash/src/emacs && ./autogen.sh$#
              #$./scripts/build-emacs-mini.sh$#)
  (rocksdb (src) #$scripts/get-rocksdb.sh$#
@@ -39,6 +39,7 @@
  (stumpwm (src) #$./scripts/get-stumpwm.sh$#
           #$cd .stash/src/stumpwm && ./autogen.sh && ./configure && make$#)
  (tree-sitter (src) #$./scripts/get-tree-sitter.sh$#)
+ (tree-sitter-langs (src) #$./scripts/tree-sitter-install-langs.sh$#)
  (linux () #$mkdir -pv .stash/src/linux$#
         #$gpg --export autosigner@ torvalds@ gregkh@ > .stash/src/linux/keyring.gpg$#
         #$./scripts/get-linux.sh $(uname -r | cut -d- -f1) .stash .stash/src/linux/keyring.gpg$#
@@ -48,4 +49,9 @@
         zcat /proc/config.gz > .config && yes N | make localmodconfig$#)
  (clean () #$rm -rvf .stash$#)
  (rust () #$scripts/get-rust.sh$#)
- (rustup () #$curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y$#))
+ (rustup () #$curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y$#)
+ (sbcl-install () #$cd .stash/src/sbcl && INSTALL_ROOT=/usr/local sh install.sh$#)
+ (emacs-install () #$cd .stash/src/emacs && make install)
+ (rocksdb-install () #$cd .stash/src/rocksdb && make install-shared &&
+                  cp -r include/* /usr/local/include/$#)
+ (stumpwm-install () #$cd .stash/src/stumpwm && make install))

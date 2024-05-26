@@ -41,16 +41,16 @@ $(DESTINATION):$(D);cd $< && cp -rf ./* $@
 LINUX_TARGET:=linux-$(LINUX_VERSION)
 linux:$(LINUX_TARGET) linux-config;
 $(LINUX_TARGET):scripts/get-linux.sh;
-	mkdir -pv build/$@
-	gpg --export autosigner@ torvalds@ gregkh@ > build/$@/keyring.gpg
-	$< $(LINUX_VERSION) build build/$@/keyring.gpg
+	mkdir -pv .stash/$@
+	gpg --export autosigner@ torvalds@ gregkh@ > .stash/$@/keyring.gpg
+	$< $(LINUX_VERSION) build .stash/$@/keyring.gpg
 	cd build && unxz $@.tar.xz && tar -xvf $@.tar $(LINUX_TARGET)
 linux-config:$(LINUX_TARGET);
-	cd build/$< && make mrproper -j && zcat /proc/config.gz > .config && yes N | make localmodconfig
-clean-linux::;rm -rf build/$(LINUX_TARGET)
+	cd .stash/$< && make mrproper -j && zcat /proc/config.gz > .config && yes N | make localmodconfig
+clean-linux::;rm -rf .stash/$(LINUX_TARGET)
 
 ### Emacs
-EMACS_TARGET:=build/src/emacs
+EMACS_TARGET:=.stash/src/emacs
 EMACS_DIST:=$(D)/src/emacs
 $(EMACS_TARGET):scripts/get-emacs.sh $(B);
 	$<
@@ -65,7 +65,7 @@ emacs-install:$(EMACS_TARGET);
 	cd $< && make install
 
 ### RocksDB
-ROCKSDB_TARGET:=build/src/rocksdb
+ROCKSDB_TARGET:=.stash/src/rocksdb
 $(ROCKSDB_TARGET):scripts/get-rocksdb.sh $(B)
 	$<
 rocksdb:$(ROCKSDB_TARGET)
@@ -80,7 +80,7 @@ rocksdb-install:$(ROCKSDB_TARGET)
 	cd $< && make install-shared && cp -r include/* /usr/local/include/
 
 ### Nushell
-NUSHELL_TARGET:=build/src/nushell
+NUSHELL_TARGET:=.stash/src/nushell
 $(NUSHELL_TARGET):scripts/get-nushell.sh;$<
 nushell:$(NUSHELL_TARGET)
 # build without clipboard to avoid errors at runtime in container env
@@ -89,7 +89,7 @@ nushell-build:$(NUSHELL_TARGET)
 nushell-install:$(NUSHELL_TARGET) nushell-build
 	cd $< && ./scripts/install-all.sh
 ### SBCL
-SBCL_TARGET:=build/src/sbcl
+SBCL_TARGET:=.stash/src/sbcl
 SBCL_VERSION:=2.4.5
 $(SBCL_TARGET):scripts/get-sbcl.sh $(B)
 	$<
@@ -117,10 +117,10 @@ sbcl-docs:sbcl-build;## REQUIRES TEXLIVE
 sbcl-install:sbcl-build;cd $(SBCL_TARGET) && INSTALL_ROOT=/usr/local sh install.sh
 clean-sbcl:$(SBCL_TARGET);cd $(SBCL_TARGET) && ./clean.sh
 
-build/quicklisp.lisp:$(B);cd $< && curl -O https://beta.quicklisp.org/quicklisp.lisp
-quicklisp-install:scripts/quicklisp-install.sh build/quicklisp.lisp;$<
+.stash/quicklisp.lisp:$(B);cd $< && curl -O https://beta.quicklisp.org/quicklisp.lisp
+quicklisp-install:scripts/quicklisp-install.sh .stash/quicklisp.lisp;$<
 
-STUMPWM_TARGET:=build/src/stumpwm
+STUMPWM_TARGET:=.stash/src/stumpwm
 $(STUMPWM_TARGET):scripts/get-stumpwm.sh $(B);$<
 stumpwm:$(STUMPWM_TARGET);
 stumpwm-build:stumpwm;
@@ -128,7 +128,7 @@ stumpwm-build:stumpwm;
 stumpwm-install:stumpwm-build;
 	cd $(STUMPWM_TARGET) && make install
 ### Rust
-RUST_TARGET:=build/src/rust
+RUST_TARGET:=.stash/src/rust
 $(RUST_TARGET):scripts/get-rust.sh $(B);$<
 rust:$(RUST_TARGET)
 rust-install-x:rust;
@@ -145,7 +145,7 @@ rustup-install:;curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -
 cargo-tools-install:scripts/install-cargo-tools.sh
 	$<
 ### Tree-sitter
-TREE_SITTER_TARGET:=build/src/tree-sitter
+TREE_SITTER_TARGET:=.stash/src/tree-sitter
 $(TREE_SITTER_TARGET):scripts/get-tree-sitter.sh
 	$<
 tree-sitter:$(TREE_SITTER_TARGET)
@@ -153,17 +153,17 @@ tree-sitter-build:$(TREE_SITTER_TARGET)
 tree-sitter-install:$(TREE_SITTER_TARGET) tree-sitter-build
 
 ### Tree-sitter Langs
-TREE_SITTER_LANGS_TARGET:=build/src/tree-sitter-langs
+TREE_SITTER_LANGS_TARGET:=.stash/src/tree-sitter-langs
 tree-sitter-langs-install:scripts/tree-sitter-install-langs.sh
 	$<
 ### Etc
-ETC_TARGET:=build/etc
+ETC_TARGET:=.stash/etc
 $(ETC_TARGET):scripts/get-etc.sh
 	$<
 etc:$(ETC_TARGET)
 
 ### Code
-CODE_TARGET:=build/src/$(SRC)
+CODE_TARGET:=.stash/src/$(SRC)
 $(CODE_TARGET):scripts/get-code.sh $(B)
 	$< $(SRC)
 code:$(CODE_TARGET)
@@ -182,7 +182,7 @@ dist/sbcl:$(D);
 dist/linux:linux $(D);
 
 dist/rocksdb:$(D) rocksdb;
-	cd build/src && \
+	cd .stash/src && \
 	tar -I 'zstd' -cf ../../$</rocksdb.tar.zst rocksdb/include/* rocksdb/librocksdb.*
 
 CORE_SRC?=/usr/local/src/core
