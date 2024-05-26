@@ -8,16 +8,34 @@
 :vc (:hg "https://vc.compiler.company/comp/infra")
 :docs ((:org "readme"))
 :scripts "scripts"
-:rules 
-((default (emacs rocksdb sbcl rust))
- (emacs () #$make emacs-build$#)
- (emacs () #$make emacs-build-mini$#)
- (rocksdb () #$make rocksdb-build-shared$#)
- (rocksdb-static () #$make rocksdb-build-static$#)
- (sbcl () #$make sbcl-build-shared$#)
- (quicklisp () #$make quicklisp-install$#)
- (stumpwm () #$make stumpwm-build$#)
- (tree-sitter () #$make tree-sitter-build$#)
+:rules
+((check (#$./check.sh$#))
+ (archlinux () #$podman build -f containers/Containerfile.archlinux -t localhost/archlinux$#)
+ (alpine () #$podman build -f containers/Containerfile.alpine -t localhost/alpine$#)
+ (ubuntu () #$podman build -f containers/Containerfile.alpine -t localhost/alpine$#)
+ (box (archlinux) #$podman build -f containers/Containerfile.box -t localhost/box$#)
+ (worker (alpine) #$podman build -f containers/Containerfile.worker -t localhost/worker$#)
+ (operator (box) #$podman build -f containers/Containerfile.operator -t localhost/operator$#)
+ (containers (archlinux alpine ubuntu box worker operator))
+ (src () #$mkdir -pv .stash/src$#)
+ (emacs (src) #$./scripts/get-emacs.sh$#
+        #$cd .stash/src/emacs && ./autogen.sh$#
+        #$scripts/build-emacs.sh$#)
+ (emacs-mini (src)
+             #$cd .stash/src/emacs && ./autogen.sh$#
+             #$scripts/build-emacs-mini.sh$#)
+ (rocksdb (src) #$make rocksdb-build-shared$#)
+ (rocksdb-static (src) #$make rocksdb-build-static$#)
+ (sbcl (src) #$cd .stash/src/sbcl &&
+       ./make.sh --dynamic-space-size=8Gb --without-gencgc --with-mark-region-gc --fancy$#)
+ (sbcl-gencgc (src) #$cd .stash/src/sbcl &&
+       ./make.sh --dynamic-space-size=8Gb --fancy$#)
+ (quicklisp () #$cd .stash && curl -O https://beta.quicklisp.org/quicklisp.lisp$#
+            #$./scripts/quicklisp-install.sh$#)
+ (stumpwm (src) #$scripts/get-stumpwm.sh$#
+          #$cd .stash/src/stumpwm && ./autogen.sh && ./configure && make$#)
+ (tree-sitter (src) #$scripts/get-tree-sitter.sh$#)
  (linux () #$make linux$#)
- (clean () #$make clean$#)
- (rust () #$make rust$#))
+ (clean () #$rm -vf .stash$#)
+ (rust () #$make rust$#)
+ (rustup () #$curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y$#))

@@ -77,7 +77,7 @@ rocksdb-build-static:$(ROCKSDB_TARGET)
 	cd $< && make static_lib DISABLE_JEMALLOC=1
 
 rocksdb-install:$(ROCKSDB_TARGET)
-	cd $< && make install LIB_MODE=shared && cp -r include/* /usr/local/include/
+	cd $< && make install-shared && cp -r include/* /usr/local/include/
 
 ### Nushell
 NUSHELL_TARGET:=build/src/nushell
@@ -90,7 +90,7 @@ nushell-install:$(NUSHELL_TARGET) nushell-build
 	cd $< && ./scripts/install-all.sh
 ### SBCL
 SBCL_TARGET:=build/src/sbcl
-SBCL_VERSION:=2.4.4a
+SBCL_VERSION:=2.4.5
 $(SBCL_TARGET):scripts/get-sbcl.sh $(B)
 	$<
 	cd $(SBCL_TARGET) && \
@@ -145,7 +145,7 @@ rustup-install:;curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -
 cargo-tools-install:scripts/install-cargo-tools.sh
 	$<
 ### Tree-sitter
-TREE_SITTER_TARGET:=build/src/tree-sitter
+TREE_SIToTER_TARGET:=build/src/tree-sitter
 $(TREE_SITTER_TARGET):scripts/get-tree-sitter.sh
 	$<
 tree-sitter:$(TREE_SITTER_TARGET)

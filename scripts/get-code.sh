@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Get The Compiler Company source code
 SRC="${1:-code}"
-OUT=build/src/$SRC
+OUT=.stash/src/$SRC
 mkdir -pv $OUT
 cd $OUT
 wget -nc https://packy.compiler.company/bundle/$SRC.tar.zst 

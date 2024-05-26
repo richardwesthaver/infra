@@ -7,8 +7,8 @@ DOMAIN="${2}"
 REMOTE="https://$DOMAIN/$NAME"
 BRANCH="${2:-master}"
 REPO="ssh://git@vc.compiler.company/packy/${1}"
-OUT="${3:-build/src/${1}}"
-mkdir -pv build/src
+OUT="${3:-.stash/src/${1}}"
+mkdir -pv .stash/src
 git clone $REPO $OUT
 pushd $OUT
 git pull $REMOTE $BRANCH

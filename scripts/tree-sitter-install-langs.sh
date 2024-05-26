@@ -9,7 +9,7 @@ declare -ar default_langs=(
 ) 
 # see https://tree-sitter.github.io/tree-sitter/#parsers for a
 # complete list of parsers available
-TARGETDIR="${1:-build/src/tree-sitter-langs}"
+TARGETDIR="${1:-.stash/src/tree-sitter-langs}"
 PREFIX=${PREFIX:-/usr/local}
 CC=${CC:-clang}
 CXX=${CXX:-clang++}

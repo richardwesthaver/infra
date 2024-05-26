@@ -12,5 +12,5 @@ else
 fi
 # installs to /usr/local/share/lisp
 sbcl --non-interactive \
-     --load build/quicklisp.lisp \
+     --load .stash/quicklisp.lisp \
      --eval "(quicklisp-quickstart:install :path \"/usr/local/share/quicklisp\" :dist-version $QUICKLISP_DIST_VERSION :client-version $QUICKLISP_CLIENT_VERSION)"

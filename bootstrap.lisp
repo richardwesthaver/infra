@@ -34,7 +34,7 @@
                   (dolist (k keys table)
                     (setf (gethash k table) (sb-posix:getenv k))))))
 
-;; (info! "starting bootstrap.lisp")
+(println "starting bootstrap.lisp")
 ;; (println sb-sys::*machine-version*)
 ;; (trace! "env:" (hash-table-alist *env*))
 

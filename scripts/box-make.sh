@@ -1,11 +1,7 @@
 #!/bin/sh
-
-# SHELL=nu
 set -e
-img="${1:-infra/box}"
+img="${1:-localhost/box}"
 rule="${2:-sbcl-build}"
-# in nushell
-cmd="cd infra; hg pull -u; make build clean dist $rule"
+cmd="cd infra; skel pull ; skel make clean $rule"
 podman run --name "$rule" --replace -it "$img" -c "$cmd"
-podman cp --overwrite $rule:infra/dist .
-podman cp --overwrite $rule:infra/build .
+podman cp --overwrite $rule:infra/.stash .

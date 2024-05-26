@@ -1,7 +1,7 @@
 #!/bin/sh
 # bundle The Compiler Company source code
-OUT="${2:-$HOME/dev/comp/infra/dist}"
-SRC_PATH="$OUT/../build/src/code"
+OUT="${2:-/tmp/dist}"
+SRC_PATH="$OUT/../.stash/src/code"
 BUNDLE_NAME="${1:-code}"
 echo "Bundling $BUNDLE_NAME in $OUT..."
 SOURCES="${3:-org core infra demo}"

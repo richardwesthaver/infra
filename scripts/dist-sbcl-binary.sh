@@ -1,8 +1,8 @@
 #!/bin/sh
 set -e
 # binary dist
-cd build/src/
-tar -I 'zstd' -cf ../../dist/sbcl-binary.tar.zst sbcl/output/sbcl.core sbcl/src/runtime/sbcl sbcl/output/prefix.def \
+cd .stash/src/
+tar -I 'zstd' -cf /tmp/dist/sbcl-binary.tar.zst sbcl/output/sbcl.core sbcl/src/runtime/sbcl sbcl/output/prefix.def \
     sbcl/src/runtime/sbcl.mk \
     `grep '^LIBSBCL=' sbcl/src/runtime/sbcl.mk | cut -d= -f2- | while read lib; do echo sbcl/src/runtime/$lib; done` \
     sbcl/BUGS sbcl/COPYING sbcl/CREDITS sbcl/INSTALL sbcl/NEWS sbcl/README \

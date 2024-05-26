@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 main() {
-  downloader --check
+  download --check
 
   get_architecture || return 1
   local _arch="$RETVAL"
@@ -25,9 +25,9 @@ main() {
   local _cc_url="${_url}/cc-install"
   local _sbcl_url="${_url}/pack/sbcl.tar.zst"
   local _rocksdb_url="${_url}/pack/rocksdb.tar.zst"
-  ensure downloader "$_sbcl_url" "${_stash}/sbcl.tar.zst" "$_arch"
-  ensure downloader "$_rocksdb_url" "${_stash}/rocksdb.tar.zst" "$_arch"
-  ensure downloader "$_cc_url" "${_stash}/cc-install" "$_arch"
+  ensure download "$_sbcl_url" "${_stash}/sbcl.tar.zst" "$_arch"
+  ensure download "$_rocksdb_url" "${_stash}/rocksdb.tar.zst" "$_arch"
+  ensure download "$_cc_url" "${_stash}/cc-install" "$_arch"
 }
 
 say() {
@@ -486,7 +486,7 @@ get_architecture() {
 
 # This wraps curl or wget. Try curl first, if not installed,
 # use wget instead.
-downloader() {
+download() {
   local _dld
   local _ciphersuites
   local _err

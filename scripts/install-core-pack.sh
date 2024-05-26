@@ -1,6 +1,6 @@
 #!/bin/sh
 set -e
-cd build/src
+cd .stash/src
 curl -O https://packy.compiler.company/dist/x86_64-unknown-linux-gnu/core.tar.zst
 unzstd core.tar.zst
 tar -xvf core.tar

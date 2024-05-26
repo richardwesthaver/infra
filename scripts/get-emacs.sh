@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 # get Emacs source code
-git clone https://vc.compiler.company/packy/emacs.git build/src/emacs
+git clone https://vc.compiler.company/packy/emacs.git .stash/src/emacs

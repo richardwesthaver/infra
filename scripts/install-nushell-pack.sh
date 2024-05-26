@@ -1,6 +1,6 @@
 #!/bin/sh
 set -e
-cd build/src 
+cd .stash/src 
 mkdir nushell && cd nushell
 curl -O https://packy.compiler.company/dist/x86_64-unknown-linux-gnu/nushell.tar.zst
 unzstd nushell.tar.zst
