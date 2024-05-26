@@ -51,7 +51,7 @@
  (rust () #$scripts/get-rust.sh$#)
  (rustup () #$curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y$#)
  (sbcl-install () #$cd .stash/src/sbcl && INSTALL_ROOT=/usr/local sh install.sh$#)
- (emacs-install () #$cd .stash/src/emacs && make install)
+ (emacs-install () #$cd .stash/src/emacs && make install$#)
  (rocksdb-install () #$cd .stash/src/rocksdb && make install-shared &&
                   cp -r include/* /usr/local/include/$#)
- (stumpwm-install () #$cd .stash/src/stumpwm && make install))
+ (stumpwm-install () #$cd .stash/src/stumpwm && make install$#))
