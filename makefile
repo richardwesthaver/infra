@@ -145,7 +145,7 @@ rustup-install:;curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -
 cargo-tools-install:scripts/install-cargo-tools.sh
 	$<
 ### Tree-sitter
-TREE_SIToTER_TARGET:=build/src/tree-sitter
+TREE_SITTER_TARGET:=build/src/tree-sitter
 $(TREE_SITTER_TARGET):scripts/get-tree-sitter.sh
 	$<
 tree-sitter:$(TREE_SITTER_TARGET)

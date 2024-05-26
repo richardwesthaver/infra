@@ -20,22 +20,32 @@
  (src () #$mkdir -pv .stash/src$#)
  (emacs (src) #$./scripts/get-emacs.sh$#
         #$cd .stash/src/emacs && ./autogen.sh$#
-        #$scripts/build-emacs.sh$#)
+        #$./scripts/build-emacs.sh$#)
  (emacs-mini (src)
              #$cd .stash/src/emacs && ./autogen.sh$#
-             #$scripts/build-emacs-mini.sh$#)
- (rocksdb (src) #$make rocksdb-build-shared$#)
- (rocksdb-static (src) #$make rocksdb-build-static$#)
- (sbcl (src) #$cd .stash/src/sbcl &&
+             #$./scripts/build-emacs-mini.sh$#)
+ (rocksdb (src) #$scripts/get-rocksdb.sh$#
+          #$cd .stash/src/rocksdb && make shared_lib DISABLE_JEMALLOC=1$#)
+ (rocksdb-static (src) #$scripts/get-rocksdb.sh$#
+                 #$cd .stash/src/rocksdb && make static_lib DISABLE_JEMALLOC=1$#)
+ (sbcl (src) #$scripts/get-sbcl.sh$#
+       #$cd .stash/src/sbcl &&
+       echo '"2.4.5"' > version.lisp-expr &&
        ./make.sh --dynamic-space-size=8Gb --without-gencgc --with-mark-region-gc --fancy$#)
  (sbcl-gencgc (src) #$cd .stash/src/sbcl &&
        ./make.sh --dynamic-space-size=8Gb --fancy$#)
  (quicklisp () #$cd .stash && curl -O https://beta.quicklisp.org/quicklisp.lisp$#
             #$./scripts/quicklisp-install.sh$#)
- (stumpwm (src) #$scripts/get-stumpwm.sh$#
+ (stumpwm (src) #$./scripts/get-stumpwm.sh$#
           #$cd .stash/src/stumpwm && ./autogen.sh && ./configure && make$#)
- (tree-sitter (src) #$scripts/get-tree-sitter.sh$#)
- (linux () #$make linux$#)
- (clean () #$rm -vf .stash$#)
- (rust () #$make rust$#)
+ (tree-sitter (src) #$./scripts/get-tree-sitter.sh$#)
+ (linux () #$mkdir -pv .stash/src/linux$#
+        #$gpg --export autosigner@ torvalds@ gregkh@ > .stash/src/linux/keyring.gpg$#
+        #$./scripts/get-linux.sh $(uname -r | cut -d- -f1) .stash .stash/src/linux/keyring.gpg$#
+        #$cd scripts && unxz .stash/src/linux.tar.xz &&
+        tar -xvf .stash/src/linux.tar $(uname -r | cut -d- -f1)$#
+        #$cd .stash/src/linux && make mrproper -j &&
+        zcat /proc/config.gz > .config && yes N | make localmodconfig$#)
+ (clean () #$rm -rvf .stash$#)
+ (rust () #$scripts/get-rust.sh$#)
  (rustup () #$curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y$#))
