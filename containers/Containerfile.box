@@ -15,9 +15,8 @@ WORKDIR infra
 ENV CARGO_HOME="/usr/local/share/cargo"
 ENV RUSTUP_HOME="/usr/local/share/rustup"
 # stage1
-RUN mkdir .stash
-RUN sh scripts/get-sk.sh
-RUN .stash/sk make rustup
+RUN sh scripts/get-sk.sh /usr/local/bin
+RUN sk make rustup
 ENV PATH="$PATH:/usr/local/share/cargo/bin"
 RUN rustup update
 # dev rustc components
@@ -28,15 +27,15 @@ RUN rustup component add --toolchain nightly rust-src rust-analyzer rustc-dev ll
 # RUN sh scripts/install-sbcl-pack.sh
 # RUN sh scripts/install-rocksdb-pack.sh
 # RUN sh scripts/install-cargo-tools.sh
-RUN .stash/sk make sbcl
-RUN .stash/sk make quicklisp
-RUN .stash/sk make sbcl-install
-RUN .stash/sk make tree-sitter
-RUN .stash/sk make tree-sitter-langs
-RUN .stash/sk make emacs-mini
-RUN .stash/sk make emacs-install
-RUN .stash/sk make rocksdb
-RUN .stash/sk make rocksdb-install
+RUN sk make sbcl
+RUN sk make quicklisp
+RUN sk make sbcl-install
+RUN sk make tree-sitter
+RUN sk make tree-sitter-langs
+RUN sk make emacs-mini
+RUN sk make emacs-install
+RUN sk make rocksdb
+RUN sk make rocksdb-install
 #ADD etc/sbclrc /etc/sbclrc
 #COPY etc/skel/ /etc/skel/
 #ADD etc/shells /etc/

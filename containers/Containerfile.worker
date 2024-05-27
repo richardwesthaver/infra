@@ -9,12 +9,14 @@ RUN apk add build-base zstd-dev curl make git linux-headers openssl-dev pkgconf 
 RUN mkdir /usr/share/lisp
 RUN mkdir /usr/local/share/lisp
 WORKDIR /usr/local/src
+RUN hg clone https://vc.compiler.company/comp/infra
 WORKDIR infra
-RUN mkdir .stash
+RUN mkdir -pv .stash
 RUN sh scripts/get-sk.sh
 ENV CARGO_HOME="/usr/local/share/cargo"
 ENV RUSTUP_HOME="/usr/local/share/rustup"
-RUN .stash/sk make rustup tree-sitter-langs
+RUN exec .stash/sk make rustup
+RUN exec .stash/sk make tree-sitter-langs
 ENV PATH="$PATH:/usr/local/share/cargo/bin"
 RUN rustup update 
 RUN rustup default nightly
