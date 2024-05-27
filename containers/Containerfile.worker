@@ -11,6 +11,7 @@ RUN mkdir /usr/share/lisp
 RUN mkdir /usr/local/share/lisp
 WORKDIR /usr/local/src
 RUN hg clone https://vc.compiler.company/comp/infra
+RUN hg clone https://vc.compiler.company/comp/core
 WORKDIR infra
 RUN scripts/get-sk.sh
 ENV CARGO_HOME="/usr/local/share/cargo"
@@ -18,6 +19,8 @@ ENV RUSTUP_HOME="/usr/local/share/rustup"
 ENV PATH="$PATH:/usr/local/share/cargo/bin:/usr/local/share/lisp/bin"
 # RUN sk make sbcl sbcl-install quicklisp rustup tree-sitter-langs rocksdb
 RUN make sbcl-install-gencgc
+RUN make quicklisp-install
+RUN make rocksdb-install
 RUN adduser -D -u ${ID} -k /etc/skel ${WORKER}
 USER ${WORKER}
 WORKDIR ${WORKER_HOME}
