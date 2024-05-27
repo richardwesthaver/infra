@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # bundle a tar.zst archive of Mercurial repositories.
 # must be absolute
-#WD=/mnt/y/data/packy
-WD="${2:-/tmp/dist}"
-OUT=$WD/bundle
-SRC_PATH=$HOME/dev/comp
-BUNDLE_NAME="${1:-code}"
+BUNDLE="${1:-comp}"
+WD=$(realpath .stash)
+OUT=$WD
+SRC_PATH=$HOME/src/$BUNDLE
+
 echo "Bundling $BUNDLE_NAME in $OUT..."
 
 rm -rf $OUT/*
@@ -29,7 +29,7 @@ for i in $(find . -name ".hg" | cut -c 3-); do
 done
 
 # archive all *.hg bundles, final compression with zst
-cd $WD/vc && tar -I 'zstd' -cf $OUT/$BUNDLE_NAME.tar.zst *.hg
-# tar -cf $OUT/$BUNDLE_NAME.tar.stream vc/stream/*.hg.stream
-# tar -cf $OUT/$BUNDLE_NAME.tar vc/*.hg
+cd $WD/vc && tar -I 'zstd' -cf $OUT/$BUNDLE.tar.zst *.hg
+# tar -cf $OUT/$BUNDLE.tar.stream vc/stream/*.hg.stream
+# tar -cf $OUT/$BUNDLE.tar vc/*.hg
 echo "Done."

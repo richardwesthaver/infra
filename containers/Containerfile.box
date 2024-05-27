@@ -12,11 +12,11 @@ WORKDIR /usr/local/src
 RUN hg clone https://vc.compiler.company/comp/infra
 RUN hg clone https://vc.compiler.company/comp/core
 WORKDIR infra
-RUN mkdir .stash
-RUN sh scripts/get-sk.sh
 ENV CARGO_HOME="/usr/local/share/cargo"
 ENV RUSTUP_HOME="/usr/local/share/rustup"
 # stage1
+RUN mkdir .stash
+RUN sh scripts/get-sk.sh
 RUN .stash/sk make rustup
 ENV PATH="$PATH:/usr/local/share/cargo/bin"
 RUN rustup update

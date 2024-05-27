@@ -10,13 +10,16 @@
 :scripts "scripts"
 :rules
 ((check (#$./check.sh$#))
- (archlinux () #$podman build -f containers/Containerfile.archlinux -t localhost/archlinux$#)
- (alpine () #$podman build -f containers/Containerfile.alpine -t localhost/alpine$#)
- (ubuntu () #$podman build -f containers/Containerfile.alpine -t localhost/alpine$#)
- (box (archlinux) #$podman build -f containers/Containerfile.box -t localhost/box$#)
- (worker (alpine) #$podman build -f containers/Containerfile.worker -t localhost/worker$#)
- (operator (box) #$podman build -f containers/Containerfile.operator -t localhost/operator$#)
+ (clean () #$rm -rvf .stash$#)
+ ;; containers
+ (archlinux () #$podman build -f containers/Containerfile.archlinux --no-cache -t localhost/archlinux$#)
+ (alpine () #$podman build -f containers/Containerfile.alpine --no-cache -t localhost/alpine$#)
+ (ubuntu () #$podman build -f containers/Containerfile.alpine --no-cache -t localhost/alpine$#)
+ (box (archlinux) #$podman build -f containers/Containerfile.box --no-cache -t localhost/box$#)
+ (worker (alpine) #$podman build -f containers/Containerfile.worker --no-cache -t localhost/worker$#)
+ (operator (box) #$podman build -f containers/Containerfile.operator --no-cache -t localhost/operator$#)
  (containers (archlinux alpine ubuntu box worker operator))
+ ;; programs
  (src () #$mkdir -pv .stash/src$#)
  (emacs (src) #$./scripts/get-emacs.sh$#
         #$cd .stash/src/emacs && ./autogen.sh$#
@@ -34,12 +37,12 @@
        ./make.sh --dynamic-space-size=8Gb --without-gencgc --with-mark-region-gc --fancy$#)
  (sbcl-gencgc (src) #$cd .stash/src/sbcl &&
        ./make.sh --dynamic-space-size=8Gb --fancy$#)
+ (sbcl-shared () #$cd .stash/src/sbcl && sh make-shared-library.sh$#)
  (quicklisp () #$cd .stash && curl -O https://beta.quicklisp.org/quicklisp.lisp$#
             #$./scripts/quicklisp-install.sh$#)
  (stumpwm (src) #$./scripts/get-stumpwm.sh$#
           #$cd .stash/src/stumpwm && ./autogen.sh && ./configure && make$#)
  (tree-sitter (src) #$./scripts/get-tree-sitter.sh$#)
- (tree-sitter-langs (src) #$./scripts/tree-sitter-install-langs.sh$#)
  (linux () #$mkdir -pv .stash/src/linux$#
         #$gpg --export autosigner@ torvalds@ gregkh@ > .stash/src/linux/keyring.gpg$#
         #$./scripts/get-linux.sh $(uname -r | cut -d- -f1) .stash .stash/src/linux/keyring.gpg$#
@@ -47,8 +50,10 @@
         tar -xvf .stash/src/linux.tar $(uname -r | cut -d- -f1)$#
         #$cd .stash/src/linux && make mrproper -j &&
         zcat /proc/config.gz > .config && yes N | make localmodconfig$#)
- (clean () #$rm -rvf .stash$#)
  (rust () #$scripts/get-rust.sh$#)
+ ;; install
+ (tree-sitter-langs (src) #$./scripts/tree-sitter-install-langs.sh$#)
+ (cargo-tools () #$scripts/install-cargo-tools.sh$#)
  (rustup () #$curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y$#)
  (sbcl-install () #$cd .stash/src/sbcl && INSTALL_ROOT=/usr/local sh install.sh$#)
  (emacs-install () #$cd .stash/src/emacs && make install$#)
