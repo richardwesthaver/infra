@@ -5,22 +5,19 @@ FROM localhost/alpine:latest
 ARG ID=908
 ARG WORKER=worker
 ARG WORKER_HOME=/home/${WORKER}
-RUN apk add build-base zstd-dev curl make git linux-headers openssl-dev pkgconf clang m4 tree-sitter
+# TODO: build sbcl for musl
+RUN apk add build-base zstd-dev curl make git linux-headers openssl-dev pkgconf clang m4 tree-sitter sbcl
 RUN mkdir /usr/share/lisp
 RUN mkdir /usr/local/share/lisp
 WORKDIR /usr/local/src
 RUN hg clone https://vc.compiler.company/comp/infra
 WORKDIR infra
-RUN mkdir -pv .stash
-RUN sh scripts/get-sk.sh
+RUN scripts/get-sk.sh
 ENV CARGO_HOME="/usr/local/share/cargo"
 ENV RUSTUP_HOME="/usr/local/share/rustup"
-RUN exec .stash/sk make rustup
-RUN exec .stash/sk make tree-sitter-langs
-ENV PATH="$PATH:/usr/local/share/cargo/bin"
-RUN rustup update 
-RUN rustup default nightly
-RUN cd .. && rm -rf infra core
+ENV PATH="$PATH:/usr/local/share/cargo/bin:/usr/local/share/lisp/bin"
+# RUN sk make sbcl sbcl-install quicklisp rustup tree-sitter-langs rocksdb
+RUN make sbcl-install-gencgc
 RUN adduser -D -u ${ID} -k /etc/skel ${WORKER}
 USER ${WORKER}
 WORKDIR ${WORKER_HOME}

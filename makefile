@@ -115,6 +115,7 @@ sbcl-build-gencgc:$(SBCL_TARGET)
 sbcl-docs:sbcl-build;## REQUIRES TEXLIVE
 	cd $(SBCL_TARGET)/doc/manual && make
 sbcl-install:sbcl-build;cd $(SBCL_TARGET) && INSTALL_ROOT=/usr/local sh install.sh
+sbcl-install-gencgc:sbcl-build-gencgc;cd $(SBCL_TARGET) && INSTALL_ROOT=/usr/local sh install.sh
 clean-sbcl:$(SBCL_TARGET);cd $(SBCL_TARGET) && ./clean.sh
 
 .stash/quicklisp.lisp:$(B);cd $< && curl -O https://beta.quicklisp.org/quicklisp.lisp

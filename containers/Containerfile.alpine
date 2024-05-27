@@ -1,2 +1,2 @@
 FROM alpine:latest
-RUN apk add --no-cache openssh mercurial wireguard-tools liburing
+RUN apk add --no-cache openssh mercurial wireguard-tools liburing libc6-compat coreutils
