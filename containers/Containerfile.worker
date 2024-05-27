@@ -9,17 +9,15 @@ RUN apk add build-base zstd-dev curl make git linux-headers openssl-dev pkgconf 
 RUN mkdir /usr/share/lisp
 RUN mkdir /usr/local/share/lisp
 WORKDIR /usr/local/src
-RUN hg clone https://vc.compiler.company/comp/infra
-RUN hg clone https://vc.compiler.company/comp/core
 WORKDIR infra
-# RUN hg clone https://vc.compiler.company/comp/etc
+RUN mkdir .stash
+RUN sh scripts/get-sk.sh
 ENV CARGO_HOME="/usr/local/share/cargo"
 ENV RUSTUP_HOME="/usr/local/share/rustup"
-RUN make rustup-install tree-sitter-langs-install
+RUN .stash/sk make rustup tree-sitter-langs
 ENV PATH="$PATH:/usr/local/share/cargo/bin"
 RUN rustup update 
-#RUN rustup default nightly # disabled due to issue with zellij build
-# ADD etc/sbclrc /etc/sbclrc
+RUN rustup default nightly
 RUN cd .. && rm -rf infra core
 RUN adduser -D -u ${ID} -k /etc/skel ${WORKER}
 USER ${WORKER}
