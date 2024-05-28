@@ -1,7 +1,5 @@
 FROM localhost/archlinux:latest
 RUN --network=host pacman -Sy uutils-coreutils sysstat iotop imagemagick giflib libgccjit libxaw snappy sbcl liburing libxkbcommon nuklear --noconfirm
-# VOLUME /opt/store
-# VOLUME /opt/stash
 # custom
 ARG DEV=dev
 ARG DEV_HOME=/home/${DEV}
@@ -15,27 +13,22 @@ WORKDIR infra
 ENV CARGO_HOME="/usr/local/share/cargo"
 ENV RUSTUP_HOME="/usr/local/share/rustup"
 # stage1
-RUN sh scripts/get-sk.sh /usr/local/bin
-RUN sk make rustup
+RUN ./bootstrap.sh
 ENV PATH="$PATH:/usr/local/share/cargo/bin"
+RUN .stash/bin/sk make rustup
 RUN rustup update
 # dev rustc components
 RUN rustup default nightly
 RUN rustup component add --toolchain nightly rust-src rust-analyzer rustc-dev llvm-tools-preview
-# RUN sh scripts/install-nushell-pack.sh
-# RUN sh scripts/install-emacs-pack.sh
-# RUN sh scripts/install-sbcl-pack.sh
-# RUN sh scripts/install-rocksdb-pack.sh
-# RUN sh scripts/install-cargo-tools.sh
-RUN sk make sbcl
-RUN sk make quicklisp
-RUN sk make sbcl-install
-RUN sk make tree-sitter
-RUN sk make tree-sitter-langs
-RUN sk make emacs-mini
-RUN sk make emacs-install
-RUN sk make rocksdb
-RUN sk make rocksdb-install
+RUN .stash/bin/sk make sbcl
+RUN .stash/bin/sk make quicklisp
+RUN .stash/bin/sk make sbcl-install
+RUN .stash/bin/sk make tree-sitter
+RUN .stash/bin/sk make tree-sitter-langs
+RUN .stash/bin/sk make emacs-mini
+RUN .stash/bin/sk make emacs-install
+RUN .stash/bin/sk make rocksdb
+RUN .stash/bin/sk make rocksdb-install
 #ADD etc/sbclrc /etc/sbclrc
 #COPY etc/skel/ /etc/skel/
 #ADD etc/shells /etc/

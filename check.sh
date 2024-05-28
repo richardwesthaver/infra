@@ -16,8 +16,8 @@ main() {
   need_cmd awk
   need_cmd head
   need_cmd tail
-  host_config_file=$(cat /proc/sys/kernel/hostname).sxp
-  rm -f $host_config_file
+  export INFRA_HOST_CONFIG=$(cat /proc/sys/kernel/hostname).sxp
+  rm -f $INFRA_HOST_CONFIG
   check_mem
   local _mem_total="$RETVAL"
   check_disk
@@ -41,7 +41,6 @@ main() {
     *)
       _write ":ext nil"
   esac
-  print_env
 }
 
 say() {
@@ -53,7 +52,7 @@ say_var() {
 }
 
 _write() {
-  say "$1" >> $host_config_file
+  say "$1" >> $INFRA_HOST_CONFIG
 }
 
 err() {
