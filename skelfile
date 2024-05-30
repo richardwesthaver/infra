@@ -42,6 +42,10 @@
             #$./scripts/quicklisp-install.sh$#)
  (stumpwm (src) #$./scripts/get-stumpwm.sh$#
           #$cd .stash/src/stumpwm && ./autogen.sh && ./configure && make$#)
+ (nyxt (src) #$./scripts/get-nyxt.sh$#
+       #$cd .stash/src/nyxt && git submodule update --init && make all$#)
+ (scryer-prolog (src) #$./scripts/get-scryer-prolog.sh$#
+                #$cd .stash/src/scryer-prolog && cargo build --release$#)
  (tree-sitter (src) #$./scripts/get-tree-sitter.sh$#)
  (linux () #$mkdir -pv .stash/src/linux$#
         #$gpg --export autosigner@ torvalds@ gregkh@ > .stash/src/linux/keyring.gpg$#
