@@ -25,7 +25,7 @@ main() {
   get_architecture || return 1
   local _arch="$RETVAL"
   assert_nz "$_arch" "arch"
-  _write ";; -*- mode:skel -*-"
+  _write ";;; $INFRA_HOST_CONFIG -*- mode:skel -*-"
   _write ":arch \"$_arch\""
   kernel_version
   local _kernel_version="$RETVAL"

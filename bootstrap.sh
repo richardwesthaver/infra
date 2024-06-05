@@ -26,6 +26,7 @@ main() {
   ensure download "$_rocksdb_url" "${_stash}/src/rocksdb.tar.zst" "$_arch"
   ensure download "$_sk_url" "${_stash}/bin/sk" "$_arch"
   chmod +x "${_stash}/bin/sk"
+  say "OK ${_stash}/bin/sk"
 }
 
 _read() {
