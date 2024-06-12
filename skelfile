@@ -54,6 +54,8 @@
         tar -xvf .stash/src/linux.tar $(uname -r | cut -d- -f1)$#
         #$cd .stash/src/linux && make mrproper -j &&
         zcat /proc/config.gz > .config && yes N | make localmodconfig$#)
+ (xcaddy () #$go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest$#)
+ (caddy-webdav (xcaddy) #$xcaddy build --output .stash/caddy --with github.com/mholt/caddy-webdav
  (rust () #$scripts/get-rust.sh$#)
  ;; install
  (tree-sitter-langs (src) #$./scripts/tree-sitter-install-langs.sh$#)
