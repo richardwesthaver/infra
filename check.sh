@@ -22,6 +22,7 @@ main() {
   local _mem_total="$RETVAL"
   check_disk
   check_mod kvm
+  check_mod btrfs
   get_architecture || return 1
   local _arch="$RETVAL"
   assert_nz "$_arch" "arch"
@@ -41,6 +42,7 @@ main() {
     *)
       _write ":ext nil"
   esac
+  say $INFRA_HOST_CONFIG
 }
 
 say() {

@@ -1,6 +1,6 @@
-;;; bootstrap.lisp --- let 'er rip
+;;; autogen.lisp --- Setup the current directory for 
 
-;;
+;; sbcl --load autogen.lisp
 
 ;;; Code:
 (in-package :std-user)
@@ -11,35 +11,60 @@
         :cli/progress :cli/ansi :cli/ed :cli/prompt
         :cli/shell :std/hash-table :std/alien :std/macs
         :std/fmt))
+
 (in-package :infra/bootstrap)
+
 (in-readtable :shell)
 
-(eval-when (:compile-toplevel)
-  (defstruct host name cpus mem arch kernel core)
-  (defparameter *profile* (read-sxp-file
-                           (if-let ((profile (sb-posix:getenv "BUILD_PROFILE")))
-                             profile
-                             #P"default.sxp")))
-  (defparameter *core* sb-ext:*core-pathname*)
-  (defparameter *host-config* (read-sxp-file
-                               (let ((hcfg (format nil "~a.sxp" (sb-unix:unix-gethostname))))
-                                 (unless (probe-file hcfg)
-                                   (print #0$./check.sh$#))
-                                 hcfg)))
-  (defparameter *env* (let ((table (make-hash-table :test 'equal))
-                            (keys (list "STASH" "STORE" "DIST" "PACKY_URL" "VC_URL" "INSTALL_PREFIX"
-                                        "CC" "AR" "HG" "GIT" "LISP" "RUST" "LD" "SHELL" "DEV" "DEV_HOME"
-                                        "DEV_ID" "WORKER" "WORKER_ID" "WORKER_HOME" "CARGO_HOME" "RUSTUP_HOME"
-                                        "LISP_HOME")))
-                  (dolist (k keys table)
-                    (setf (gethash k table) (sb-posix:getenv k))))))
+(defparameter *profile* (uiop:read-file-forms
+                         (if-let ((profile (sb-posix:getenv "INFRA_PROFILE")))
+                           profile
+                           #P"default.sxp")))
+(defparameter *core* sb-ext:*core-pathname*)
+(defparameter *host* (uiop:read-file-forms
+                             (let ((hcfg (format nil "~a.sxp" (sb-unix:unix-gethostname))))
+                               (unless (probe-file hcfg)
+                                 (print #0$./check.sh$#))
+                               hcfg)))
+(defun gethost (k) (getf *host* k))
+(defun getprofile (k) (getf *profile* k))
+(init-skel-vars)
+(setq *skel-project* (find-skelfile *default-pathname-defaults* :load t))
+(defparameter *host-env* (let ((table (make-hash-table :test 'equal))
+                               (keys (list "STASH" "STORE" "DIST" "PACKY_URL" "VC_URL" "INSTALL_PREFIX"
+                                           "CC" "AR" "HG" "GIT" "LISP" "RUST" "LD" "SHELL" "DEV" "DEV_HOME"
+                                           "DEV_ID" "WORKER" "WORKER_ID" "WORKER_HOME" "CARGO_HOME" "RUSTUP_HOME"
+                                           "LISP_HOME" "INFRA_PROFILE")))
+                           (dolist (k keys table)
+                             (setf (gethash k table) (sb-posix:getenv k)))))
+(defun getenv (k) (gethash *host-env* k))
 
-(println "starting bootstrap.lisp")
-;; (println sb-sys::*machine-version*)
-;; (trace! "env:" (hash-table-alist *env*))
+(info! "starting autogen.lisp" sb-ext:*core-pathname*)
+(terpri)
+(format t "core: ~A~%" *core*)
+(terpri)
+(println "host:")
+(loop for (k v) on *host* by 'cddr
+      do (format t "  ~A = ~A~%" k v))
+(println "env:")
+(loop for k being the hash-key
+      using (hash-value v) of *host-env*
+      do (format t "  ~A = ~:A~%" k v))
+(println "profile:")
+(loop for (k v) on *profile* by 'cddr
+      do (format t "  ~A = ~A~%" k v))
 
-;; build-config
-(defun apply-build-config ()
-  (setf *log-level* :trace))
+;;; init stash (via skel)
+(sk-call* *skel-project* :clean :src)
 
-;; host-config
+(let ((rocksdb-builder (sb-thread:make-thread (lambda () (sk-call* *skel-project* :rocksdb))))
+      (sbcl-builder (sb-thread:make-thread (lambda () (sk-call* *skel-project* :sbcl :sbcl-shared))))
+      (archlinux-pod-builder (sb-thread:make-thread (lambda () (sk-call *skel-project* :archlinux))))
+      (alpine-pod-builder (sb-thread:make-thread (lambda () (sk-call *skel-project* :alpine)))))
+  (std/thread:wait-for-threads
+   (list rocksdb-builder sbcl-builder archlinux-pod-builder alpine-pod-builder)))
+;;; *host*
+
+;;; *profile*
+
+(sb-ext:quit)

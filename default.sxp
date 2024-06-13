@@ -1,5 +1,5 @@
 ;; -*- mode:skel -*-
-:sbcl-version "2.4.4" ;; SBCL is always required for bootstrap
+:sbcl-version "2.4.5" ;; SBCL is always required for bootstrap
 
 :cc "clang"
 

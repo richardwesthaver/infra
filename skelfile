@@ -8,8 +8,10 @@
 :vc (:hg "https://vc.compiler.company/comp/infra")
 :docs ((:org "readme"))
 :scripts "scripts"
+:stash #p".stash"
+:store #p"/usr/local/store"
 :rules
-((check (#$./check.sh$#))
+((check () #$./check.sh$#)
  (clean () #$rm -rvf .stash$#)
  ;; containers
  (archlinux () #$podman build -f containers/Containerfile.archlinux --no-cache -t localhost/archlinux$#)
@@ -21,6 +23,7 @@
  (containers (archlinux alpine ubuntu box worker operator))
  ;; programs
  (src () #$mkdir -pv .stash/src$#)
+ (bin () #$mkdir -pv .stash/bin$#)
  (emacs (src) #$./scripts/get-emacs.sh$#
         #$cd .stash/src/emacs && ./autogen.sh$#
         #$./scripts/build-emacs.sh$#)
