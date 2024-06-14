@@ -45,7 +45,7 @@ main() {
   unzstd "${_core_pack}"
   tar -xvf "pack/core.tar"
   mv core/bin/* bin/
-  mv core/fasl/* share/lisp/fasl
+  mv core/share/* share/
   # chmod +x "bin/*"
   rm -rf core rocksdb sbcl
   rm -rf pack/*.tar
