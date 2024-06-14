@@ -18,14 +18,14 @@
 
 (defparameter *profile* (uiop:read-file-forms
                          (if-let ((profile (sb-posix:getenv "INFRA_PROFILE")))
-                           profile
-                           #P"default.sxp")))
+                                 profile
+                                 #P"default.sxp")))
 (defparameter *core* sb-ext:*core-pathname*)
 (defparameter *host* (uiop:read-file-forms
-                             (let ((hcfg (format nil "~a.sxp" (sb-unix:unix-gethostname))))
-                               (unless (probe-file hcfg)
-                                 (print #0$./check.sh$#))
-                               hcfg)))
+                      (let ((hcfg (format nil "~a.sxp" (sb-unix:unix-gethostname))))
+                        (unless (probe-file hcfg)
+                          (print #0$./check.sh$#))
+                        hcfg)))
 (defun gethost (k) (getf *host* k))
 (defun getprofile (k) (getf *profile* k))
 (init-skel-vars)
@@ -39,32 +39,33 @@
                              (setf (gethash k table) (sb-posix:getenv k)))))
 (defun getenv (k) (gethash *host-env* k))
 
-(info! "starting autogen.lisp" sb-ext:*core-pathname*)
-(terpri)
-(format t "core: ~A~%" *core*)
-(terpri)
-(println "host:")
-(loop for (k v) on *host* by 'cddr
-      do (format t "  ~A = ~A~%" k v))
-(println "env:")
-(loop for k being the hash-key
-      using (hash-value v) of *host-env*
-      do (format t "  ~A = ~:A~%" k v))
-(println "profile:")
-(loop for (k v) on *profile* by 'cddr
-      do (format t "  ~A = ~A~%" k v))
+(defun autogen ()
+  "Auto-generate the INFRA system."
+  (info! "starting autogen.lisp" sb-ext:*core-pathname*)
+  (terpri)
+  (format t "core: ~A~%" *core*)
+  (terpri)
+  (println "host:")
+  (loop for (k v) on *host* by 'cddr
+        do (format t "  ~A = ~A~%" k v))
+  (println "env:")
+  (loop for k being the hash-key
+        using (hash-value v) of *host-env*
+        do (format t "  ~A = ~:A~%" k v))
+  (println "profile:")
+  (loop for (k v) on *profile* by 'cddr
+        do (format t "  ~A = ~A~%" k v))
 
 ;;; init stash (via skel)
-(sk-call* *skel-project* :clean :src)
+  (sk-call* *skel-project* :clean :src)
 
-(let ((rocksdb-builder (sb-thread:make-thread (lambda () (sk-call* *skel-project* :rocksdb))))
-      (sbcl-builder (sb-thread:make-thread (lambda () (sk-call* *skel-project* :sbcl :sbcl-shared))))
-      (archlinux-pod-builder (sb-thread:make-thread (lambda () (sk-call *skel-project* :archlinux))))
-      (alpine-pod-builder (sb-thread:make-thread (lambda () (sk-call *skel-project* :alpine)))))
-  (std/thread:wait-for-threads
-   (list rocksdb-builder sbcl-builder archlinux-pod-builder alpine-pod-builder)))
+  (let ((rocksdb-builder (sb-thread:make-thread (lambda () (sk-call* *skel-project* :rocksdb))))
+        (sbcl-builder (sb-thread:make-thread (lambda () (sk-call* *skel-project* :sbcl :sbcl-shared))))
+        (archlinux-pod-builder (sb-thread:make-thread (lambda () (sk-call *skel-project* :archlinux :operator))))
+        (alpine-pod-builder (sb-thread:make-thread (lambda () (sk-call *skel-project* :alpine :worker)))))
+    (std/thread:wait-for-threads
+     (list rocksdb-builder sbcl-builder archlinux-pod-builder alpine-pod-builder))))
 ;;; *host*
 
 ;;; *profile*
-
-(sb-ext:quit)
+;; (sb-ext:quit)

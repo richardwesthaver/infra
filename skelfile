@@ -14,12 +14,12 @@
 ((check () #$./check.sh$#)
  (clean () #$rm -rvf .stash$#)
  ;; containers
- (archlinux () #$podman build -f containers/Containerfile.archlinux --no-cache -t localhost/archlinux$#)
- (alpine () #$podman build -f containers/Containerfile.alpine --no-cache -t localhost/alpine$#)
- (ubuntu () #$podman build -f containers/Containerfile.alpine --no-cache -t localhost/alpine$#)
- (box (archlinux) #$podman build -f containers/Containerfile.box --no-cache -t localhost/box$#)
- (worker (alpine) #$podman build -f containers/Containerfile.worker --no-cache -t localhost/worker$#)
- (operator (box) #$podman build -f containers/Containerfile.operator --no-cache -t localhost/operator$#)
+ (archlinux () #$podman build -f pod/Containerfile.archlinux --no-cache -t localhost/archlinux$#)
+ (alpine () #$podman build -f pod/Containerfile.alpine --no-cache -t localhost/alpine$#)
+ (ubuntu () #$podman build -f pod/Containerfile.alpine --no-cache -t localhost/alpine$#)
+ (box (archlinux) #$podman build -f pod/Containerfile.box --no-cache -t localhost/box$#)
+ (worker (alpine) #$podman build -f pod/Containerfile.worker --no-cache -t localhost/worker$#)
+ (operator (box) #$podman build -f pod/Containerfile.operator --no-cache -t localhost/operator$#)
  (containers (archlinux alpine ubuntu box worker operator))
  ;; programs
  (src () #$mkdir -pv .stash/src$#)

@@ -1,5 +1,6 @@
 #!/bin/sh
 set -eu
+
 main() {
   . ./check.sh
   download --check
@@ -19,44 +20,26 @@ main() {
   fi
   ensure mkdir -p "${_stash}/src"
   ensure mkdir -p "${_stash}/bin"
-  local _sk_url="${_url}/bin/sk"
+  cd "${_stash}"
+  hg clone https://vc.compiler.company/comp/core src/core
   local _sbcl_url="${_url}/pack/sbcl.tar.zst"
   local _rocksdb_url="${_url}/pack/rocksdb.tar.zst"
-  ensure download "$_sbcl_url" "${_stash}/src/sbcl.tar.zst" "$_arch"
-  ensure download "$_rocksdb_url" "${_stash}/src/rocksdb.tar.zst" "$_arch"
-  ensure download "$_sk_url" "${_stash}/bin/sk" "$_arch"
-  chmod +x "${_stash}/bin/sk"
-  say "${_stash}/bin/sk"
+  local _core_url="${_url}/pack/core.tar.zst"
+  ensure download "$_sbcl_url" "sbcl.tar.zst" "$_arch"
+  unzstd "sbcl.tar.zst"
+  tar -xvf "sbcl.tar"
+  ensure download "$_rocksdb_url" "rocksdb.tar.zst" "$_arch"
+  unzstd "rocksdb.tar.zst"
+  tar -xvf "rocksdb.tar"
+  chmod +x bin/*
+  say "${_stash}/src/sbcl"
+  say "${_stash}/src/rocksdb"
+  say "${_stash}/bin/cl"
+  rm -rf *.tar*
 }
 
 _read() {
   grep ":$1" $INFRA_HOST_CONFIG | cut -d' ' -f 2-
-}
-
-say() {
-  printf 'bootstrap.sh: %s\n' "$1"
-}
-
-err() {
-  say "$1" >&2
-  exit 1
-}
-
-check_cmd() {
-  command -v "$1" > /dev/null 2>&1
-}
-
-need_cmd() {
-  if ! check_cmd "$1"; then
-    err "need '$1' (command not found)"
-  fi
-}
-
-# Run a command that should never fail. If the command fails execution
-# will immediately terminate with an error showing the failing
-# command.
-ensure() {
-  if ! "$@"; then err "command failed: $*"; fi
 }
 
 # Check if curl supports the --retry flag, then pass it to the curl invocation.
@@ -211,64 +194,6 @@ get_strong_ciphersuites_for() {
     # GnuTLS isn't forgiving of unknown values, so this may require a GnuTLS version that supports TLS 1.3 even if wget doesn't.
     # Begin with SECURE128 (and higher) then remove/add to build cipher suites. Produces same 9 cipher suites as OpenSSL but in slightly different order.
     echo "SECURE128:-VERS-SSL3.0:-VERS-TLS1.0:-VERS-TLS1.1:-VERS-DTLS-ALL:-CIPHER-ALL:-MAC-ALL:-KX-ALL:+AEAD:+ECDHE-ECDSA:+ECDHE-RSA:+AES-128-GCM:+CHACHA20-POLY1305:+AES-256-GCM"
-  fi
-}
-
-check_proc() {
-  # Check for /proc by looking for the /proc/self/exe link
-  # This is only run on Linux
-  if ! test -L /proc/self/exe ; then
-    err "fatal: Unable to find /proc/self/exe.  Is /proc mounted?  Installation cannot proceed without /proc."
-  fi
-}
-
-get_bitness() {
-  need_cmd head
-  # Architecture detection without dependencies beyond coreutils.
-  # ELF files start out "\x7fELF", and the following byte is
-  #   0x01 for 32-bit and
-  #   0x02 for 64-bit.
-  # The printf builtin on some shells like dash only supports octal
-  # escape sequences, so we use those.
-  local _current_exe_head
-  _current_exe_head=$(head -c 5 /proc/self/exe )
-  if [ "$_current_exe_head" = "$(printf '\177ELF\001')" ]; then
-    echo 32
-  elif [ "$_current_exe_head" = "$(printf '\177ELF\002')" ]; then
-    echo 64
-  else
-    err "unknown platform bitness"
-  fi
-}
-
-is_host_amd64_elf() {
-  need_cmd head
-  need_cmd tail
-  # ELF e_machine detection without dependencies beyond coreutils.
-  # Two-byte field at offset 0x12 indicates the CPU,
-  # but we're interested in it being 0x3E to indicate amd64, or not that.
-  local _current_exe_machine
-  _current_exe_machine=$(head -c 19 /proc/self/exe | tail -c 1)
-  [ "$_current_exe_machine" = "$(printf '\076')" ]
-}
-
-get_endianness() {
-  local cputype=$1
-  local suffix_eb=$2
-  local suffix_el=$3
-
-  # detect endianness without od/hexdump, like get_bitness() does.
-  need_cmd head
-  need_cmd tail
-
-  local _current_exe_endianness
-  _current_exe_endianness="$(head -c 6 /proc/self/exe | tail -c 1)"
-  if [ "$_current_exe_endianness" = "$(printf '\001')" ]; then
-    echo "${cputype}${suffix_el}"
-  elif [ "$_current_exe_endianness" = "$(printf '\002')" ]; then
-    echo "${cputype}${suffix_eb}"
-  else
-    err "unknown platform endianness"
   fi
 }
 

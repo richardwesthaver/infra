@@ -1,2 +1,0 @@
-FROM localhost/box:latest
-RUN infra/scripts/wg-gen-keys.sh private.key public.key
