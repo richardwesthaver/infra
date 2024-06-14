@@ -19,23 +19,36 @@ main() {
     exit 1
   fi
   ensure mkdir -p "${_stash}/src"
+  ensure mkdir -p "${_stash}/share/lisp/fasl"
   ensure mkdir -p "${_stash}/bin"
+  ensure mkdir -p "${_stash}/lib"
+  ensure mkdir -p "${_stash}/include"
+  ensure mkdir -p "${_stash}/pack"
   cd "${_stash}"
   hg clone https://vc.compiler.company/comp/core src/core
-  local _sbcl_url="${_url}/pack/sbcl.tar.zst"
-  local _rocksdb_url="${_url}/pack/rocksdb.tar.zst"
-  local _core_url="${_url}/pack/core.tar.zst"
-  ensure download "$_sbcl_url" "sbcl.tar.zst" "$_arch"
-  unzstd "sbcl.tar.zst"
-  tar -xvf "sbcl.tar"
-  ensure download "$_rocksdb_url" "rocksdb.tar.zst" "$_arch"
-  unzstd "rocksdb.tar.zst"
-  tar -xvf "rocksdb.tar"
-  chmod +x bin/*
-  say "${_stash}/src/sbcl"
-  say "${_stash}/src/rocksdb"
-  say "${_stash}/bin/cl"
-  rm -rf *.tar*
+  local _sbcl_pack="pack/sbcl.tar.zst"
+  local _rocksdb_pack="pack/rocksdb.tar.zst"
+  local _core_pack="pack/core.tar.zst"
+  local _sbcl_url="${_url}/${_sbcl_pack}"
+  local _rocksdb_url="${_url}/${_rocksdb_pack}"
+  local _core_url="${_url}/${_core_pack}"
+  ensure download "$_sbcl_url" "$_sbcl_pack" "$_arch"
+  unzstd "${_sbcl_pack}"
+  tar -xvf "pack/sbcl.tar"
+  cd sbcl && INSTALL_ROOT=$(realpath ..) sh install.sh && cd ..
+  ensure download "$_rocksdb_url" "${_rocksdb_pack}" "$_arch"
+  unzstd "${_rocksdb_pack}"
+  tar -xvf "pack/rocksdb.tar"
+  mv rocksdb/include/* include/
+  mv rocksdb/*.so lib/
+  ensure download "$_core_url" "${_core_pack}" "$_arch"
+  unzstd "${_core_pack}"
+  tar -xvf "pack/core.tar"
+  mv core/bin/* bin/
+  mv core/fasl/* share/lisp/fasl
+  # chmod +x "bin/*"
+  rm -rf core rocksdb sbcl
+  rm -rf pack/*.tar
 }
 
 _read() {

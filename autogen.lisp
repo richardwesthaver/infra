@@ -26,6 +26,7 @@
                         (unless (probe-file hcfg)
                           (print #0$./check.sh$#))
                         hcfg)))
+
 (defun gethost (k) (getf *host* k))
 (defun getprofile (k) (getf *profile* k))
 (init-skel-vars)
@@ -43,6 +44,7 @@
   "Auto-generate the INFRA system."
   (info! "starting autogen.lisp" sb-ext:*core-pathname*)
   (terpri)
+  ;; print host, env, profile
   (format t "core: ~A~%" *core*)
   (terpri)
   (println "host:")
@@ -55,17 +57,21 @@
   (println "profile:")
   (loop for (k v) on *profile* by 'cddr
         do (format t "  ~A = ~A~%" k v))
-
-;;; init stash (via skel)
-  (sk-call* *skel-project* :clean :src)
-
+  ;; 
+  (sk-call* *skel-project* :clean :bootstrap)
   (let ((rocksdb-builder (sb-thread:make-thread (lambda () (sk-call* *skel-project* :rocksdb))))
         (sbcl-builder (sb-thread:make-thread (lambda () (sk-call* *skel-project* :sbcl :sbcl-shared))))
         (archlinux-pod-builder (sb-thread:make-thread (lambda () (sk-call *skel-project* :archlinux :operator))))
         (alpine-pod-builder (sb-thread:make-thread (lambda () (sk-call *skel-project* :alpine :worker)))))
     (std/thread:wait-for-threads
      (list rocksdb-builder sbcl-builder archlinux-pod-builder alpine-pod-builder))))
+
 ;;; *host*
+;; The host profile is generated automatically by 'check.sh'. After running
+;; the script you'll have a file HOST.sxp.
 
 ;;; *profile*
+;; The default profile is defined in 'default.sxp'. You can use that as a base
+;; configuration and override it with INFRA_PROFILE
+
 ;; (sb-ext:quit)

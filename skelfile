@@ -24,6 +24,7 @@
  ;; programs
  (src () #$mkdir -pv .stash/src$#)
  (bin () #$mkdir -pv .stash/bin$#)
+ (bootstrap () #$./bootstrap.sh$#)
  (emacs (src) #$./scripts/get-emacs.sh$#
         #$cd .stash/src/emacs && ./autogen.sh$#
         #$./scripts/build-emacs.sh$#)
@@ -60,6 +61,15 @@
  (xcaddy () #$go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest$#)
  (caddy-webdav (xcaddy) #$xcaddy build --output .stash/caddy --with github.com/mholt/caddy-webdav
  (rust () #$scripts/get-rust.sh$#)
+ (ublk () #$scripts/get-ublksrv.sh$#
+       #$cd .stash/src/ublksrv && autoreconf -i && ./configure && make$#)
+ (ublk-install () #$cd .stash/src/ublksrv && make install$#)
+ ;; ref: https://github.com/BLAKE3-team/BLAKE3/tree/master/c#building
+ (blake3 () #$scripts/get-blake3.sh$#
+         #$cd .stash/src/blake3/c && gcc -shared -O3 -o libblake3.so blake3.c blake3_dispatch.c blake3_portable.c \
+         blake3_sse2_x86-64_unix.S blake3_sse41_x86-64_unix.S blake3_avx2_x86-64_unix.S \
+         blake3_avx512_x86-64_unix.S$#)
+ (blake3-install () #$cd .stash/src/blake3/c && cp libblake3.so /usr/local/lib/ && cp blake3.h /usr/local/include/$#)
  ;; install
  (tree-sitter-langs (src) #$./scripts/tree-sitter-install-langs.sh$#)
  (cargo-tools () #$scripts/install-cargo-tools.sh$#)
