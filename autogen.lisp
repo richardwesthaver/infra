@@ -57,14 +57,16 @@
   (println "profile:")
   (loop for (k v) on *profile* by 'cddr
         do (format t "  ~A = ~A~%" k v))
-  ;; 
-  (sk-call* *skel-project* :clean :bootstrap)
+  ;; fresh bootstrap
+  (sk-call* *skel-project* :clean :bootstrap))
+
+(defun build-default ()
   (let ((rocksdb-builder (sb-thread:make-thread (lambda () (sk-call* *skel-project* :rocksdb))))
         (sbcl-builder (sb-thread:make-thread (lambda () (sk-call* *skel-project* :sbcl :sbcl-shared))))
-        (archlinux-pod-builder (sb-thread:make-thread (lambda () (sk-call *skel-project* :archlinux :operator))))
-        (alpine-pod-builder (sb-thread:make-thread (lambda () (sk-call *skel-project* :alpine :worker)))))
+        (operator-builder (sb-thread:make-thread (lambda () (sk-call *skel-project* :archlinux :operator))))
+        (worker-builder (sb-thread:make-thread (lambda () (sk-call *skel-project* :alpine :worker)))))
     (std/thread:wait-for-threads
-     (list rocksdb-builder sbcl-builder archlinux-pod-builder alpine-pod-builder))))
+     (list rocksdb-builder sbcl-builder operator-builder worker-builder))))
 
 ;;; *host*
 ;; The host profile is generated automatically by 'check.sh'. After running
@@ -75,3 +77,9 @@
 ;; configuration and override it with INFRA_PROFILE
 
 ;; (sb-ext:quit)
+(unless (probe-file #p".stash")
+  (autogen))
+
+(build-default)
+
+(sb-ext:quit)

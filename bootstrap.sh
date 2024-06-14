@@ -25,7 +25,6 @@ main() {
   ensure mkdir -p "${_stash}/include"
   ensure mkdir -p "${_stash}/pack"
   cd "${_stash}"
-  hg clone https://vc.compiler.company/comp/core src/core
   local _sbcl_pack="pack/sbcl.tar.zst"
   local _rocksdb_pack="pack/rocksdb.tar.zst"
   local _core_pack="pack/core.tar.zst"
@@ -39,13 +38,13 @@ main() {
   ensure download "$_rocksdb_url" "${_rocksdb_pack}" "$_arch"
   unzstd "${_rocksdb_pack}"
   tar -xvf "pack/rocksdb.tar"
-  mv rocksdb/include/* include/
-  mv rocksdb/*.so lib/
+  cp -rf rocksdb/include/* include/
+  cp -rf rocksdb/*.so lib/
   ensure download "$_core_url" "${_core_pack}" "$_arch"
   unzstd "${_core_pack}"
   tar -xvf "pack/core.tar"
-  mv core/bin/* bin/
-  mv core/share/* share/
+  cp -rf core/bin/* bin/
+  cp -rf core/share/* share/
   # chmod +x "bin/*"
   rm -rf core rocksdb sbcl
   rm -rf pack/*.tar
