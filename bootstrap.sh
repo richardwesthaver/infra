@@ -31,7 +31,7 @@ main() {
   local _sbcl_url="${_url}/${_sbcl_pack}"
   local _rocksdb_url="${_url}/${_rocksdb_pack}"
   local _core_url="${_url}/${_core_pack}"
-  local _core_src_url="${_url}/${_core_pack}"
+  local _core_src_url="${_url}/${_core_src_pack}"
   ensure download "$_sbcl_url" "$_sbcl_pack" "$_arch"
   unzstd "${_sbcl_pack}"
   tar -xvf "sbcl.tar"
@@ -39,18 +39,19 @@ main() {
   ensure download "$_core_src_url" "$_core_src_pack" "$_arch"
   unzstd "${_core_src_pack}"
   tar -xvf "core-source.tar"
+  mv core src/
   # ensure download "$_rocksdb_url" "${_rocksdb_pack}" "$_arch"
   # unzstd "${_rocksdb_pack}"
   # tar -xvf "pack/rocksdb.tar"
   # cp -rf rocksdb/include/* include/
   # cp -rf rocksdb/*.so lib/
-  # ensure download "$_core_url" "${_core_pack}" "$_arch"
-  # unzstd "${_core_pack}"
-  # tar -xvf "pack/core.tar"
-  # cp -rf core/bin/* bin/
-  # cp -rf core/share/* share/
+  ensure download "$_core_url" "${_core_pack}" "$_arch"
+  unzstd "${_core_pack}"
+  tar -xvf "core.tar"
+  cp -rf core/bin/* bin/
+  cp -rf core/share/* share/
   chmod +x bin/*
-  # rm -rf core rocksdb sbcl
+  rm -rf core sbcl
   rm -rf *.tar
 }
 
