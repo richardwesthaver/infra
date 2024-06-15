@@ -11,7 +11,7 @@ main() {
       _ext=".exe"
       ;;
   esac
-  local _url="https://packy.compiler.company/dist/${_arch}"
+  local _url="https://packy.compiler.company/dist/${_arch}/pack"
   local _stash
   if ! _stash=".stash"; then
     # Because the previous command ran in a subshell, we must manually
@@ -23,31 +23,35 @@ main() {
   ensure mkdir -p "${_stash}/bin"
   ensure mkdir -p "${_stash}/lib"
   ensure mkdir -p "${_stash}/include"
-  ensure mkdir -p "${_stash}/pack"
   cd "${_stash}"
-  local _sbcl_pack="pack/sbcl.tar.zst"
-  local _rocksdb_pack="pack/rocksdb.tar.zst"
-  local _core_pack="pack/core.tar.zst"
+  local _sbcl_pack="sbcl.tar.zst"
+  local _rocksdb_pack="rocksdb.tar.zst"
+  local _core_pack="core.tar.zst"
+  local _core_src_pack="core-source.tar.zst"
   local _sbcl_url="${_url}/${_sbcl_pack}"
   local _rocksdb_url="${_url}/${_rocksdb_pack}"
   local _core_url="${_url}/${_core_pack}"
+  local _core_src_url="${_url}/${_core_pack}"
   ensure download "$_sbcl_url" "$_sbcl_pack" "$_arch"
   unzstd "${_sbcl_pack}"
-  tar -xvf "pack/sbcl.tar"
+  tar -xvf "sbcl.tar"
   cd sbcl && INSTALL_ROOT=$(realpath ..) sh install.sh && cd ..
-  ensure download "$_rocksdb_url" "${_rocksdb_pack}" "$_arch"
-  unzstd "${_rocksdb_pack}"
-  tar -xvf "pack/rocksdb.tar"
-  cp -rf rocksdb/include/* include/
-  cp -rf rocksdb/*.so lib/
-  ensure download "$_core_url" "${_core_pack}" "$_arch"
-  unzstd "${_core_pack}"
-  tar -xvf "pack/core.tar"
-  cp -rf core/bin/* bin/
-  cp -rf core/share/* share/
-  # chmod +x "bin/*"
-  rm -rf core rocksdb sbcl
-  rm -rf pack/*.tar
+  ensure download "$_core_src_url" "$_core_src_pack" "$_arch"
+  unzstd "${_core_src_pack}"
+  tar -xvf "core-source.tar"
+  # ensure download "$_rocksdb_url" "${_rocksdb_pack}" "$_arch"
+  # unzstd "${_rocksdb_pack}"
+  # tar -xvf "pack/rocksdb.tar"
+  # cp -rf rocksdb/include/* include/
+  # cp -rf rocksdb/*.so lib/
+  # ensure download "$_core_url" "${_core_pack}" "$_arch"
+  # unzstd "${_core_pack}"
+  # tar -xvf "pack/core.tar"
+  # cp -rf core/bin/* bin/
+  # cp -rf core/share/* share/
+  chmod +x bin/*
+  # rm -rf core rocksdb sbcl
+  rm -rf *.tar
 }
 
 _read() {

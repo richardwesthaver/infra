@@ -59,7 +59,7 @@
         #$cd .stash/src/linux && make mrproper -j &&
         zcat /proc/config.gz > .config && yes N | make localmodconfig$#)
  (xcaddy () #$go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest$#)
- (caddy-webdav (xcaddy) #$xcaddy build --output .stash/caddy --with github.com/mholt/caddy-webdav
+ (caddy-webdav (xcaddy) #$xcaddy build --output .stash/caddy --with github.com/mholt/caddy-webdav$#)
  (rust () #$scripts/get-rust.sh$#)
  (ublk () #$scripts/get-ublksrv.sh$#
        #$cd .stash/src/ublksrv && autoreconf -i && ./configure && make$#)
@@ -78,4 +78,9 @@
  (emacs-install () #$cd .stash/src/emacs && make install$#)
  (rocksdb-install () #$cd .stash/src/rocksdb && make install-shared &&
                   cp -r include/* /usr/local/include/$#)
- (stumpwm-install () #$cd .stash/src/stumpwm && make install$#))
+ (stumpwm-install () #$cd .stash/src/stumpwm && make install$#)
+ ;; dist
+ (dist (rocksdb sbcl) #$scripts/dist-rocksdb-binary.sh
+       scripts/dist-rocksdb-source.sh
+       scripts/dist-sbcl-binary.sh
+       scripts/dist-sbcl-source.sh$#))

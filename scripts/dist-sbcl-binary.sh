@@ -17,4 +17,4 @@ tar -I 'zstd' -cf sbcl.tar.zst sbcl/output/sbcl.core sbcl/src/runtime/sbcl sbcl/
          fi
      done` \
     sbcl/obj/sbcl-home
-mv sbcl.tar.zst ../dist/
+mv sbcl.tar.zst ../
