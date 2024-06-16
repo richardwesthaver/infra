@@ -6,6 +6,7 @@
 (in-package :std-user)
 
 (defpkg :infra/deploy
-  (:use :cl :skel :packy :dat/json))
+  (:use :cl :std :skel :packy :dat/json))
 
 (in-package :infra/deploy)
+

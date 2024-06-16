@@ -1,6 +1,6 @@
 ;;; autogen.lisp --- Setup the current directory for 
 
-;; sbcl --load autogen.lisp
+;; sbcl --core .stash/share/lisp/user.core --load autogen.lisp
 
 ;;; Code:
 (in-package :std-user)
@@ -63,8 +63,8 @@
 (defun build-default ()
   (let ((rocksdb-builder (sb-thread:make-thread (lambda () (sk-call* *skel-project* :rocksdb))))
         (sbcl-builder (sb-thread:make-thread (lambda () (sk-call* *skel-project* :sbcl :sbcl-shared))))
-        (operator-builder (sb-thread:make-thread (lambda () (sk-call *skel-project* :archlinux :operator))))
-        (worker-builder (sb-thread:make-thread (lambda () (sk-call *skel-project* :alpine :worker)))))
+        (operator-builder (sb-thread:make-thread (lambda () (sk-call* *skel-project* :archlinux :operator))))
+        (worker-builder (sb-thread:make-thread (lambda () (sk-call* *skel-project* :alpine :worker)))))
     (std/thread:wait-for-threads
      (list rocksdb-builder sbcl-builder operator-builder worker-builder))))
 
@@ -80,6 +80,7 @@
 (unless (probe-file #p".stash")
   (autogen))
 
-(build-default)
+;; (build-default)
 
-(sb-ext:quit)
+;; (sb-ext:quit)
+

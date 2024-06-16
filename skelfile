@@ -39,6 +39,7 @@
        #$cd .stash/src/sbcl &&
        echo '"2.4.5"' > version.lisp-expr &&
        ./make.sh --dynamic-space-size=8Gb --without-gencgc --with-mark-region-gc --fancy$#)
+ (sbcl-docs (sbcl) #$cd .stash/src/sbcl/doc/manual && make$#)
  (sbcl-gencgc (src) #$cd .stash/src/sbcl &&
        ./make.sh --dynamic-space-size=8Gb --fancy$#)
  (sbcl-shared () #$cd .stash/src/sbcl && sh make-shared-library.sh$#)
@@ -61,6 +62,7 @@
  (xcaddy () #$go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest$#)
  (caddy-webdav (xcaddy) #$xcaddy build --output .stash/caddy --with github.com/mholt/caddy-webdav$#)
  (rust () #$scripts/get-rust.sh$#)
+ (rust-docs (rust) #$cd .stash/src/rust && ./x doc$#)
  (ublk () #$scripts/get-ublksrv.sh$#
        #$cd .stash/src/ublksrv && autoreconf -i && ./configure && make$#)
  (ublk-install () #$cd .stash/src/ublksrv && make install$#)
