@@ -40,6 +40,15 @@
                              (setf (gethash k table) (sb-posix:getenv k)))))
 (defun getenv (k) (gethash *host-env* k))
 
+(defun build-default ()
+  (let ((comp-builder (sb-thread:make-thread (lambda () (sk-call* *skel-project* :repos))))
+        (packy-builder (sb-thread:make-thread (lambda () (sk-call* *skel-project* :packy-repos))))
+        (sbcl-builder (sb-thread:make-thread (lambda () (sk-call* *skel-project* :sbcl :sbcl-shared))))
+        (operator-builder (sb-thread:make-thread (lambda () (sk-call* *skel-project* :archlinux :operator))))
+        (worker-builder (sb-thread:make-thread (lambda () (sk-call* *skel-project* :alpine :worker)))))
+    (std/thread:wait-for-threads
+     (list comp-builder packy-builder operator-builder worker-builder))))
+
 (defun autogen ()
   "Auto-generate the INFRA system."
   (info! "starting autogen.lisp" sb-ext:*core-pathname*)
@@ -56,15 +65,9 @@
         do (format t "  ~A = ~:A~%" k v))
   (println "profile:")
   (loop for (k v) on *profile* by 'cddr
-        do (format t "  ~A = ~A~%" k v)))
+        do (format t "  ~A = ~A~%" k v))
 
-(defun build-default ()
-  (let ((rocksdb-builder (sb-thread:make-thread (lambda () (sk-call* *skel-project* :rocksdb))))
-        (sbcl-builder (sb-thread:make-thread (lambda () (sk-call* *skel-project* :sbcl :sbcl-shared))))
-        (operator-builder (sb-thread:make-thread (lambda () (sk-call* *skel-project* :archlinux :operator))))
-        (worker-builder (sb-thread:make-thread (lambda () (sk-call* *skel-project* :alpine :worker)))))
-    (std/thread:wait-for-threads
-     (list rocksdb-builder sbcl-builder operator-builder worker-builder))))
+  (build-default))
 
 ;;; *host*
 ;; The host profile is generated automatically by 'check.sh'. After running
@@ -75,10 +78,10 @@
 ;; configuration and override it with INFRA_PROFILE
 
 ;; (sb-ext:quit)
+
 (unless (probe-file #p".stash")
   (sk-call* *skel-project* :bootstrap))
 
 ;; (build-default)
 (autogen)
-(sb-ext:quit)
 

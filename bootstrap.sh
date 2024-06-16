@@ -25,21 +25,21 @@ main() {
   ensure mkdir -p "${_stash}/include"
   cd "${_stash}"
   local _sbcl_pack="sbcl.tar.zst"
-  local _rocksdb_pack="rocksdb.tar.zst"
+  # local _rocksdb_pack="rocksdb.tar.zst"
   local _core_pack="core.tar.zst"
   local _core_src_pack="core-source.tar.zst"
   local _sbcl_url="${_url}/${_sbcl_pack}"
-  local _rocksdb_url="${_url}/${_rocksdb_pack}"
+  # local _rocksdb_url="${_url}/${_rocksdb_pack}"
   local _core_url="${_url}/${_core_pack}"
   local _core_src_url="${_url}/${_core_src_pack}"
   ensure download "$_sbcl_url" "$_sbcl_pack" "$_arch"
   unzstd "${_sbcl_pack}"
   tar -xf "sbcl.tar"
   cd sbcl && INSTALL_ROOT=$(realpath ..) sh install.sh && cd ..
-  # ensure download "$_core_src_url" "$_core_src_pack" "$_arch"
-  # unzstd "${_core_src_pack}"
-  # tar -xvf "core-source.tar"
-  # mv core src/
+  ensure download "$_core_src_url" "$_core_src_pack" "$_arch"
+  unzstd "${_core_src_pack}"
+  tar -xvf "core-source.tar"
+  mv core src/
   # ensure download "$_rocksdb_url" "${_rocksdb_pack}" "$_arch"
   # unzstd "${_rocksdb_pack}"
   # tar -xvf "pack/rocksdb.tar"
@@ -74,7 +74,6 @@ check_curl_for_retry_support() {
       _retry_supported="--retry 3 -C -"
     fi
   fi
-
   RETVAL="$_retry_supported"
 }
 
@@ -87,7 +86,6 @@ get_ciphersuites_for_curl() {
     RETVAL="$TLS_CIPHERSUITES"
     return
   fi
-
   local _openssl_syntax="no"
   local _gnutls_syntax="no"
   local _backend_supported="yes"
@@ -102,7 +100,6 @@ get_ciphersuites_for_curl() {
   else
     _backend_supported="no"
   fi
-
   local _args_supported="no"
   if [ "$_backend_supported" = "yes" ]; then
     # "unspecified" is for arch, allows for possibility old OS using macports, homebrew, etc.
@@ -110,7 +107,6 @@ get_ciphersuites_for_curl() {
       _args_supported="yes"
     fi
   fi
-
   local _cs=""
   if [ "$_args_supported" = "yes" ]; then
     if [ "$_openssl_syntax" = "yes" ]; then
@@ -119,7 +115,6 @@ get_ciphersuites_for_curl() {
       _cs=$(get_strong_ciphersuites_for "gnutls")
     fi
   fi
-
   RETVAL="$_cs"
 }
 
@@ -132,7 +127,6 @@ get_ciphersuites_for_wget() {
     RETVAL="$TLS_CIPHERSUITES"
     return
   fi
-
   local _cs=""
   if wget -V | grep -q '\-DHAVE_LIBSSL'; then
     # "unspecified" is for arch, allows for possibility old OS using macports, homebrew, etc.
@@ -145,7 +139,6 @@ get_ciphersuites_for_wget() {
       _cs=$(get_strong_ciphersuites_for "gnutls")
     fi
   fi
-
   RETVAL="$_cs"
 }
 
@@ -157,7 +150,6 @@ check_help_for() {
     shift
     _cmd="$1"
     shift
-
     local _category
     if "$_cmd" --help | grep -q 'For all options use the manual or "--help all".'; then
       _category="all"
@@ -166,7 +158,6 @@ check_help_for() {
     fi
 
     case "$_arch" in
-
         *darwin*)
         if check_cmd sw_vers; then
             case $(sw_vers -productVersion) in
@@ -190,15 +181,12 @@ check_help_for() {
             esac
         fi
         ;;
-
     esac
-
     for _arg in "$@"; do
         if ! "$_cmd" --help "$_category" | grep -q -- "$_arg"; then
             return 1
         fi
     done
-
     true # not strictly needed
 }
 
@@ -233,7 +221,6 @@ download() {
   else
     _dld='curl or wget' # to be used in error message of need_cmd
   fi
-
   if [ "$1" = --check ]; then
     need_cmd "$_dld"
   elif [ "$_dld" = curl ]; then

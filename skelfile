@@ -13,6 +13,11 @@
 :rules
 ((check () #$./check.sh$#)
  (clean () #$rm -rvf .stash$#)
+ (src () #$mkdir -pv .stash/src$#)
+ (bin () #$mkdir -pv .stash/bin$#)
+ ;; src
+ (repos (src) #$hg clone https://vc.compiler.company/comp/repos .stash/src/comp$#)
+ (packy-repos (src) #$hg clone https://vc.compiler.company/comp/repos .stash/src/packy$#)
  ;; containers
  (archlinux () #$podman build -f pod/Containerfile.archlinux --no-cache -t localhost/archlinux$#)
  (alpine () #$podman build -f pod/Containerfile.alpine --no-cache -t localhost/alpine$#)
@@ -22,8 +27,6 @@
  (operator (box) #$podman build -f pod/Containerfile.operator --no-cache -t localhost/operator$#)
  (containers (archlinux alpine ubuntu box worker operator))
  ;; programs
- (src () #$mkdir -pv .stash/src$#)
- (bin () #$mkdir -pv .stash/bin$#)
  (bootstrap () #$./bootstrap.sh$#)
  (emacs (src) #$./scripts/get-emacs.sh$#
         #$cd .stash/src/emacs && ./autogen.sh$#
