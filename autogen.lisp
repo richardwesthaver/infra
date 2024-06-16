@@ -5,14 +5,14 @@
 ;;; Code:
 (in-package :std-user)
 
-(defpkg :infra/bootstrap
+(defpkg :infra/autogen
   (:use :cl :skel :log :std/named-readtables
         :dat/json :dat/sxp :net/fetch :net/util
         :cli/progress :cli/ansi :cli/ed :cli/prompt
         :cli/shell :std/hash-table :std/alien :std/macs
         :std/fmt))
 
-(in-package :infra/bootstrap)
+(in-package :infra/autogen)
 
 (in-readtable :shell)
 

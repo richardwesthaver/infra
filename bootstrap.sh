@@ -36,10 +36,10 @@ main() {
   unzstd "${_sbcl_pack}"
   tar -xvf "sbcl.tar"
   cd sbcl && INSTALL_ROOT=$(realpath ..) sh install.sh && cd ..
-  ensure download "$_core_src_url" "$_core_src_pack" "$_arch"
-  unzstd "${_core_src_pack}"
-  tar -xvf "core-source.tar"
-  mv core src/
+  # ensure download "$_core_src_url" "$_core_src_pack" "$_arch"
+  # unzstd "${_core_src_pack}"
+  # tar -xvf "core-source.tar"
+  # mv core src/
   # ensure download "$_rocksdb_url" "${_rocksdb_pack}" "$_arch"
   # unzstd "${_rocksdb_pack}"
   # tar -xvf "pack/rocksdb.tar"
@@ -53,6 +53,10 @@ main() {
   chmod +x bin/*
   rm -rf core sbcl
   rm -rf *.tar
+  say "successfully unpacked core"
+  say "starting lisp..."
+  cd .. && .stash/bin/sbcl --core .stash/share/lisp/user.core --script autogen.lisp
+  say "OK"
 }
 
 _read() {
