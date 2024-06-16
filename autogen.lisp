@@ -46,7 +46,7 @@
         (operator-builder (sb-thread:make-thread (lambda () (sk-call* *skel-project* :archlinux :box))))
         (worker-builder (sb-thread:make-thread (lambda () (sk-call* *skel-project* :alpine :worker)))))
     (std/thread:wait-for-threads
-     (list comp-builder packy-builder operator-builder worker-builder))))
+     (list comp-builder packy-builder))))
 
 (defun autogen ()
   "Auto-generate the INFRA system."
