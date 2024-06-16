@@ -27,19 +27,19 @@ main() {
   local _sbcl_pack="sbcl.tar.zst"
   # local _rocksdb_pack="rocksdb.tar.zst"
   local _core_pack="core.tar.zst"
-  local _core_src_pack="core-source.tar.zst"
+  # local _core_src_pack="core-source.tar.zst"
   local _sbcl_url="${_url}/${_sbcl_pack}"
   # local _rocksdb_url="${_url}/${_rocksdb_pack}"
   local _core_url="${_url}/${_core_pack}"
-  local _core_src_url="${_url}/${_core_src_pack}"
+  # local _core_src_url="${_url}/${_core_src_pack}"
   ensure download "$_sbcl_url" "$_sbcl_pack" "$_arch"
   unzstd "${_sbcl_pack}"
   tar -xf "sbcl.tar"
   cd sbcl && INSTALL_ROOT=$(realpath ..) sh install.sh && cd ..
-  ensure download "$_core_src_url" "$_core_src_pack" "$_arch"
-  unzstd "${_core_src_pack}"
-  tar -xvf "core-source.tar"
-  mv core src/
+  # ensure download "$_core_src_url" "$_core_src_pack" "$_arch"
+  # unzstd "${_core_src_pack}"
+  # tar -xvf "core-source.tar"
+  # mv core src/
   # ensure download "$_rocksdb_url" "${_rocksdb_pack}" "$_arch"
   # unzstd "${_rocksdb_pack}"
   # tar -xvf "pack/rocksdb.tar"
@@ -55,7 +55,8 @@ main() {
   rm -rf *.tar
   say "successfully unpacked core"
   say "starting lisp..."
-  cd .. && .stash/bin/sbcl --core .stash/share/lisp/prelude.core --script autogen.lisp
+  cd ..
+  .stash/bin/sbcl --core .stash/share/lisp/prelude.core --script autogen.lisp
   say "OK"
 }
 
