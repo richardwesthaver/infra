@@ -55,7 +55,11 @@ main() {
   rm -rf *.tar
   say "successfully unpacked core"
   say "starting lisp..."
-  cd .. && .stash/bin/sbcl --core .stash/share/lisp/prelude.core --script autogen.lisp
+  cd .. && \
+    .stash/bin/sbcl --core .stash/share/lisp/user.core \
+                    --load autogen.lisp \
+                    --eval "(infra/autogen:autogen)" \
+                    --non-interactive
   say "OK"
 }
 

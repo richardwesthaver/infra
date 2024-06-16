@@ -1,8 +1,9 @@
-{{{header(infra,
-Richard Westhaver,
-ellis@rwest.io,
-The Compiler Company Infrastructure)}}}
+#+title: infra
+#+author: Richard Westhaver
+#+email: richard.westhaver@gmail.com
+#+description: The Compiler Company Infrastructure
 #+EXPORT_FILE_NAME: index
+#+setupfile: https://cdn.compiler.company/org/clean.theme
 
 This project contains scripts, utils, and applications used to host
 and maintain The Compiler Company infrastructure.
