@@ -19,12 +19,12 @@
  (repos (src) #$hg clone https://vc.compiler.company/comp/repos .stash/src/comp$#)
  (packy-repos (src) #$hg clone https://vc.compiler.company/comp/repos .stash/src/packy$#)
  ;; containers
- (archlinux () #$podman build -f pod/Containerfile.archlinux --no-cache -t localhost/archlinux$#)
- (alpine () #$podman build -f pod/Containerfile.alpine --no-cache -t localhost/alpine$#)
- (ubuntu () #$podman build -f pod/Containerfile.alpine --no-cache -t localhost/alpine$#)
- (box (archlinux) #$podman build -f pod/Containerfile.box --no-cache -t localhost/box$#)
- (worker (alpine) #$podman build -f pod/Containerfile.worker --no-cache -t localhost/worker$#)
- (operator (box) #$podman build -f pod/Containerfile.operator --no-cache -t localhost/operator$#)
+ (archlinux () #$podman build -f pod/Containerfile.archlinux . -t localhost/archlinux$#)
+ (alpine () #$podman build -f pod/Containerfile.alpine . -t localhost/alpine$#)
+ (ubuntu () #$podman build -f pod/Containerfile.alpine . -t localhost/alpine$#)
+ (box (archlinux) #$podman build -f pod/Containerfile.box . -t localhost/box$#)
+ (worker (alpine) #$podman build -f pod/Containerfile.worker . -t localhost/worker$#)
+ (operator (box) #$podman build -f pod/Containerfile.operator . -t localhost/operator$#)
  (containers (archlinux alpine ubuntu box worker operator))
  ;; programs
  (bootstrap () #$./bootstrap.sh$#)
