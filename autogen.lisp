@@ -43,7 +43,6 @@
 (defun build-default ()
   (let ((comp-builder (sb-thread:make-thread (lambda () (sk-call* *skel-project* :repos))))
         (packy-builder (sb-thread:make-thread (lambda () (sk-call* *skel-project* :packy-repos))))
-        (sbcl-builder (sb-thread:make-thread (lambda () (sk-call* *skel-project* :sbcl :sbcl-shared))))
         (operator-builder (sb-thread:make-thread (lambda () (sk-call* *skel-project* :archlinux :operator))))
         (worker-builder (sb-thread:make-thread (lambda () (sk-call* *skel-project* :alpine :worker)))))
     (std/thread:wait-for-threads
