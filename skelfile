@@ -82,7 +82,7 @@
                   cp -r include/* /usr/local/include/$#)
  (stumpwm-install () #$cd .stash/src/stumpwm && make install$#)
  ;; dist
- (dist (rocksdb sbcl) #$scripts/dist-rocksdb-binary.sh
-       scripts/dist-rocksdb-source.sh
-       scripts/dist-sbcl-binary.sh
+ (sbcl-dist (sbcl) #$scripts/dist-sbcl-binary.sh$#)
+ (rocksdb-dist (sbcl) #$scripts/dist-rocksdb-binary.sh$#)
+ (dist (rocksdb-dist sbcl-dist) #$scripts/dist-rocksdb-source.sh
        scripts/dist-sbcl-source.sh$#))
