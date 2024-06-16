@@ -34,7 +34,7 @@ main() {
   local _core_src_url="${_url}/${_core_src_pack}"
   ensure download "$_sbcl_url" "$_sbcl_pack" "$_arch"
   unzstd "${_sbcl_pack}"
-  tar -xvf "sbcl.tar"
+  tar -xf "sbcl.tar"
   cd sbcl && INSTALL_ROOT=$(realpath ..) sh install.sh && cd ..
   # ensure download "$_core_src_url" "$_core_src_pack" "$_arch"
   # unzstd "${_core_src_pack}"
@@ -47,7 +47,7 @@ main() {
   # cp -rf rocksdb/*.so lib/
   ensure download "$_core_url" "${_core_pack}" "$_arch"
   unzstd "${_core_pack}"
-  tar -xvf "core.tar"
+  tar -xf "core.tar"
   cp -rf core/bin/* bin/
   cp -rf core/share/* share/
   chmod +x bin/*
@@ -55,7 +55,7 @@ main() {
   rm -rf *.tar
   say "successfully unpacked core"
   say "starting lisp..."
-  cd .. && .stash/bin/sbcl --core .stash/share/lisp/user.core --script autogen.lisp
+  cd .. && .stash/bin/sbcl --core .stash/share/lisp/prelude.core --script autogen.lisp
   say "OK"
 }
 

@@ -56,9 +56,7 @@
         do (format t "  ~A = ~:A~%" k v))
   (println "profile:")
   (loop for (k v) on *profile* by 'cddr
-        do (format t "  ~A = ~A~%" k v))
-  ;; fresh bootstrap
-  (sk-call* *skel-project* :clean :bootstrap))
+        do (format t "  ~A = ~A~%" k v)))
 
 (defun build-default ()
   (let ((rocksdb-builder (sb-thread:make-thread (lambda () (sk-call* *skel-project* :rocksdb))))
@@ -78,9 +76,9 @@
 
 ;; (sb-ext:quit)
 (unless (probe-file #p".stash")
-  (autogen))
+  (sk-call* *skel-project* :bootstrap))
 
 ;; (build-default)
-
-;; (sb-ext:quit)
+(autogen)
+(sb-ext:quit)
 
