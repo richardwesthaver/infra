@@ -70,8 +70,7 @@ sbcl --core $LISP_HOME/user.core --script autogen.lisp \
 ;;; Build
 (defun make-default ()
   (std/thread:wait-for-threads
-   (list (sb-thread:make-thread (lambda () (sk-call* *skel-project* :repos)))
-         (sb-thread:make-thread (lambda () (sk-call* *skel-project* :packy-repos)))))
+   (list (sb-thread:make-thread (lambda () (sk-call* *skel-project* :repos)))))
   (vc:run-hg-command "clone" (list ".stash/src/core.hg" ".stash/src/core"))
   (vc:run-hg-command "clone" (list ".stash/src/home.hg" ".stash/src/home"))
   (vc:run-hg-command "clone" (list ".stash/src/etc.hg" ".stash/src/etc")))
