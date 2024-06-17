@@ -34,5 +34,8 @@ for i in $(find . -name ".hg" | cut -c 3-); do
 done
 
 # archive all *.git bundles and Mercurial .hg bundle
-cd $WD/src && tar -I 'zstd' -cf $OUT/$BUNDLE.tar.zst packy
+cd $WD/src
+tar -cf $BUNDLE.tar packy/* && zstd --ultra $BUNDLE.tar && mv $BUNDLE.tar.zst $OUT
+rm $BUNDLE.tar
+
 echo "Done."
