@@ -23,7 +23,6 @@ main() {
   ensure mkdir -p "${_stash}/bin"
   ensure mkdir -p "${_stash}/lib"
   ensure mkdir -p "${_stash}/include"
-  ensure mkdir -p "${_stash}/tmp"
   cd "${_stash}"
   local _sbcl_pack="sbcl.tar.zst"
   # local _rocksdb_pack="rocksdb.tar.zst"
