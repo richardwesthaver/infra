@@ -71,12 +71,22 @@ sbcl --core $LISP_HOME/user.core --script autogen.lisp \
 (defun make-default ()
   (std/thread:wait-for-threads
    (list (sb-thread:make-thread (lambda () (sk-call* *skel-project* :repos)))
-         (sb-thread:make-thread (lambda () (sk-call* *skel-project* :packy-repos))))))
+         (sb-thread:make-thread (lambda () (sk-call* *skel-project* :packy-repos)))))
+  (vc:run-hg-command "clone" (list ".stash/src/core.hg" ".stash/src/core"))
+  (vc:run-hg-command "clone" (list ".stash/src/home.hg" ".stash/src/home"))
+  (vc:run-hg-command "clone" (list ".stash/src/etc.hg" ".stash/src/etc")))
 
 (defun make-pods ()
+  (vc:run-hg-command "clone" (list ".stash/src/pod.hg" ".stash/src/pod"))
   (std/thread:wait-for-threads
    (list (sb-thread:make-thread (lambda () (sk-call* *skel-project* :archlinux :box)))
          (sb-thread:make-thread (lambda () (sk-call* *skel-project* :alpine :worker))))))
+
+(defun make-boxes ()
+  (vc:run-hg-command "clone" (list ".stash/src/box.hg" ".stash/src/box")))
+
+(defun make-org ()
+  (vc:run-hg-command "clone" (list ".stash/src/org.hg" ".stash/src/org")))
 
 (defun autogen ()
   "Auto-generate the INFRA system."

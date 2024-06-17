@@ -20,13 +20,15 @@
         unzstd comp.tar.zst && tar -xf comp.tar -C src && rm comp.tar$#)
  (packy-repos (src) #$cd .stash && curl -O https://vc.compiler.company/src/packy.tar.zst$#)
  ;; containers
- (archlinux () #$podman build -f pod/Containerfile.archlinux . -t localhost/archlinux$#)
- (alpine () #$podman build -f pod/Containerfile.alpine . -t localhost/alpine$#)
- (ubuntu () #$podman build -f pod/Containerfile.alpine . -t localhost/alpine$#)
- (box (archlinux) #$podman build -f pod/Containerfile.box . -t localhost/box$#)
- (worker (alpine) #$podman build -f pod/Containerfile.worker . -t localhost/worker$#)
- (operator (box) #$podman build -f pod/Containerfile.operator . -t localhost/operator$#)
- (containers (archlinux alpine ubuntu box worker operator))
+ (archlinux () #$podman build -f .stash/src/pod/Containerfile.archlinux . -t localhost/archlinux$#)
+ (alpine () #$podman build -f .stash/src/pod/Containerfile.alpine . -t localhost/alpine$#)
+ (ubuntu () #$podman build -f .stash/src/pod/Containerfile.alpine . -t localhost/alpine$#)
+ (box (archlinux) #$podman build -f .stash/src/pod/Containerfile.box . -t localhost/box$#)
+ (worker (alpine) #$podman build -f .stash/src/pod/Containerfile.worker . -t localhost/worker$#)
+ (operator (box) #$podman build -f .stash/src/pod/Containerfile.operator . -t localhost/operator$#)
+ (vc (worker) #$podman build -f .stash/src/pod/Containerfile.vc . -t localhost/vc$#)
+ (core (operator) #$podman build -f .stash/src/pod/Containerfile.core . -t localhost/core$#)
+ (containers (archlinux alpine ubuntu box worker operator vc))
  ;; programs
  (bootstrap () #$./bootstrap.sh$#)
  (emacs (src) #$./scripts/get-emacs.sh$#
