@@ -17,8 +17,10 @@
  (bin () #$mkdir -pv .stash/bin$#)
  ;; src
  (repos (src) #$cd .stash && curl -O https://packy.compiler.company/src/comp.tar.zst && \
-        unzstd comp.tar.zst && tar -xf comp.tar -C src && rm comp.tar$#)
- (packy-repos (src) #$cd .stash && curl -O https://vc.compiler.company/src/packy.tar.zst$#)
+        unzstd comp.tar.zst && tar -xf comp.tar -C src && mv src/hg/* src/ && rm -rf src/hg comp.tar$#)
+ (packy-repos (src) #$cd .stash && curl -O https://vc.compiler.company/src/packy.tar.zst && \
+              unzstd packy.tar.zst && mkdir -p src/packy && tar -xf packy.tar -C src/packy && \
+              mv hg/* git/* src/packy/ && rm -rf src/packy/hg src/packy/git packy.tar$#)
  ;; containers
  (archlinux () #$podman build -f .stash/src/pod/Containerfile.archlinux . -t localhost/archlinux$#)
  (alpine () #$podman build -f .stash/src/pod/Containerfile.alpine . -t localhost/alpine$#)

@@ -9,7 +9,7 @@ SRC_PATH=$HOME/src/$BUNDLE
 echo "Bundling $BUNDLE_NAME in $OUT..."
 
 mkdir -pv $OUT
-mkdir -pv $WD/vc/{git,hg}
+mkdir -pv $WD/src/packy
 
 cd $SRC_PATH
 # Find all git repositories, create bundles and dump them to $OUT dir.
@@ -18,7 +18,7 @@ for i in $(find . -name ".git" | cut -c 3-); do
     echo "found git repo: $i"
     cd $i/..
     echo "making git bundle..."
-    git bundle create $WD/vc/git/$(basename $(realpath .)).git --all
+    git bundle create $WD/src/packy/$(basename $(realpath .)).git --all
     echo "... Done."
     cd $SRC_PATH
 done
@@ -28,11 +28,11 @@ for i in $(find . -name ".hg" | cut -c 3-); do
     echo "found hg repo: $i"
     cd $i/..
     echo "making none-v2 bundle..."
-    hg bundle -a -t none-v2 $WD/vc/hg/$(basename $(hg root)).hg
+    hg bundle -a -t none-v2 $WD/src/packy/$(basename $(hg root)).hg
     echo "... Done."
     cd $SRC_PATH
 done
 
 # archive all *.git bundles and Mercurial .hg bundle
-cd $WD/vc && tar -I 'zstd' -cf $OUT/$BUNDLE.tar.zst git/*.git hg/hg.hg
+cd $WD/src && tar -I 'zstd' -cf $OUT/$BUNDLE.tar.zst packy/*
 echo "Done."
