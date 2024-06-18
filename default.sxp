@@ -21,10 +21,12 @@
 
 :install-prefix "/usr/local" ;; default install prefix
 
-:log-level :trace ;; should usually be set to at least :DEBUG, set to
+:log-level :debug ;; should usually be set to at least :DEBUG, set to
                   ;; :TRACE or T for verbose output
 
 :features (:default :org) ;; :demo :rust :rust-docs :caddy :stumpwm :emacs
                           ;; :emacs-mini :sbcl-gencgc :sbcl :sbcl-docs :prolog
                           ;; :ublk :blake3 :ts :ts-langs :rust-tools :rocksdb
                           ;; :quicklisp :pod :box :packy
+
+:secrets nil
