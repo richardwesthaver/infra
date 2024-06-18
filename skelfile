@@ -68,7 +68,7 @@
         #$cd .stash/src/linux && make mrproper -j &&
         zcat /proc/config.gz > .config && yes N | make localmodconfig$#)
  (xcaddy () #$go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest$#)
- (caddy (xcaddy) #$CGO_ENABLED=1 xcaddy build --output .stash/bin/caddy --with github.com/mholt/caddy-webdav --with github.com/mliezun/caddy-snake$#)
+ (caddy (xcaddy) #$CGO_ENABLED=1 xcaddy build --output .stash/bin/caddy --with github.com/mholt/caddy-webdav$#)
  (rust () #$scripts/get-rust.sh$#)
  (rust-docs (rust) #$cd .stash/src/rust && ./x doc$#)
  (ublk () #$scripts/get-ublksrv.sh$#

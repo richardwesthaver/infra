@@ -41,7 +41,7 @@ sbcl --core $LISP_HOME/user.core --script autogen.lisp \
                         hcfg)))
 (defparameter *host-env* (let ((table (make-hash-table :test 'equal))
                                (keys (list "STASH" "STORE" "DIST" "PACKY_URL" "VC_URL" "INSTALL_PREFIX"
-                                           "CC" "AR" "HG" "GIT" "LISP" "RUST" "LD" "SHELL" "DEV" "DEV_HOME"
+                                           "CC" "AR" "HG" "GIT" "LISP" "RUSTC" "LD" "SHELL" "DEV" "DEV_HOME"
                                            "DEV_ID" "WORKER" "WORKER_ID" "WORKER_HOME" "CARGO_HOME" "RUSTUP_HOME"
                                            "LISP_HOME" "INFRA_PROFILE" "LOG_LEVEL")))
                            (dolist (k keys table)
@@ -96,6 +96,7 @@ When WARN is non-nil, signal a warning instead of an error."
          (log-level (getprofile :log-level))
          (lisp-home (getprofile :lisp-home))
          (quicklisp-home (getprofile :quicklisp-home))
+         (rustc (getpro-else :rustc "rustc"))
          (rust-home (getprofile :rust-home))
          (rustup-home (getprofile :rustup-home))
          (cargo-home (getprofile :cargo-home))
@@ -112,6 +113,7 @@ When WARN is non-nil, signal a warning instead of an error."
      "LISP_VERSION" lisp-version
      "LISP_HOME" lisp-home
      "QUICKLISP_HOME" quicklisp-home
+     "RUSTC" rustc
      "RUST_HOME" rust-home
      "RUSTUP_HOME" rustup-home
      "CARGO_HOME" cargo-home
@@ -186,4 +188,5 @@ When WARN is non-nil, signal a warning instead of an error."
        (when (member :default features) (sb-thread:make-thread 'make-default :name "default"))
        (when (member :pod features) (sb-thread:make-thread 'make-pods :name "pod"))
        (when (member :box features) (sb-thread:make-thread 'make-boxes :name "box"))
-       (when (member :org features) (sb-thread:make-thread 'make-pods :name "org")))))))
+       (when (member :org features) (sb-thread:make-thread 'make-pods :name "org"))
+       (when (member :packy features) (sb-thread:make-thread 'make-packy :name "packy")))))))
