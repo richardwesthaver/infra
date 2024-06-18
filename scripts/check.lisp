@@ -4,7 +4,7 @@
 ;; bootstrapping.
 
 ;;; Code:
-(defpackage :infra/scripts/check
+(defpackage :infra/check
   (:nicknames :check)
   (:use :cl :std :sb-alien :cli :log)
   (:export :main

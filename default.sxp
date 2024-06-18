@@ -1,24 +1,16 @@
 ;; -*- mode:skel -*-
-:sbcl-version "2.4.5" ;; SBCL is always required for bootstrap
-
-:cc "clang"
-
 :lisp "sbcl"
-
+:lisp-version "2.4.5"
+:cc "clang"
 :stash ".stash" ;; local build stash
-
 :dist nil ;; remote distribution directory, or nil to use the stash
           ;; instead
-
-:install-root "/usr/local" ;; default installation directory
-
+:install-prefix "/usr/local" ;; default install prefix
 :log-level :debug ;; should usually be set to at least :DEBUG, set to
                   ;; :TRACE or T for verbose output
-
 :lisp-home "/usr/local/share/lisp"
-
 :quicklisp-home "/usr/local/share/lisp/quicklisp"
-
 :rust-home "/usr/local/share/rust"
-
 :cargo-home "/usr/local/share/rust/cargo"
+:rustup-home "/usr/local/share/rust/rustup"
+:features (:default :pod :box :org) ;; :demo 
