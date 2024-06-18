@@ -58,7 +58,7 @@ main() {
   cd .. && \
     .stash/bin/sbcl --core .stash/share/lisp/user.core \
                     --load autogen.lisp \
-                    --eval "(infra/autogen:autogen)" \
+                    --eval "(time (infra/autogen:autogen))" \
                     --non-interactive
   say "OK"
 }
