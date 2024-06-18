@@ -62,30 +62,77 @@ sbcl --core $LISP_HOME/user.core --script autogen.lisp \
      ,@(loop for (k v) on forms by #'cddr while v
              collect `(setenv ,k (or ,v "")))))
 
-(defmacro check-err (is-warn ctrl name)
+(defmacro check-err (is-warn ctrl &rest args)
   `(if ,is-warn
        (warn 'simple-warning 
              :format-control ,ctrl
-             :format-arguments (list ,name))
-       (error 'simple-program-error 
-              :format-control ,ctrl
-              :format-arguments (list ,name))))
+             :format-arguments (list ,@args))
+       (std:simple-program-error
+        ,ctrl
+        ,@args)))
+
+(defun setenv-exe (k v &optional warn)
+  (if-let ((path (cli:find-exe v)))
+    (setenv k (namestring path))
+    (check-err warn "~A not found: ~A" k v)))
+
+(defun setenv-probe (k v &optional warn)
+  (if-let ((path (probe-file v)))
+    (setenv k (namestring path))
+    (check-err warn "~A not found: ~A" k v)))
 
 (defun check-shared-lib (name &optional warn)
   "Check for a shared library by loading it in the current session with dlopen.
 When WARN is non-nil, signal a warning instead of an error."
   (let ((lib-name (format nil "lib~a.so" name)))
     (if-let ((lib (ignore-errors (sb-alien:load-shared-object lib-name))))
-      (unwind-protect t
+      (unwind-protect (format t "found shared lib: ~A~%" lib)
         (sb-alien:unload-shared-object lib))
       (check-err warn "shared library missing: ~x" name))))
+
+(defun check-exe (name &optional warn)
+  "Check for an executable in current $PATH by NAME. When WARN is non-nil, signal
+a warning instead of an error."
+  (if-let ((bin (cli:find-exe name)))
+    (progn (format t "found executable: ~A~%" bin) t)
+    (check-err warn "executable missing: ~x" name)))
+
+(defun check-default ()
+  (check-shared-lib "rocksdb")
+  (check-shared-lib "uring")
+  (check-shared-lib "zstd")
+  (check-shared-lib "tree-sitter")
+  (check-shared-lib "xkbcommon"))
+
+(defun check-org ()
+  (check-exe "emacs" t))
+
+(defun check-pod ()
+  (check-exe "podman"))
+
+(defun check-box ()
+  (check-exe "qemu"))
+
+(defun check-feature (name)
+  "Dispatch a host check based on feature NAME."
+  (case name
+    (:default (check-default))
+    (:org (check-org))
+    (:pod (check-pod))
+    (:box (check-box))
+    (t (warn "unsupported feature: ~A" name))))
 
 (defun getpro-else (k else) (or (getprofile k) else))
 
 ;;; Config
 (defun init-profile ()
   (info! "initializing profile...")
-  (let* ((cc (getpro-else :cc "clang"))
+  (let* ((packy-url (uri:uri (getpro-else :packy-url "https://packy.compiler.company")))
+         (vc-url (uri:uri (getpro-else :packy-url "https://vc.compiler.company")))
+         (ar (getpro-else :ar "tar"))
+         (git (getpro-else :git "git"))
+         (hg (getpro-else :hg "hg"))
+         (cc (getpro-else :cc "clang"))
          (ld (getpro-else :ld "lld"))
          (install-prefix (getpro-else :install-prefix "/usr/local"))
          (stash (getpro-else :stash ".stash"))
@@ -101,31 +148,42 @@ When WARN is non-nil, signal a warning instead of an error."
          (rustup-home (getprofile :rustup-home))
          (cargo-home (getprofile :cargo-home))
          (features (getprofile :features)))
-    (if-let ((stash (probe-file stash)))
-      (setenv "STASH" (namestring stash))
-      (error "STASH not found: ~A" stash))
-    (if-let ((cc (cli:find-exe cc)))
-      (setenv "CC" (namestring cc))
-      (error "CC not found: ~A" cc))
+    (setq *log-level* log-level)
+    (when (log:trace-p)
+      (trace! "env before update:")
+      (loop for k being the hash-key
+            using (hash-value v) of *host-env*
+            do (format t "  ~A = ~A~%" k (or v ""))
+            finally (terpri)))
+    (setenv-probe "STASH" stash t)
+    (setenv-probe "STORE" store t)
+    (setenv-probe "DIST" dist t)
+    (setenv-probe "INSTALL_PREFIX" install-prefix)
+    (setenv-exe "CC" cc)
+    (setenv-exe "LD" ld)
+    (setenv-exe "AR" ar)
+    (setenv-exe "GIT" git)
+    (setenv-exe "HG" hg)
+    (setenv-exe "RUSTC" rustc t)
+    (setenv-exe "LISP" lisp t)
     (setenv*
-     "LD" ld
-     "LISP" lisp
+     "PACKY_URL" (uri:uri-to-string packy-url)
+     "VC_URL" (uri:uri-to-string vc-url)
      "LISP_VERSION" lisp-version
      "LISP_HOME" lisp-home
      "QUICKLISP_HOME" quicklisp-home
-     "RUSTC" rustc
      "RUST_HOME" rust-home
      "RUSTUP_HOME" rustup-home
      "CARGO_HOME" cargo-home
      "INSTALL_PREFIX" install-prefix
-     "STORE" store
-     "DIST" dist
      "LOG_LEVEL" (symbol-name log-level))
-    (setq *log-level* log-level)
+    (terpri)
     ;; process features
     (loop for f in features
           do (progn
-               (format t "checking host for feature dependencies: ~A~%" f)))))
+               (format t "checking host for feature: ~A~%" f)
+               (check-feature f)
+               (terpri)))))
 
 (defun init-host ()
   )
@@ -133,10 +191,15 @@ When WARN is non-nil, signal a warning instead of an error."
 ;;; Build
 (defun make-default ()
   (std/thread:wait-for-threads
-   (list (sb-thread:make-thread (lambda () (sk-call* *skel-project* :repos)))))
-  (vc:run-hg-command "clone" (list ".stash/src/core.hg" ".stash/src/core"))
-  (vc:run-hg-command "clone" (list ".stash/src/home.hg" ".stash/src/home"))
-  (vc:run-hg-command "clone" (list ".stash/src/etc.hg" ".stash/src/etc")))
+   (list (sb-thread:make-thread (lambda () (sk-call* *skel-project* :repos)) :name "repos")))
+  (std/thread:wait-for-threads
+   (list
+    (sb-thread:make-thread (lambda () (vc:run-hg-command "clone" (list ".stash/src/core.hg" ".stash/src/core")))
+                           :name "core")
+    (sb-thread:make-thread (lambda () (vc:run-hg-command "clone" (list ".stash/src/home.hg" ".stash/src/home")))
+                           :name "home")
+    (sb-thread:make-thread (lambda () (vc:run-hg-command "clone" (list ".stash/src/etc.hg" ".stash/src/etc")))
+                           :name "etc"))))
 
 (defun make-pods ()
   (vc:run-hg-command "clone" (list ".stash/src/pod.hg" ".stash/src/pod"))
@@ -167,26 +230,33 @@ When WARN is non-nil, signal a warning instead of an error."
   (setq *skel-project* (find-skelfile *default-pathname-defaults* :load t))
   (unless (probe-file #p".stash")
     (sk-call* *skel-project* :bootstrap))
-  ;; print post-init info
-  (format t "lisp: ~A ~A~%"(lisp-implementation-type) (lisp-implementation-version))
-  (format t "core: ~A~%" sb-ext:*core-pathname*)
   (terpri)
-  (println "host:")
-  (loop for (k v) on *host* by 'cddr
-        do (format t "  ~A = ~A~%" k v))
-  (println "profile:")
-  (loop for (k v) on *profile* by 'cddr
-        do (format t "  ~A = ~A~%" k v))
-  (println "env:")
-  (loop for k being the hash-key
-        using (hash-value v) of *host-env*
-        do (format t "  ~A = ~A~%" k (or v "")))
+  ;; print post-init info
+  (when (log:info-p)
+    (log:info! "")
+    (format t "lisp: ~A ~A~%"(lisp-implementation-type) (lisp-implementation-version))
+    (terpri)
+    (format t "core: ~A~%" sb-ext:*core-pathname*)
+    (terpri)
+    (println "host:")
+    (loop for (k v) on *host* by 'cddr
+          do (format t "  ~A = ~A~%" k v))
+    (terpri)
+    (println "profile:")
+    (loop for (k v) on *profile* by 'cddr
+          do (format t "  ~A = ~A~%" k v))
+    (terpri)
+    (println "env:")
+    (loop for k being the hash-key
+          using (hash-value v) of *host-env*
+          do (format t "  ~A = ~A~%" k (or v ""))))
+  ;; process all features
   (let ((features (getprofile :features)))
+    (when (member :default features) (make-default))
     (std/thread:wait-for-threads
      (std:flatten
       (list
-       (when (member :default features) (sb-thread:make-thread 'make-default :name "default"))
-       (when (member :pod features) (sb-thread:make-thread 'make-pods :name "pod"))
-       (when (member :box features) (sb-thread:make-thread 'make-boxes :name "box"))
-       (when (member :org features) (sb-thread:make-thread 'make-pods :name "org"))
-       (when (member :packy features) (sb-thread:make-thread 'make-packy :name "packy")))))))
+       (when (member :org features) (sb-thread:make-thread #'make-org :name "org"))
+       (when (member :pod features) (sb-thread:make-thread #'make-pods :name "pod"))
+       (when (member :box features) (sb-thread:make-thread #'make-boxes :name "box"))
+       (when (member :packy features) (sb-thread:make-thread #'make-packy :name "packy")))))))
