@@ -13,11 +13,13 @@
 :rules
 ((check () #$./check.sh$#)
  (clean () #$rm -rvf .stash$#)
+ (tmp () #$mkdir -pv .stash/tmp$#)
  (src () #$mkdir -pv .stash/src$#)
  (bin () #$mkdir -pv .stash/bin$#)
  ;; src
- (repos (src) #$cd .stash && curl -O https://packy.compiler.company/src/comp.tar.zst && \
-        unzstd comp.tar.zst && tar -xf comp.tar -C src && mv src/hg/* src/ && rm -rf src/hg comp.tar$#)
+ (repos (src tmp) #$cd .stash/tmp && curl -O https://packy.compiler.company/src/comp.tar.zst && \
+        unzstd comp.tar.zst && tar -xf comp.tar -C ../src && \
+        mv ../src/hg/* ../src/ && rm -rf ../src/hg comp.tar$#)
  (packy-repos (src) #$cd .stash && curl -O https://packy.compiler.company/src/packy.tar.zst && \
               unzstd packy.tar.zst && tar -xf packy.tar -C src && \
               rm -rf packy.tar$#)
@@ -90,7 +92,8 @@
                   cp -r include/* /usr/local/include/$#)
  (stumpwm-install () #$cd .stash/src/stumpwm && make install$#)
  ;; dist
- (sbcl-dist (sbcl) #$scripts/dist-sbcl-binary.sh$#)
- (rocksdb-dist (sbcl) #$scripts/dist-rocksdb-binary.sh$#)
+ (sbcl-dist () #$scripts/dist-sbcl-binary.sh$#)
+ (rocksdb-dist () #$scripts/dist-rocksdb-binary.sh$#)
+ (stumpwm-dist () #$scripts/dist-stumpwm-binary.sh$#)
  (dist (rocksdb-dist sbcl-dist) #$scripts/dist-rocksdb-source.sh
        scripts/dist-sbcl-source.sh$#))

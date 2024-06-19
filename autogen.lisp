@@ -84,11 +84,13 @@ sbcl --core $LISP_HOME/user.core --script autogen.lisp \
 (defun check-shared-lib (name &optional warn)
   "Check for a shared library by loading it in the current session with dlopen.
 When WARN is non-nil, signal a warning instead of an error."
-  (let ((lib-name (format nil "lib~a.so" name)))
-    (if-let ((lib (ignore-errors (sb-alien:load-shared-object lib-name))))
-      (unwind-protect (format t "found shared lib: ~A~%" lib)
-        (sb-alien:unload-shared-object lib))
-      (check-err warn "shared library missing: ~x" name))))
+  (let ((local-lib-name (format nil "/usr/local/lib/lib~a.so" name))
+        (sys-lib-name (format nil "/usr/lib/lib~a.so" name)))
+    (if-let ((lib (or (ignore-errors (sb-alien:load-shared-object local-lib-name))
+                      (ignore-errors (sb-alien:load-shared-object sys-lib-name)))))
+            (unwind-protect (format t "found shared lib: ~A~%" lib)
+              (sb-alien:unload-shared-object lib))
+            (check-err warn "shared library missing in /usr/lib/ or /usr/local/lib/: ~x" name))))
 
 (defun check-exe (name &optional warn)
   "Check for an executable in current $PATH by NAME. When WARN is non-nil, signal

@@ -18,24 +18,33 @@ main() {
     # propagate exit status.
     exit 1
   fi
+  # setup default directories
   ensure mkdir -p "${_stash}/src"
   ensure mkdir -p "${_stash}/share/lisp/fasl"
+  ensure mkdir -p "${_stash}/tmp"
+  ensure mkdir -p "${_stash}/share/store/dist"
   ensure mkdir -p "${_stash}/bin"
   ensure mkdir -p "${_stash}/lib"
   ensure mkdir -p "${_stash}/include"
+
   cd "${_stash}"
   local _sbcl_pack="sbcl.tar.zst"
   # local _rocksdb_pack="rocksdb.tar.zst"
   local _core_pack="core.tar.zst"
+  local _user_core="user.core"
   # local _core_src_pack="core-source.tar.zst"
   local _sbcl_url="${_url}/${_sbcl_pack}"
   # local _rocksdb_url="${_url}/${_rocksdb_pack}"
   local _core_url="${_url}/${_core_pack}"
+  local _user_core_url="https://packy.compiler.company/dist/${_arch}/lisp/${_user_core}"
   # local _core_src_url="${_url}/${_core_src_pack}"
-  ensure download "$_sbcl_url" "$_sbcl_pack" "$_arch"
-  unzstd "${_sbcl_pack}"
-  tar -xf "sbcl.tar"
-  cd sbcl && INSTALL_ROOT=$(realpath ..) sh install.sh && cd ..
+  if [ ! -f "tmp/$_sbcl_pack" ]; then
+    ensure download "$_sbcl_url" "tmp/$_sbcl_pack" "$_arch"
+    unzstd "tmp/${_sbcl_pack}"
+    tar -C tmp -xf "tmp/sbcl.tar"
+    cd tmp/sbcl && INSTALL_ROOT=$(realpath ../..) sh install.sh && cd ../..
+  fi
+
   # ensure download "$_core_src_url" "$_core_src_pack" "$_arch"
   # unzstd "${_core_src_pack}"
   # tar -xvf "core-source.tar"
@@ -45,15 +54,20 @@ main() {
   # tar -xvf "pack/rocksdb.tar"
   # cp -rf rocksdb/include/* include/
   # cp -rf rocksdb/*.so lib/
-  ensure download "$_core_url" "${_core_pack}" "$_arch"
-  unzstd "${_core_pack}"
-  tar -xf "core.tar"
-  cp -rf core/bin/* bin/
-  cp -rf core/share/* share/
-  chmod +x bin/*
-  rm -rf core sbcl
-  rm -rf *.tar
-  say "successfully unpacked core"
+
+  # ensure download "$_core_url" "${_core_pack}" "$_arch"
+  # unzstd "${_core_pack}"
+  # tar -xf "core.tar"
+  # cp -rf core/bin/* bin/
+  # cp -rf core/share/* share/
+  if [ ! -f "tmp/$_user_core" ]; then
+    ensure download "$_user_core_url" "tmp/$_user_core" "$_arch"
+    cp "tmp/$_user_core" share/lisp/user.core
+    chmod +x bin/*
+  fi
+
+  say "bootstrap complete"
+
   say "starting lisp..."
   cd .. && \
     .stash/bin/sbcl --core .stash/share/lisp/user.core \
@@ -61,6 +75,7 @@ main() {
                     --eval "(infra/autogen:autogen)" \
                     --non-interactive \
                     --no-userinit --no-sysinit
+
   say "OK"
 }
 
