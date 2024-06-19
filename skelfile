@@ -92,6 +92,8 @@
                   cp -r include/* /usr/local/include/$#)
  (stumpwm-install () #$cd .stash/src/stumpwm && make install$#)
  ;; dist
+ (emacs-mini-dist () #$scripts/dist-emacs-binary.sh emacs-mini$#)
+ (emacs-dist () #$scripts/dist-emacs-binary.sh$#)
  (sbcl-dist () #$scripts/dist-sbcl-binary.sh$#)
  (rocksdb-dist () #$scripts/dist-rocksdb-binary.sh$#)
  (stumpwm-dist () #$scripts/dist-stumpwm-binary.sh$#)

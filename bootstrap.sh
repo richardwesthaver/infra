@@ -55,11 +55,14 @@ main() {
   # cp -rf rocksdb/include/* include/
   # cp -rf rocksdb/*.so lib/
 
-  # ensure download "$_core_url" "${_core_pack}" "$_arch"
-  # unzstd "${_core_pack}"
-  # tar -xf "core.tar"
-  # cp -rf core/bin/* bin/
-  # cp -rf core/share/* share/
+  if [ ! -f "bin/skel" ]; then
+  ensure download "$_core_url" "${_core_pack}" "$_arch"
+  unzstd "${_core_pack}"
+  tar -xf "core.tar"
+  cp -rf core/bin/* bin/
+  cp -rf core/share/* share/
+  fi
+
   if [ ! -f "share/lisp/$_infra_core" ]; then
     ensure download "$_infra_core_url" "share/lisp/$_infra_core" "$_arch"
   fi
