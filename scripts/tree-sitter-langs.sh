@@ -10,7 +10,8 @@ declare -ar default_langs=(
 # see https://tree-sitter.github.io/tree-sitter/#parsers for a
 # complete list of parsers available
 TARGETDIR="${1:-.stash/src/tree-sitter-langs}"
-PREFIX=${PREFIX:-/usr/local}
+
+PREFIX=$(realpath "${PREFIX:-/usr/local}")
 CC=${CC:-clang}
 CXX=${CXX:-clang++}
 if [ $(uname) == "Darwin" ];then
@@ -32,7 +33,7 @@ else
 fi
 
 mkdir -pv $TARGETDIR
-pushd $TARGETDIR
+cd $TARGETDIR
 for lang in "${langs[@]}";do
   [ -d "tree-sitter-${lang%/*}" ] || git clone ${repos[$lang]:-https://github.com/tree-sitter/tree-sitter-${lang%/*}};
   # subshell
