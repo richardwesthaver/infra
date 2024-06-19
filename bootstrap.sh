@@ -60,17 +60,17 @@ main() {
   # tar -xf "core.tar"
   # cp -rf core/bin/* bin/
   # cp -rf core/share/* share/
-  if [ ! -f "tmp/$_user_core" ]; then
-    ensure download "$_user_core_url" "tmp/$_user_core" "$_arch"
-    cp "tmp/$_user_core" share/lisp/user.core
-    chmod +x bin/*
+  if [ ! -f "share/lisp/$_infra_core" ]; then
+    ensure download "$_infra_core_url" "share/lisp/$_infra_core" "$_arch"
   fi
+
+  chmod +x bin/*
 
   say "bootstrap complete"
 
   say "starting lisp..."
   cd .. && \
-    .stash/bin/sbcl --core .stash/share/lisp/user.core \
+    .stash/bin/sbcl --core .stash/share/lisp/infra.core \
                     --load autogen.lisp \
                     --eval "(infra/autogen:autogen)" \
                     --non-interactive \
