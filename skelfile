@@ -53,8 +53,8 @@
  (sbcl-gencgc (src) #$cd .stash/src/sbcl &&
        ./make.sh --dynamic-space-size=8Gb --fancy$#)
  (sbcl-shared () #$cd .stash/src/sbcl && sh make-shared-library.sh$#)
- (quicklisp () #$cd .stash && curl -O https://beta.quicklisp.org/quicklisp.lisp
-            ./scripts/quicklisp-install.sh$#)
+ (quicklisp () #$cd .stash && curl -O https://beta.quicklisp.org/quicklisp.lisp$#
+            #$./scripts/quicklisp-install.sh$#)
  (stumpwm (src) #$./scripts/get-stumpwm.sh$#
           #$cd .stash/src/stumpwm && ./autogen.sh && ./configure && make$#)
  (nyxt (src) #$./scripts/get-nyxt.sh$#

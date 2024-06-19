@@ -276,7 +276,7 @@ a warning instead of an error."
           do (format t "  ~A = ~A~%" k (or v ""))))
   ;; process all features
   (let ((features (getprofile :features)))
-    (when (member :all features) (setf features *all-features*))
+    (when (member :all features) (setq features *all-features*))
     (when (member :default features) (make-default))
     (std/thread:wait-for-threads
      (std:flatten
