@@ -27,12 +27,12 @@
  (archlinux () #$podman build -f .stash/src/pod/Containerfile.archlinux . -t localhost/archlinux$#)
  (alpine () #$podman build -f .stash/src/pod/Containerfile.alpine . -t localhost/alpine$#)
  (ubuntu () #$podman build -f .stash/src/pod/Containerfile.alpine . -t localhost/alpine$#)
- (box (archlinux) #$podman build -f .stash/src/pod/Containerfile.box . -t localhost/box$#)
- (worker (alpine) #$podman build -f .stash/src/pod/Containerfile.worker . -t localhost/worker$#)
- (operator (box) #$podman build -f .stash/src/pod/Containerfile.operator . -t localhost/operator$#)
- (vc (worker) #$podman build -f .stash/src/pod/Containerfile.vc . -t localhost/vc$#)
- (core (operator) #$podman build -f .stash/src/pod/Containerfile.core . -t localhost/core$#)
- (containers (archlinux alpine ubuntu box worker operator vc))
+ (dev () #$podman build -f .stash/src/pod/Containerfile.dev . -t localhost/dev$#)
+ (worker () #$podman build -f .stash/src/pod/Containerfile.worker . -t localhost/worker$#)
+ (operator () #$podman build -f .stash/src/pod/Containerfile.operator . -t localhost/operator$#)
+ (vc () #$podman build -f .stash/src/pod/Containerfile.vc . -t localhost/vc$#)
+ (core () #$podman build -f .stash/src/pod/Containerfile.core . -t localhost/core$#)
+ (containers (archlinux alpine ubuntu dev worker operator vc core))
  ;; programs
  (bootstrap () #$./bootstrap.sh$#)
  (emacs (src) #$./scripts/get-emacs.sh$#
