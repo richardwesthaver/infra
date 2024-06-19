@@ -28,12 +28,15 @@ sbcl --core $LISP_HOME/user.core --script autogen.lisp \
 (in-package :infra/autogen)
 (in-readtable :shell)
 ;;; Vars
+(defvar *all-features*
+  (list :default :org :demo :emacs-mini :ts :ts-langs :rust-tools :quicklisp :pod :box :packy))
+
 (defparameter *profile* (uiop:read-file-forms
                          (if-let ((profile (sb-posix:getenv "INFRA_PROFILE")))
-                           (probe-file profile)
-                           (when-let ((default (probe-file "default.sxp")))
-                             (sb-posix:setenv "INFRA_PROFILE" (namestring default) 1)
-                             default))))
+                                 (probe-file profile)
+                                 (when-let ((default (probe-file "default.sxp")))
+                                           (sb-posix:setenv "INFRA_PROFILE" (namestring default) 1)
+                                           default))))
 (defparameter *host* (uiop:read-file-forms
                       (let ((hcfg (format nil "~a.sxp" (sb-unix:unix-gethostname))))
                         (unless (probe-file hcfg)
@@ -73,13 +76,13 @@ sbcl --core $LISP_HOME/user.core --script autogen.lisp \
 
 (defun setenv-exe (k v &optional warn)
   (if-let ((path (cli:find-exe v)))
-    (setenv k (namestring path))
-    (check-err warn "~A not found: ~A" k v)))
+          (setenv k (namestring path))
+          (check-err warn "~A not found: ~A" k v)))
 
 (defun setenv-probe (k v &optional warn)
   (if-let ((path (probe-file v)))
-    (setenv k (namestring path))
-    (check-err warn "~A not found: ~A" k v)))
+          (setenv k (namestring path))
+          (check-err warn "~A not found: ~A" k v)))
 
 (defun check-shared-lib (name &optional warn)
   "Check for a shared library by loading it in the current session with dlopen.
@@ -96,8 +99,8 @@ When WARN is non-nil, signal a warning instead of an error."
   "Check for an executable in current $PATH by NAME. When WARN is non-nil, signal
 a warning instead of an error."
   (if-let ((bin (cli:find-exe name)))
-    (progn (format t "found executable: ~A~%" bin) t)
-    (check-err warn "executable missing: ~x" name)))
+          (progn (format t "found executable: ~A~%" bin) t)
+          (check-err warn "executable missing: ~x" name)))
 
 (defun check-default ()
   (check-shared-lib "rocksdb")
@@ -113,7 +116,13 @@ a warning instead of an error."
   (check-exe "podman"))
 
 (defun check-box ()
-  (check-exe "qemu"))
+  (check-exe "qemu-system-x86_64"))
+
+(defun check-all ()
+  (check-default)
+  (check-org)
+  (check-pod)
+  (check-box))
 
 (defun check-feature (name)
   "Dispatch a host check based on feature NAME."
@@ -122,6 +131,7 @@ a warning instead of an error."
     (:org (check-org))
     (:pod (check-pod))
     (:box (check-box))
+    (:all (check-all))
     (t (warn "unsupported feature: ~A" name))))
 
 (defun getpro-else (k else) (or (getprofile k) else))
@@ -221,6 +231,18 @@ a warning instead of an error."
 (defun make-demo ()
   (vc:run-hg-command "clone" (list ".stash/src/demo.hg" ".stash/src/demo")))
 
+(defun make-quicklisp ()
+  (sk-call *skel-project* :quicklisp))
+
+(defun make-emacs-mini ()
+  (sk-run (sk-find-script "install-emacs-mini-pack" *skel-project*)))
+
+(defun make-ts ()
+  (sk-call *skel-project* :tree-sitter))
+
+(defun make-ts-langs ()
+  (sk-call *skel-project* :tree-sitter-langs))
+
 (defun autogen ()
   (info! (machine-version)
          "starting autogen...")
@@ -254,11 +276,16 @@ a warning instead of an error."
           do (format t "  ~A = ~A~%" k (or v ""))))
   ;; process all features
   (let ((features (getprofile :features)))
+    (when (member :all features) (setf features *all-features*))
     (when (member :default features) (make-default))
     (std/thread:wait-for-threads
      (std:flatten
       (list
        (when (member :org features) (sb-thread:make-thread #'make-org :name "org"))
        (when (member :pod features) (sb-thread:make-thread #'make-pods :name "pod"))
+       (when (member :quicklisp features) (sb-thread:make-thread #'make-quicklisp :name "quicklisp"))
+       (when (member :emacs-mini features) (sb-thread:make-thread #'make-emacs-mini :name "emacs-mini"))
+       (when (member :ts features) (sb-thread:make-thread #'make-ts :name "ts"))
+       (when (member :ts-langs features) (sb-thread:make-thread #'make-ts-langs :name "ts-langs"))
        (when (member :box features) (sb-thread:make-thread #'make-boxes :name "box"))
        (when (member :packy features) (sb-thread:make-thread #'make-packy :name "packy")))))))

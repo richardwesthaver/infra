@@ -1,8 +1,14 @@
 #!/bin/sh
-set -eu
+
 
 main() {
   . ./check.sh
+  if [[ -z "${INFRA_PROFILE:-}" ]]; then
+    export INFRA_PROFILE="${1:-default.sxp}"
+  else
+    export INFRA_PROFILE="${INFRA_PROFILE}"
+  fi
+  set -eu
   download --check
   local _arch=$(_read arch | tr -d '"')
   local _ext=""
