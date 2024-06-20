@@ -51,7 +51,7 @@
        ./make.sh --dynamic-space-size=8Gb --without-gencgc --with-mark-region-gc --fancy$#)
  (sbcl-docs (sbcl) #$cd .stash/src/sbcl/doc/manual && make$#)
  (sbcl-gencgc (src) #$cd .stash/src/sbcl &&
-       ./make.sh --dynamic-space-size=8Gb --fancy$#)
+       ./make.sh --fancy$#)
  (sbcl-shared () #$cd .stash/src/sbcl && sh make-shared-library.sh$#)
  (quicklisp () #$cd .stash && curl -O https://beta.quicklisp.org/quicklisp.lisp$#
             #$./scripts/quicklisp-install.sh$#)
