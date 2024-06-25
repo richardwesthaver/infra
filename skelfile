@@ -8,8 +8,8 @@
 :vc (:hg "https://vc.compiler.company/comp/infra")
 :docs ((:org "readme"))
 :scripts "scripts"
-:stash #p".stash"
-:store #p"/usr/local/share/store"
+:stash ".stash"
+:store "/usr/local/share/store"
 :rules
 ((check () #$./check.sh$#)
  (clean () #$rm -rvf .stash$#)
