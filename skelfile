@@ -1,12 +1,12 @@
 ;;; skelfile --- infra skelfile -*- mode: skel; -*-
 :name "infra"
-:author "Richard Westhaver <ellis@rwest.io>"
+:author ("Richard Westhaver" . "richard.westhaver@gmail.com")
 :version "0.1.0"
 :description "The Compiler Company Infrastructure"
 :tags (:infra)
 :license "MPL"
 :vc (:hg "https://vc.compiler.company/comp/infra")
-:docs ((:org "readme"))
+:components ((:org "readme"))
 :scripts "scripts"
 :stash ".stash"
 :store "/usr/local/share/store"

@@ -5,10 +5,10 @@
 #+EXPORT_FILE_NAME: index
 #+setupfile: https://cdn.compiler.company/org/clean.theme
 
-This project is used to build and maintain =The Compiler Company=
-infrastructure.
-
-- [[comp:docs/infra][Docs]]
+- [[https://compiler.company/docs/infra][Docs]]
   - [[https://compiler.company/docs/infra/quickstart.html][Quickstart]]
-  - [[comp:docs/infra/stats.html][Stats]]
-  - [[comp:docs/infra/scripts.html][Scripts]]
+  - [[https://compiler.company/docs/infra/stats.html][Stats]]
+  - [[https://compiler.company/docs/infra/scripts.html][Scripts]]
+
+* Overview
+This project is used to build and maintain [[https://compiler.company][CC]] infrastructure.
