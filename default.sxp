@@ -3,7 +3,7 @@
 :vc-url "https://vc.compiler.company"
 
 :lisp "sbcl"
-:lisp-version "2.4.5"
+:lisp-version "2.4.6"
 :lisp-home "/usr/local/share/lisp"
 :quicklisp-home "/usr/local/share/lisp/quicklisp"
 
