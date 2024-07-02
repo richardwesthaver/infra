@@ -5,6 +5,7 @@ CONFIG=(--with-mailutils
 	--with-imagemagick
 	--with-x-toolkit=gtk
 	--without-pop
+        --with-tree-sitter
 	--without-sound
 	--with-json
 	--enable-link-time-optimization

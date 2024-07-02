@@ -18,12 +18,15 @@ sbcl --core $LISP_HOME/user.core --script autogen.lisp \
 (in-package :std-user)
 
 (defpkg :infra/autogen
+  (:nicknames :infra)
   (:use :cl :skel :log :std/named-readtables
         :dat/json :dat/sxp :net/fetch :net/util
         :cli/progress :cli/ansi :cli/ed :cli/prompt
         :cli/shell :std/hash-table :std/alien :std/macs
         :std/fmt)
-  (:export :autogen))
+  (:export :autogen *profile* :*host*
+   :*all-features* :*host-env* :gethost :getprofile
+   :getenv))
 
 (in-package :infra/autogen)
 (in-readtable :shell)
