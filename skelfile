@@ -46,8 +46,9 @@
  (rocksdb-static (src) #$scripts/get-rocksdb.sh$#
                  #$cd .stash/src/rocksdb && make static_lib DISABLE_JEMALLOC=1$#)
  (sbcl (src) #$scripts/get-sbcl.sh$#
-       #$cd .stash/src/sbcl &&
-       echo '"2.4.6"' > version.lisp-expr &&
+       #$cd .stash/src/sbcl
+       sbcl_rev=$(git rev-parse --short HEAD)
+       echo \""2.4.6:$sbcl_rev"\" > version.lisp-expr &&
        ./make.sh --dynamic-space-size=8Gb --without-gencgc --with-mark-region-gc --fancy$#)
  (sbcl-docs (sbcl) #$cd .stash/src/sbcl/doc/manual && make$#)
  (sbcl-gencgc (src) #$cd .stash/src/sbcl &&
