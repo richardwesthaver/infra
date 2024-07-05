@@ -3,15 +3,16 @@
 ;;
 
 ;;; Code:
-(in-package :infra)
-
 (defvar *autogen-fasl*
   (or (probe-file ".stash/tmp/autogen.fasl")
       (and
        (ensure-directories-exist ".stash/tmp/")
        (compile-file "autogen" :output-file ".stash/tmp/autogen"))))
 
+#-(find-package :infra)
 (load *autogen-fasl*)
+
+(in-package :infra)
 
 (defvar *dist* (getprofile :dist))
 
