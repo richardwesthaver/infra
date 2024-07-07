@@ -21,7 +21,7 @@
         unzstd comp.tar.zst && tar -xf comp.tar -C ../src && \
         mv ../src/hg/* ../src/ && rm -rf ../src/hg comp.tar$#)
  (packy-repos (src) #$cd .stash && curl -O https://packy.compiler.company/src/packy.tar.zst && \
-              unzstd packy.tar.zst && tar -xf packy.tar -C src && \
+              unzstd packy.tar.zst && tar -xf packy.tar -C src/packy && \
               rm -rf packy.tar$#)
  ;; containers
  (archlinux () #$podman build -f .stash/src/pod/Containerfile.archlinux . -t localhost/archlinux$#)
@@ -63,6 +63,7 @@
  (scryer-prolog (src) #$./scripts/get-scryer-prolog.sh$#
                 #$cd .stash/src/scryer-prolog && cargo build --release$#)
  (tree-sitter (src) #$./scripts/get-tree-sitter.sh$#)
+ (tree-sitter-install (src) #$cd .stash/src/tree-sitter && make install$#)
  (linux () #$mkdir -pv .stash/src/linux$#
         #$gpg --export autosigner@ torvalds@ gregkh@ > .stash/src/linux/keyring.gpg$#
         #$./scripts/get-linux.sh $(uname -r | cut -d- -f1) .stash .stash/src/linux/keyring.gpg$#

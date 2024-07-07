@@ -13,7 +13,7 @@
 :rustup-home "/usr/local/share/rust/rustup"
 
 :cc "clang"
-:ld "lld"
+:ld "ld.lld"
 
 :stash ".stash" ;; local build stash
 :store ".stash/share/store" ;; local store

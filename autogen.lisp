@@ -237,10 +237,10 @@ a warning instead of an error."
 (defun make-emacs-mini ()
   (sk-run (sk-find-script "install-emacs-mini-pack" *skel-project*)))
 
-(defun make-ts ()
+(defun make-tree-sitter ()
   (sk-call *skel-project* :tree-sitter))
 
-(defun make-ts-langs ()
+(defun make-tree-sitter-langs ()
   (sk-call *skel-project* :tree-sitter-langs))
 
 (defun autogen ()
