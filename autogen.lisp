@@ -106,10 +106,10 @@ a warning instead of an error."
           (check-err warn "executable missing: ~x" name)))
 
 (defun check-default ()
-  (check-shared-lib "rocksdb")
-  (check-shared-lib "uring")
+  ;; (check-shared-lib "rocksdb")
+  ;; (check-shared-lib "uring")
   (check-shared-lib "zstd")
-  (check-shared-lib "tree-sitter")
+  ;; (check-shared-lib "tree-sitter")
   (check-shared-lib "xkbcommon"))
 
 (defun check-org ()
