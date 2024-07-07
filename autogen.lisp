@@ -18,12 +18,15 @@ sbcl --core $LISP_HOME/user.core --script autogen.lisp \
 (in-package :std-user)
 
 (defpkg :infra/autogen
+  (:nicknames :infra)
   (:use :cl :skel :log :std/named-readtables
         :dat/json :dat/sxp :net/fetch :net/util
         :cli/progress :cli/ansi :cli/ed :cli/prompt
         :cli/shell :std/hash-table :std/alien :std/macs
         :std/fmt)
-  (:export :autogen))
+  (:export :autogen *profile* :*host*
+   :*all-features* :*host-env* :gethost :getprofile
+   :getenv))
 
 (in-package :infra/autogen)
 (in-readtable :shell)
@@ -103,10 +106,10 @@ a warning instead of an error."
           (check-err warn "executable missing: ~x" name)))
 
 (defun check-default ()
-  (check-shared-lib "rocksdb")
-  (check-shared-lib "uring")
+  ;; (check-shared-lib "rocksdb")
+  ;; (check-shared-lib "uring")
   (check-shared-lib "zstd")
-  (check-shared-lib "tree-sitter")
+  ;; (check-shared-lib "tree-sitter")
   (check-shared-lib "xkbcommon"))
 
 (defun check-org ()
