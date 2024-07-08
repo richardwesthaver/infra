@@ -16,7 +16,7 @@ tar -cf sbcl.tar sbcl/output/sbcl.core sbcl/src/runtime/sbcl sbcl/output/prefix.
              echo $src_dir/Makefile
          fi
      done` \
-    sbcl/obj/sbcl-home && \
-zstd sbcl.tar && \
-rm sbcl.tar && \
+    sbcl/obj/sbcl-home
+# zstd sbcl.tar
+# rm sbcl.tar
 mv sbcl.tar.zst ../
