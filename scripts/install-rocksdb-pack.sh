@@ -3,7 +3,8 @@
 # static library is shipped separately.
 set -e
 cd .stash/tmp
-curl -O https://packy.compiler.company/dist/x86_64-unknown-linux-gnu/pack/rocksdb.tar.zst
+TARGET="${1:-x86_64-unknown-linux-gnu}"
+curl -O "https://packy.compiler.company/dist/${TARGET}/pack/rocksdb.tar.zst"
 unzstd rocksdb.tar.zst
 tar -xvf rocksdb.tar
 cd rocksdb
