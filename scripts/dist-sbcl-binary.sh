@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 # binary dist
-cd .stash/src/
+cd .stash/src/ && \
 tar -cf sbcl.tar sbcl/output/sbcl.core sbcl/src/runtime/sbcl sbcl/output/prefix.def \
     sbcl/src/runtime/sbcl.mk \
     `grep '^LIBSBCL=' sbcl/src/runtime/sbcl.mk | cut -d= -f2- | while read lib; do echo sbcl/src/runtime/$lib; done` \
@@ -16,7 +16,7 @@ tar -cf sbcl.tar sbcl/output/sbcl.core sbcl/src/runtime/sbcl sbcl/output/prefix.
              echo $src_dir/Makefile
          fi
      done` \
-    sbcl/obj/sbcl-home
-zstd sbcl.tar
-rm sbcl.tar
+    sbcl/obj/sbcl-home && \
+zstd sbcl.tar && \
+rm sbcl.tar && \
 mv sbcl.tar.zst ../
