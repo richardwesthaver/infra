@@ -4,5 +4,5 @@ TARGETDIR="${1:-.stash/src/emacs}"
 cd $TARGETDIR && ./autogen.sh && \
 ./configure --without-all --with-x-toolkit=no --without-x --enable-link-time-optimization \
             --with-json=ifavailable --with-gif=ifavailable --with-modules --with-gnutls=ifavailable \
-            --with-native-compilation --prefix=/usr/local && \
+            --with-zlib --with-native-compilation --prefix=/usr/local && \
 NATIVE_FULL_AOT=1 make -j$CPUS
