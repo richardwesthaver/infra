@@ -6,5 +6,6 @@ curl -O "https://packy.compiler.company/dist/${TARGET}/pack/core.tar.zst"
 unzstd core.tar.zst
 tar -xvf core.tar
 cd core
-install -m 755 bin/* /usr/local/bin/
-install -m 755 fasl/* /usr/local/lib/sbcl/
+mv bin/* /usr/local/bin/
+mv lib/* /usr/local/lib/
+mv share/* /usr/local/share/
