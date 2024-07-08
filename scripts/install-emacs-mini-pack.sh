@@ -6,4 +6,7 @@ curl -O "https://packy.compiler.company/dist/${TARGET}/pack/emacs-mini.tar.zst"
 unzstd emacs-mini.tar.zst
 tar -xvf emacs-mini.tar
 cd emacs*/
+./configure --without-all --with-x-toolkit=no --without-x --enable-link-time-optimization \
+            --with-json=ifavailable --with-gif=ifavailable --with-modules --with-gnutls=ifavailable \
+            --with-zlib --with-native-compilation --prefix=/usr/local
 make install
