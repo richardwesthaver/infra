@@ -17,6 +17,6 @@ tar -cf sbcl.tar sbcl/output/sbcl.core sbcl/src/runtime/sbcl sbcl/output/prefix.
          fi
      done` \
     sbcl/obj/sbcl-home
-# zstd sbcl.tar
+zstd sbcl.tar
 # rm sbcl.tar
 mv sbcl.tar.zst ../
