@@ -23,7 +23,7 @@
  (repos-install-shallow (repos) #$cd .stash/src && mv *.hg /usr/local/src/$#)
  (home (src) #$hg clone https://vc.compiler.company/comp/home .stash/src/home$#)
  (core (src) #$hg clone https://vc.compiler.company/comp/core .stash/src/core$#)
- (packy-repos (src) #$cd .stash && curl -O https://packy.compiler.company/src/packy.tar.zst && \
+ (packy-repos (src) #$cd .stash/tmp && curl -O https://packy.compiler.company/src/packy.tar.zst && \
               unzstd packy.tar.zst && tar -xf packy.tar -C src/packy && \
               rm -rf packy.tar$#)
  ;; containers
