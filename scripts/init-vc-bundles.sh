@@ -9,6 +9,6 @@ for i in $(find . -type f -name ".hg"); do
   echo "unbundling $i"
   r=(basename "$i" .hg)
   hg init "$r"
-  cd $r && hg unbundle $DIR/$i && cd $DIR
+  cd "$r" && hg unbundle "$DIR/$i" && cd "$DIR"
+  rm "$i"
 done
-            
