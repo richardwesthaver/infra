@@ -19,4 +19,5 @@ for i in $(find . -type f -name "*.git"); do
   r=$(basename "$i" .git)
   git init "$r"
   cd "$r" && git fetch "$DIR/packy/$i" && cd "$DIR/packy"
+  rm "$i"
 done
