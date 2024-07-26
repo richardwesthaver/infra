@@ -24,9 +24,9 @@
 :log-level :debug ;; should usually be set to at least :DEBUG, set to
                   ;; :TRACE or T for verbose output
 
-:features (:default :org) ;; :demo :rust :rust-docs :caddy :stumpwm :emacs
-                          ;; :emacs-mini :sbcl-gencgc :sbcl :sbcl-docs :prolog
-                          ;; :ublk :blake3 :ts :ts-langs :rust-tools :rocksdb
-                          ;; :quicklisp :pod :box :packy
+:features (:default) ;; :demo :rust :rust-docs :caddy :stumpwm :emacs
+                     ;; :emacs-mini :sbcl-gencgc :sbcl :sbcl-docs :prolog
+                     ;; :ublk :blake3 :ts :ts-langs :rust-tools :rocksdb
+                     ;; :quicklisp :pod :box :packy :org
 
 :secrets nil
