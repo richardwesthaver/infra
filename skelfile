@@ -74,8 +74,8 @@
         tar -xvf .stash/src/linux.tar $(uname -r | cut -d- -f1)$#
         #$cd .stash/src/linux && make mrproper -j &&
         zcat /proc/config.gz > .config && yes N | make localmodconfig$#)
- (xcaddy () #$GOBIN=/usr/local/bin go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest$#)
- (caddy (xcaddy) #$xcaddy build --output .stash/bin/caddy --with github.com/mholt/caddy-webdav$#)
+ (xcaddy () #$go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest$#)
+ (caddy (xcaddy) #$~/go/bin/xcaddy build --output .stash/bin/caddy --with github.com/mholt/caddy-webdav$#)
  (caddy-install () #$cp .stash/bin/caddy /usr/local/bin/caddy$#)
  (rust () #$scripts/get-rust.sh$#)
  (rust-docs (rust) #$cd .stash/src/rust && ./x doc$#)
