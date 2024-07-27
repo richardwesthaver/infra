@@ -76,7 +76,7 @@
         zcat /proc/config.gz > .config && yes N | make localmodconfig$#)
  (xcaddy () #$go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest$#)
  (caddy (xcaddy) #$xcaddy build --output .stash/bin/caddy --with github.com/mholt/caddy-webdav$#)
- (caddy-install () #$cp .stash/bin/caddy /usr/local/bin/caddy$#
+ (caddy-install () #$cp .stash/bin/caddy /usr/local/bin/caddy$#)
  (rust () #$scripts/get-rust.sh$#)
  (rust-docs (rust) #$cd .stash/src/rust && ./x doc$#)
  (ublk () #$scripts/get-ublksrv.sh$#
