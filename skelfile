@@ -100,10 +100,10 @@
  ;; dist
  (dist-emacs-mini () #$cd .stash/src/emacs
                   ./make-dist --tar --no-compress
-                  zstd -8 emacs-31.0.50 -o "../../emacs-mini.tar.zst"$#)
+                  zstd -8 emacs-31.0.50.tar -o "../../emacs-mini.tar.zst"$#)
  (dist-emacs () #$cd .stash/src/emacs
              ./make-dist --tar --no-compress
-             zstd -8 emacs-31.0.50 -o "../../emacs.tar.zst"$#)
+             zstd -8 emacs-31.0.50.tar -o "../../emacs.tar.zst"$#)
  (dist-sbcl () #$scripts/dist-sbcl-binary.sh$#)
  (dist-sbcl-source () #$scripts/dist-sbcl-binary.sh$#)
  (dist-rocksdb () #$scripts/dist-rocksdb-binary.sh$#)
