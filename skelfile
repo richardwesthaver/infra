@@ -20,7 +20,7 @@
  (repos (src tmp) #$cd .stash/tmp && curl -O https://packy.compiler.company/src/comp.tar.zst && \
         unzstd comp.tar.zst && tar -xf comp.tar -C ../src && \
         mv ../src/hg/* ../src/ && rm -rf ../src/hg comp.tar$#)
- (repos-install-shallow (repos) #$cd .stash/src && mv *.hg /usr/local/src/$#)
+ (install-repos-shallow (repos) #$cd .stash/src && mv *.hg /usr/local/src/$#)
  (home (src) #$hg clone https://vc.compiler.company/comp/home .stash/src/home$#)
  (core (src) #$hg clone https://vc.compiler.company/comp/core .stash/src/core$#)
  (packy-repos (src) #$cd .stash/tmp && curl -O https://packy.compiler.company/src/packy.tar.zst && \
@@ -38,70 +38,70 @@
  (containers (archlinux alpine ubuntu dev worker operator vc core))
  ;; programs
  (bootstrap () #$./bootstrap.sh$#)
- (emacs (src) #$./scripts/get-emacs.sh$#
+ (build-emacs (src) #$./scripts/get-emacs.sh$#
         #$cd .stash/src/emacs && ./autogen.sh$#
         #$./scripts/build-emacs.sh$#)
- (emacs-mini (src) #$./scripts/get-emacs.sh$#
+ (build-emacs-mini (src) #$./scripts/get-emacs.sh$#
              #$cd .stash/src/emacs && ./autogen.sh$#
              #$./scripts/build-emacs-mini.sh$#)
- (rocksdb (src) #$scripts/get-rocksdb.sh$#
+ (build-rocksdb (src) #$scripts/get-rocksdb.sh$#
           #$cd .stash/src/rocksdb && make shared_lib DISABLE_JEMALLOC=1$#)
- (rocksdb-static (src) #$scripts/get-rocksdb.sh$#
+ (build-rocksdb-static (src) #$scripts/get-rocksdb.sh$#
                  #$cd .stash/src/rocksdb && make static_lib DISABLE_JEMALLOC=1$#)
- (sbcl (src) #$scripts/get-sbcl.sh$#
+ (build-sbcl (src) #$scripts/get-sbcl.sh$#
        #$cd .stash/src/sbcl
        sbcl_rev=$(git rev-parse --short HEAD)
        echo \""2.4.7:$sbcl_rev"\" > version.lisp-expr &&
        ./make.sh --dynamic-space-size=8Gb --without-gencgc --with-mark-region-gc --fancy$#)
- (sbcl-docs (sbcl) #$cd .stash/src/sbcl/doc/manual && make$#)
- (sbcl-gencgc (src) #$cd .stash/src/sbcl &&
+ (build-sbcl-docs (sbcl) #$cd .stash/src/sbcl/doc/manual && make$#)
+ (build-sbcl-gencgc (src) #$cd .stash/src/sbcl &&
        ./make.sh --fancy$#)
- (sbcl-shared () #$cd .stash/src/sbcl && sh make-shared-library.sh$#)
- (quicklisp () #$cd .stash && curl -O https://beta.quicklisp.org/quicklisp.lisp$#
-            #$./scripts/quicklisp-install.sh$#)
- (stumpwm (src) #$./scripts/get-stumpwm.sh$#
+ (build-sbcl-shared () #$cd .stash/src/sbcl && sh make-shared-library.sh$#)
+ (install-quicklisp () #$cd .stash && curl -O https://beta.quicklisp.org/quicklisp.lisp$#
+                    #$./scripts/quicklisp-install.sh$#)
+ (build-stumpwm (src) #$./scripts/get-stumpwm.sh$#
           #$cd .stash/src/stumpwm && ./autogen.sh && ./configure && make$#)
- (nyxt (src) #$./scripts/get-nyxt.sh$#
+ (build-nyxt (src) #$./scripts/get-nyxt.sh$#
        #$cd .stash/src/nyxt && git submodule update --init && make all$#)
- (scryer-prolog (src) #$./scripts/get-scryer-prolog.sh$#
+ (build-scryer-prolog (src) #$./scripts/get-scryer-prolog.sh$#
                 #$cd .stash/src/scryer-prolog && cargo build --release$#)
- (tree-sitter (src) #$./scripts/get-tree-sitter.sh$#)
- (tree-sitter-install (src) #$cd .stash/src/tree-sitter && make install$#)
- (linux () #$mkdir -pv .stash/src/linux$#
+ (build-tree-sitter (src) #$./scripts/get-tree-sitter.sh$#)
+ (install-tree-sitter (src) #$cd .stash/src/tree-sitter && make install$#)
+ (build-linux () #$mkdir -pv .stash/src/linux$#
         #$gpg --export autosigner@ torvalds@ gregkh@ > .stash/src/linux/keyring.gpg$#
         #$./scripts/get-linux.sh $(uname -r | cut -d- -f1) .stash .stash/src/linux/keyring.gpg$#
         #$cd scripts && unxz .stash/src/linux.tar.xz &&
         tar -xvf .stash/src/linux.tar $(uname -r | cut -d- -f1)$#
         #$cd .stash/src/linux && make mrproper -j &&
         zcat /proc/config.gz > .config && yes N | make localmodconfig$#)
- (xcaddy () #$go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest$#)
- (caddy (xcaddy) #$~/go/bin/xcaddy build --output .stash/bin/caddy --with github.com/mholt/caddy-webdav$#)
- (caddy-install () #$cp .stash/bin/caddy /usr/local/bin/caddy$#)
- (rust () #$scripts/get-rust.sh$#)
- (rust-docs (rust) #$cd .stash/src/rust && ./x doc$#)
- (ublk () #$scripts/get-ublksrv.sh$#
+ (build-xcaddy () #$go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest$#)
+ (build-caddy (xcaddy) #$~/go/bin/xcaddy build --output .stash/bin/caddy --with github.com/mholt/caddy-webdav$#)
+ (install-caddy () #$cp .stash/bin/caddy /usr/local/bin/caddy$#)
+ (build-rust () #$scripts/get-rust.sh$#)
+ (build-rust-docs (rust) #$cd .stash/src/rust && ./x doc$#)
+ (build-ublk () #$scripts/get-ublksrv.sh$#
        #$cd .stash/src/ublksrv && autoreconf -i && ./configure && make$#)
- (ublk-install () #$cd .stash/src/ublksrv && make install$#)
+ (install-ublk () #$cd .stash/src/ublksrv && make install$#)
  ;; ref: https://github.com/BLAKE3-team/BLAKE3/tree/master/c#building
- (blake3 () #$scripts/get-blake3.sh$#
+ (build-blake3 () #$scripts/get-blake3.sh$#
          #$cd .stash/src/blake3/c && gcc -shared -O3 -o libblake3.so blake3.c blake3_dispatch.c blake3_portable.c \
          blake3_sse2_x86-64_unix.S blake3_sse41_x86-64_unix.S blake3_avx2_x86-64_unix.S \
          blake3_avx512_x86-64_unix.S$#)
- (blake3-install () #$cd .stash/src/blake3/c && cp libblake3.so /usr/local/lib/ && cp blake3.h /usr/local/include/$#)
+ (install-blake3 () #$cd .stash/src/blake3/c && cp libblake3.so /usr/local/lib/ && cp blake3.h /usr/local/include/$#)
  ;; install
- (tree-sitter-langs (src) #$PREFIX=.stash ./scripts/tree-sitter-langs.sh$#)
- (cargo-tools () #$scripts/install-cargo-tools.sh$#)
- (rustup () #$curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y$#)
- (sbcl-install () #$cd .stash/src/sbcl && INSTALL_ROOT=/usr/local sh install.sh$#)
- (emacs-install () #$cd .stash/src/emacs && make install$#)
- (rocksdb-install () #$cd .stash/src/rocksdb && make install-shared &&
+ (install-tree-sitter-langs (src) #$PREFIX=.stash ./scripts/tree-sitter-langs.sh$#)
+ (install-cargo-tools () #$scripts/install-cargo-tools.sh$#)
+ (install-rustup () #$curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y$#)
+ (install-sbcl () #$cd .stash/src/sbcl && INSTALL_ROOT=/usr/local sh install.sh$#)
+ (install-emacs () #$cd .stash/src/emacs && make install$#)
+ (install-rocksdb () #$cd .stash/src/rocksdb && make install-shared &&
                   cp -r include/* /usr/local/include/$#)
- (stumpwm-install () #$cd .stash/src/stumpwm && make install$#)
+ (install-stumpwm () #$cd .stash/src/stumpwm && make install$#)
  ;; dist
- (emacs-mini-dist () #$scripts/dist-emacs-binary.sh emacs-mini$#)
- (emacs-dist () #$scripts/dist-emacs-binary.sh$#)
- (sbcl-dist () #$scripts/dist-sbcl-binary.sh$#)
- (rocksdb-dist () #$scripts/dist-rocksdb-binary.sh$#)
- (stumpwm-dist () #$scripts/dist-stumpwm-binary.sh$#)
- (dist (rocksdb-dist sbcl-dist) #$scripts/dist-rocksdb-source.sh
+ (dist-emacs-mini () #$scripts/dist-emacs-binary.sh emacs-mini$#)
+ (dist-emacs () #$scripts/dist-emacs-binary.sh$#)
+ (dist-sbcl () #$scripts/dist-sbcl-binary.sh$#)
+ (dist-rocksdb () #$scripts/dist-rocksdb-binary.sh$#)
+ (dist-stumpwm () #$scripts/dist-stumpwm-binary.sh$#)
+ (dist (dist-rocksdb dist-sbcl) #$scripts/dist-rocksdb-source.sh
        scripts/dist-sbcl-source.sh$#))
