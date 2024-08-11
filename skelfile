@@ -99,7 +99,7 @@
  (install-stumpwm () #$cd .stash/src/stumpwm && make install$#)
  ;; dist
  (dist-emacs-mini () #$cd .stash/src/emacs
-                  ./make-dist --tar --no-compress
+                  ./make-dist --tar --no-compress --no-info --no-changelog
                   zstd -8 emacs-31.0.50.tar -o "../../emacs-mini.tar.zst"$#)
  (dist-emacs () #$cd .stash/src/emacs
              ./make-dist --tar --no-compress

@@ -9,7 +9,6 @@
        (ensure-directories-exist ".stash/tmp/")
        (compile-file "autogen" :output-file ".stash/tmp/autogen"))))
 
-#-(find-package :infra)
 (load *autogen-fasl*)
 
 (in-package :infra)
