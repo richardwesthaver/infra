@@ -10,6 +10,7 @@
 :scripts "scripts"
 :stash ".stash"
 :store "/usr/local/share/store"
+:env (STASH STORE)
 :rules
 ((check () #$./check.sh$#)
  (clean () #$rm -rvf .stash$#)
