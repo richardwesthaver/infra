@@ -6,6 +6,7 @@
 :tags (:infra)
 :license "MPL"
 :vc (:hg "https://vc.compiler.company/comp/infra")
+:include ("pod/skelfile")
 :components ((:org "readme"))
 :scripts "scripts"
 :stash ".stash"
