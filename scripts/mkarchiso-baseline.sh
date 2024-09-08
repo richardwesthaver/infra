@@ -3,7 +3,7 @@ WD="${1:-.stash/box}"
 PROFILE=".stash/src/box"
 mkdir -pv $WD/baseline
 
-hg clone https://vc.compiler.company/comp/box $PROFILE
+hg clone https://vc.compiler.company/infra/box $PROFILE
 pushd $PROFILE
 hg up baseline
 popd

@@ -2,7 +2,7 @@
 WD="${1:-.stash/box}"
 PROFILE=".stash/src/box"
 mkdir -pv $WD/releng
-hg clone https://vc.compiler.company/comp/box $PROFILE
+hg clone https://vc.compiler.company/infra/box $PROFILE
 pushd $PROFILE
 hg up releng
 popd
