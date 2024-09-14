@@ -53,7 +53,7 @@
  (build-sbcl (src) #$scripts/get-sbcl.sh$#
        #$cd .stash/src/sbcl
        sbcl_rev=$(git rev-parse --short HEAD)
-       echo \""2.4.7:$sbcl_rev"\" > version.lisp-expr &&
+       echo \""2.4.8:$sbcl_rev"\" > version.lisp-expr &&
        ./make.sh --dynamic-space-size=8Gb --without-gencgc --with-mark-region-gc --fancy$#)
  (build-sbcl-docs (sbcl) #$cd .stash/src/sbcl/doc/manual && make$#)
  (build-sbcl-gencgc (src) #$cd .stash/src/sbcl &&
