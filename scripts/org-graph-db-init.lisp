@@ -8,7 +8,7 @@
 (unless (find-package :org-graph-db)
   (defpkg :org-graph-db
     (:use :cl :std :rdb
-     :obj/db :obj/query :obj/id :obj/uuid)))
+     :obj/db :obj/query :obj/id :obj/uuid :q)))
 
 (in-package :org-graph-db)
 
@@ -85,7 +85,6 @@
     (open-db db)
     (open-cfs db)
     (setq *org-graph-db* db)
-    ;; (open-cfs db)
     (insert-org-files)
     (insert-org-nodes)
     (log:info! "created org-graph-db" db *org-graph-db-directory* *org-graph-schema*)))
