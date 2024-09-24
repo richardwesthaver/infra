@@ -69,7 +69,10 @@ main() {
   cd ..
   cp -rf tmp/core/bin/* bin/
   # unpacked core, link binaries
-  ln -sf bin/core bin/skel
+  cd bin
+  # ln -sf core skel
+  # ln -sf core homer
+  cd ..
   cp -rf tmp/core/share/* share/
   fi
 
