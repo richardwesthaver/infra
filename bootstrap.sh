@@ -68,6 +68,8 @@ main() {
   tar -xf "core.tar"
   cd ..
   cp -rf tmp/core/bin/* bin/
+  # unpacked core, link binaries
+  ln -sf bin/core bin/skel
   cp -rf tmp/core/share/* share/
   fi
 
