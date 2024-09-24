@@ -90,7 +90,7 @@
          blake3_avx512_x86-64_unix.S$#)
  (install-blake3 () #$cd .stash/src/blake3/c && cp libblake3.so /usr/local/lib/ && cp blake3.h /usr/local/include/$#)
  ;; install
- (install-tree-sitter-langs (src) #$PREFIX=.stash ./scripts/tree-sitter-langs.sh$#)
+ (install-tree-sitter-langs (src) #$./scripts/tree-sitter-langs.sh$#)
  (install-cargo-tools () #$scripts/install-cargo-tools.sh$#)
  (install-rustup () #$curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y$#)
  (install-sbcl () #$cd .stash/src/sbcl && INSTALL_ROOT=/usr/local sh install.sh$#)

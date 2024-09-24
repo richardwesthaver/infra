@@ -9,4 +9,4 @@
 #rustup default nightly
 
 TARGETDIR=${1:-.stash/src/rust}
-git clone https://vc.compiler.company/packy/rust.git $TARGETDIR
+git clone https://vc.compiler.company/packy/rust $TARGETDIR
