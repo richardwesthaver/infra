@@ -3,7 +3,7 @@
 #+email: richard.westhaver@gmail.com
 #+description: The Compiler Company Infrastructure
 #+EXPORT_FILE_NAME: index
-#+setupfile: https://cdn.compiler.company/org/clean.theme
+#+setupfile: ../org/clean.theme
 #+CALL: project-details()
 
 #+RESULTS:
@@ -13,11 +13,11 @@
 | description | The Compiler Company Infrastructure                  |
 | skel-id     | 3466-87d9-5b04-a5df                                  |
 | root        | ~/comp/infra/                                        |
-| vc          | :hg [[https://vc.compiler.company/infra][vc.compiler.company/infra]] :rev [[https://vc.compiler.company/infra/rev/7dcabf3e0edc][7dcabf3e0edc:371+]] |
+| vc          | :hg [[https://vc.compiler.company/infra][vc.compiler.company/infra]] :rev [[https://vc.compiler.company/infra/rev/45a8719e362d][45a8719e362d:372+]] |
 | tags        | INFRA                                                |
-| updated     | Tue Sep 24 15:53:24 2024 -0400                       |
+| updated     | Thu Dec 12 23:51:42 2024 -0500                       |
 | langs       | autoconf bash lisp org sh                            |
-| lines       | 2574 :λ 1899 :# 391 :_ 284                           |
+| lines       | 2576 :λ 1902 :# 388 :_ 286                           |
 |-------------+------------------------------------------------------|
 
 #+CALL: project-links()
