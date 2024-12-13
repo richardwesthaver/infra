@@ -7,12 +7,12 @@
 (in-package :user)
 (unless (find-package :org-graph-db)
   (defpkg :org-graph-db
-    (:use :cl :std :rdb
-     :obj/db :obj/query :obj/id :obj/uuid :q)))
+    (:use :cl :std :rdb :cli :seq
+     :db :query :id :uuid :q :schema)))
 
 (in-package :org-graph-db)
 
-(rocksdb:load-rocksdb)
+(load-database-backend :rdb)
 
 (defun make-org-graph-schema ()
   (make-schema
@@ -34,15 +34,17 @@
 
 (defparameter *org-graph-schema* (make-org-graph-schema))
 
-(defvar *org-graph-db* nil)
-
 (defparameter *org-graph-db-directory*
   (or (probe-file (car (cli:args)))
       (merge-pathnames ".stash/org/graph/db/" (user-homedir-pathname))))
 
 (defun make-org-graph-db ()
-  (create-db (namestring *org-graph-db-directory*)
-             :opts (default-rdb-opts)))
+  (load-schema
+   (make-db :rdb :name (namestring *org-graph-db-directory*)
+                 :opts (default-rdb-opts))
+   *org-graph-schema*))
+
+(defvar *org-graph-db* (make-org-graph-db))
 
 (define-condition org-id-locations-out-of-sync (simple-error) ())
 
@@ -61,48 +63,60 @@
 
 (defun insert-org-files ()
   (log:info! "inserting org files")
-  (open-cf *org-graph-db* "file")
+  ;; (open-cfs *org-graph-db* "file")
   (maphash (lambda (k v) (insert-key *org-graph-db* k
                                      (apply 'concatenate 'string v)
-                                     :cf "file"))
-           *org-graph-id-locations*)
-  (flush-db *org-graph-db*))
+                                     :column "file"))
+           *org-graph-id-locations*))
 
 (defun insert-org-nodes ()
   (log:info! "inserting org nodes")
-  (open-cf *org-graph-db* "node")
+  ;; (open-cfs *org-graph-db* "node")
   (dolist (v (hash-table-values *org-graph-id-locations*))
     (dolist (id v)
-      (insert-key *org-graph-db* id "0" :cf "node"))))
+      (insert-key *org-graph-db*
+                  (handler-case (uuid-to-octet-vector (obj/uuid:make-uuid-from-string id))
+                    (simple-error () id))
+                  #(0 1 2 3)
+                  :column "node")))
+  (flush-db *org-graph-db*))
+
+;; (loop with i = 0
+;; while (iter-valid-p it)
+;; do (log:info! (iter-key it) (iter-val it))
+;; do (iter-next it)
+;; do (print (incf i))))
 
 (defun close-org-graph-db ()
   (when (db-open-p *org-graph-db*)
-    (close-db *org-graph-db*)))        
+    (shutdown-db *org-graph-db*)))
 
 (defun init-org-graph-db ()
-  (ensure-directories-exist (make-pathname :directory (butlast (pathname-directory *org-graph-db-directory*))) :verbose t)
-  (with-db (db (load-schema (make-org-graph-db) *org-graph-schema*))
-    (open-db db)
-    (open-cfs db)
-    (setq *org-graph-db* db)
+  (ensure-directories-exist
+   (make-pathname :directory (butlast (pathname-directory *org-graph-db-directory*)))
+   :verbose t)
+  (with-db (db :open t :close nil :db *org-graph-db*)
+    (create-columns db)
     (insert-org-files)
     (insert-org-nodes)
-    (log:info! "created org-graph-db" db *org-graph-db-directory* *org-graph-schema*)))
+    (log:info! "created org-graph-db" *org-graph-db* *org-graph-db-directory* *org-graph-schema*)))
 
 (defun open-org-graph-db ()
   (unless (probe-file *org-graph-db-directory*)
     (init-org-graph-db))
-  (if (db-open-p *org-graph-db*)
+  (if (and *org-graph-db* (db-open-p *org-graph-db*))
       *org-graph-db*
-      (open-db (or *org-graph-db* (make-org-graph-db)))))
+      (progn
+        (load-opts *org-graph-db*))))
 
-(defun destroy-org-graph-db (&optional force)
+(defun destroy-org-graph-db ()
+  (unless (null *org-graph-db*)
+    (destroy-db *org-graph-db*)
+    (log:info! "destroyed org-graph-db" *org-graph-db-directory*))
   (when (probe-file *org-graph-db-directory*)
-    (unwind-protect
-         (with-db (db (or *org-graph-db* (make-org-graph-db)))
-           (shutdown-db db)
-           (destroy-db db)
-           (log:info! "destroyed org-graph-db" db *org-graph-db-directory*))
-      (when force
-        (sb-ext:delete-directory *org-graph-db-directory* :recursive t)
-        (setq *org-graph-db* nil)))))
+    (sb-ext:delete-directory *org-graph-db-directory* :recursive t)))
+
+(defun og-get (key &optional (from "node"))
+  (get-val *org-graph-db* key :cf from))
+
+(defun og-files ())

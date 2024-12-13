@@ -52,8 +52,9 @@
  (build-sbcl (src) #$scripts/get-sbcl.sh$#
        #$cd .stash/src/sbcl
        sbcl_rev=$(git rev-parse --short HEAD)
-       echo \""2.4.8:$sbcl_rev"\" > version.lisp-expr &&
-       ./make.sh --dynamic-space-size=8Gb --without-gencgc --with-mark-region-gc --fancy$#)
+       echo \""2.4.11:$sbcl_rev"\" > version.lisp-expr &&
+       ./make.sh --dynamic-space-size=8Gb --without-gencgc --with-mark-region-gc --fancy \
+             # --with-sb-fasteval --without-sb-eval$#)
  (build-sbcl-docs (sbcl) #$cd .stash/src/sbcl/doc/manual && make$#)
  (build-sbcl-gencgc (src) #$cd .stash/src/sbcl &&
        ./make.sh --fancy$#)
@@ -79,6 +80,11 @@
  (build-caddy (xcaddy) #$~/go/bin/xcaddy build --output .stash/bin/caddy --with github.com/mholt/caddy-webdav$#)
  (install-caddy () #$cp .stash/bin/caddy /usr/local/bin/caddy$#)
  (build-rust () #$scripts/get-rust.sh$#)
+ (rustls-ffi (src) 
+  (:build () 
+   #$git clone https://github.com/rustls/rustls-ffi .stash/src/rustls-ffi$#
+   #$cd .stash/src/rustls-ffi && cargo capi build --release$#)
+  (:install () #$cd .stash/src/rustls-ffi && cargo capi install$#))
  (build-rust-docs (rust) #$cd .stash/src/rust && ./x doc$#)
  (build-ublk () #$scripts/get-ublksrv.sh$#
        #$cd .stash/src/ublksrv && autoreconf -i && ./configure && make$#)

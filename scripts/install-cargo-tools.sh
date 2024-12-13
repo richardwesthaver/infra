@@ -15,3 +15,4 @@ cargo install cross --git https://github.com/cross-rs/cross --root /usr/local/
 cargo install wasm-bindgen-cli --root /usr/local/
 cargo install wasm-opt --root /usr/local/
 cargo install wasm-pack --root /usr/local/
+cargo install cargo-c --rot /usr/local/
