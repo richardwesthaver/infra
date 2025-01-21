@@ -1,6 +1,6 @@
 ;; -*- mode:skel -*-
-:packy-url "https://packy.compiler.company"
-:vc-url "https://vc.compiler.company"
+:packy-url "http://packy.localhost"
+:vc-url "http://vc.localhost"
 
 :lisp "sbcl"
 :lisp-version "2.4.8"

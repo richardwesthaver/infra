@@ -6,7 +6,7 @@
 #-user (ql:quickload :user)
 (in-package :user)
 (unless (find-package :org-graph-db)
-  (defpkg :org-graph-db
+  (pkg:defpkg :org-graph-db
     (:use :cl :std :rdb :cli :seq
      :db :query :id :uuid :q :schema)))
 
@@ -14,25 +14,27 @@
 
 (load-database-backend :rdb)
 
-(defun make-org-graph-schema ()
-  (make-schema
-   (make-field :name "file" :type 'string)
-   (make-field :name "title" :type 'string)
-   (make-field :name "hash" :type 'octet-vector)
-   (make-field :name "atime" :type 'octet-vector)
-   (make-field :name "mtime" :type 'octet-vector)
-   (make-field :name "node" :type 'octet-vector)
-   (make-field :name "edge" :type 'octet-vector)
-   (make-field :name "node-tags" :type 'string)
-   (make-field :name "node-links" :type 'string)
-   (make-field :name "node-properties" :type 'string)
-   (make-field :name "node-priority" :type 'string)
-   (make-field :name "node-schedule" :type 'string)
-   (make-field :name "node-file" :type 'string)
-   (make-field :name "node-pos" :type 'octet-vector)
-   (make-field :name "node-state" :type 'string)))
+(deftype org-id () `(octet-vector 16))
 
-(defparameter *org-graph-schema* (make-org-graph-schema))
+(defclass org-graph-schema (rdb-schema) ()
+  (:default-initargs
+   :fields (make-fields :file '(pathname . octet-vector)
+                        :title '(org-id . string)
+                        :hash '(org-id . string)
+                        :atime '(org-id . octet-vector)
+                        :mtime '(org-id . octet-vector)
+                        :node '(org-id . octet-vector)
+                        :edge '(org-id . octet-vector)
+                        :node-tags '(org-id . string)
+                        :node-links '(org-id . string)
+                        :node-properties '(org-id . string)
+                        :node-priority '(org-id . string)
+                        :node-schedule '(org-id . string)
+                        :node-file '(org-id . string)
+                        :node-pos '(org-id . octet-vector)
+                        :node-state '(org-id . string))))
+
+(defparameter *org-graph-schema* (make-instance 'org-graph-schema))
 
 (defparameter *org-graph-db-directory*
   (or (probe-file (car (cli:args)))
@@ -63,7 +65,6 @@
 
 (defun insert-org-files ()
   (log:info! "inserting org files")
-  ;; (open-cfs *org-graph-db* "file")
   (maphash (lambda (k v) (insert-key *org-graph-db* k
                                      (apply 'concatenate 'string v)
                                      :column "file"))
@@ -71,12 +72,12 @@
 
 (defun insert-org-nodes ()
   (log:info! "inserting org nodes")
-  ;; (open-cfs *org-graph-db* "node")
   (dolist (v (hash-table-values *org-graph-id-locations*))
     (dolist (id v)
       (insert-key *org-graph-db*
                   (handler-case (uuid-to-octet-vector (obj/uuid:make-uuid-from-string id))
                     (simple-error () id))
+                  ;; TODO 2024-12-30: 
                   #(0 1 2 3)
                   :column "node")))
   (flush-db *org-graph-db*))
@@ -95,7 +96,7 @@
   (ensure-directories-exist
    (make-pathname :directory (butlast (pathname-directory *org-graph-db-directory*)))
    :verbose t)
-  (with-db (db :open t :close nil :db *org-graph-db*)
+  (with-db (db :open (not (db-open-p *org-graph-db*)) :close nil :db *org-graph-db*)
     (create-columns db)
     (insert-org-files)
     (insert-org-nodes)
@@ -107,16 +108,53 @@
   (if (and *org-graph-db* (db-open-p *org-graph-db*))
       *org-graph-db*
       (progn
-        (load-opts *org-graph-db*))))
+        (load-opts *org-graph-db*)
+        (open-columns* *org-graph-db*))))
 
 (defun destroy-org-graph-db ()
-  (unless (null *org-graph-db*)
+  (unless (db-closed-p *org-graph-db*)
+    (shutdown-db *org-graph-db*)
     (destroy-db *org-graph-db*)
-    (log:info! "destroyed org-graph-db" *org-graph-db-directory*))
-  (when (probe-file *org-graph-db-directory*)
-    (sb-ext:delete-directory *org-graph-db-directory* :recursive t)))
+    (log:info! "destroyed org-graph-db at ~A" *org-graph-db-directory*)))
 
 (defun og-get (key &optional (from "node"))
-  (get-val *org-graph-db* key :cf from))
+  (get-val *org-graph-db* key :data-type 'string :column from))
 
-(defun og-files ())
+(defun org-graph-values (column)
+  (with-iter (it (iter *org-graph-db* :column (find-column column *org-graph-db*)))
+    (seek-to-first)
+    (loop while (iter-valid-p)
+          if (equal column :file)
+          collect (cons (pathname (sb-ext:octets-to-string (key)))
+                        (let ((v (sb-ext:octets-to-string (val)))
+                              (x 36)
+                              (i 0))
+                          (loop while (< i (length v))
+                                collect (ignore-errors (uuid:make-uuid-from-string (subseq v i (incf i x)))))))
+          else
+          collect (cons (handler-case (octet-vector-to-uuid (key))
+                          (simple-type-error () (sb-ext:octets-to-string (key))))
+                        (sb-ext:octets-to-string (val)))
+          do (next))))
+
+(defun org-graph-file-scrape (path &rest ids)
+  "Return a list of org headings corresponding to IDS in PATH."
+  ;; first get an org-document and list of headings
+  (let* ((doc (organ:org-parse :document path))
+         (headings (organ:doc-tree doc))
+         (ret))
+    ;; map over IDs, searching for matches
+    (loop for h across headings
+          if (typep h 'organ:org-heading)
+          do
+          (push
+           (when-let* ((prop (organ::org-properties h))
+                       (id (find (print (value (find "ID" (print (organ:org-contents prop))
+                                                     :key (lambda (x) (string-upcase (name x))))))
+                                 ids
+                                 :test 'equal)))
+             (removef ids id :test 'equal)
+             h)
+           ret)
+          finally (return ret))))
+

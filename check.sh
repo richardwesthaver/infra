@@ -17,7 +17,9 @@ main() {
   need_cmd head
   need_cmd tail
   export INFRA_HOST_CONFIG=$(cat /proc/sys/kernel/hostname).sxp
+  export INFRA_HOST_ENV=$(cat /proc/sys/kernel/hostname).env
   rm -f $INFRA_HOST_CONFIG
+  rm -f $INFRA_HOST_ENV
   check_mem
   local _mem_total="$RETVAL"
   check_disk
@@ -42,15 +44,18 @@ main() {
     *)
       _write ":ext nil"
   esac
+  write_env
+  say $INFRA_HOST_ENV
   say $INFRA_HOST_CONFIG
+
 }
 
 say() {
   printf '%s\n' "$1"
 }
 
-say_var() {
-  say "$1=$(eval echo "\$$1" 2> /dev/null)"
+_write_var() {
+  say "$1=$(eval echo "\$$1" 2> /dev/null)" >> $INFRA_HOST_ENV
 }
 
 _write() {
@@ -401,29 +406,27 @@ check_cpus () {
   fi
 }
 
-print_env () {
-  say_var STASH
-  say_var STORE
-  say_var DIST
-  say_var PACKY_URL
-  say_var VC_URL
-  say_var INSTALL_PREFIX
-  say_var CC
-  say_var AR
-  say_var HG
-  say_var GIT
-  say_var LISP
-  say_var RUST
-  say_var LD
-  say_var SHELL
-  say_var DEV
-  say_var DEV_HOME
-  say_var ID
-  say_var WORKER
-  say_var WORKER_ID
-  say_var WORKER_HOME
-  say_var CARGO_HOME
-  say_var RUSTUP_HOME
+write_env () {
+  _write_var STASH
+  _write_var STORE
+  _write_var DIST
+  _write_var PACKY_URL
+  _write_var VC_URL
+  _write_var INSTALL_PREFIX
+  _write_var CC
+  _write_var AR
+  _write_var HG
+  _write_var GIT
+  _write_var LISP
+  _write_var RUST
+  _write_var LD
+  _write_var SHELL
+  _write_var DEV
+  _write_var DEV_HOME
+  _write_var ID
+  _write_var CARGO_HOME
+  _write_var RUSTUP_HOME
+  _write_var LISP_HOME
 }
 
 main "$@" || exit 1

@@ -17,7 +17,9 @@ main() {
       _ext=".exe"
       ;;
   esac
-  local _url="https://packy.compiler.company/dist/${_arch}/pack"
+  local _packy_url="packy.localhost"
+  local _vc_url="vc.localhost"
+  local _url="${_packy_url}/dist/${_arch}"
   local _stash
   if ! _stash=".stash"; then
     # Because the previous command ran in a subshell, we must manually
@@ -42,7 +44,7 @@ main() {
   local _sbcl_url="${_url}/${_sbcl_pack}"
   # local _rocksdb_url="${_url}/${_rocksdb_pack}"
   local _core_url="${_url}/${_core_pack}"
-  local _infra_core_url="https://packy.compiler.company/dist/${_arch}/lisp/${_infra_core}"
+  local _infra_core_url="packy.localhost/dist/${_arch}/lisp/${_infra_core}"
   # local _core_src_url="${_url}/${_core_src_pack}"
   if [ ! -f "tmp/$_sbcl_pack" ]; then
     ensure download "$_sbcl_url" "tmp/$_sbcl_pack" "$_arch"
