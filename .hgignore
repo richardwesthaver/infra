@@ -1,5 +1,4 @@
-.*[.](fasl|lock|elc|eln|scratch|tar)$
+.*[.](fasl|lock|elc|eln|scratch|tar|sxp|env|zst)$
 .*(target|dist|node_modules|target-trunk|build)/.*
 linux/linux-[0-9]+[.].*/.*
-.*[.]sxp
 [.]stash/.*

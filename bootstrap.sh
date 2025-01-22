@@ -3,6 +3,7 @@
 
 main() {
   . ./check.sh
+  . ./${INFRA_HOST_ENV}
   if [[ -z "${INFRA_PROFILE:-}" ]]; then
     export INFRA_PROFILE="${1:-default.sxp}"
   else
@@ -17,8 +18,8 @@ main() {
       _ext=".exe"
       ;;
   esac
-  local _packy_url="packy.localhost"
-  local _vc_url="vc.localhost"
+  local _packy_url=$PACKY_URL
+  local _vc_url=$VC_URL
   local _url="${_packy_url}/dist/${_arch}"
   local _stash
   if ! _stash=".stash"; then
