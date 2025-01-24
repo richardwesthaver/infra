@@ -67,8 +67,6 @@
        (:build (src) 
                #$scripts/get-sbcl.sh$#
                #$cd .stash/src/sbcl
-               sbcl_rev=$(git rev-parse --short HEAD)
-               echo \""2.4.11:$sbcl_rev"\" > version.lisp-expr &&
                ./make.sh --dynamic-space-size=8Gb --without-gencgc --with-mark-region-gc --fancy \
                # --with-sb-fasteval --without-sb-eval$#)
        (:build-docs () #$cd .stash/src/sbcl/doc/manual && make$#)
@@ -128,7 +126,9 @@
          #$cd .stash/src/blake3/c && gcc -shared -O3 -o libblake3.so blake3.c blake3_dispatch.c blake3_portable.c \
          blake3_sse2_x86-64_unix.S blake3_sse41_x86-64_unix.S blake3_avx2_x86-64_unix.S \
          blake3_avx512_x86-64_unix.S$#)
- (:install () (funcall #$cd .stash/src/blake3/c && sudo -S cp libblake3.so /usr/local/lib/ && sudo cp blake3.h /usr/local/include/$# :input t)))
+ (:install () (funcall #$cd .stash/src/blake3/c && sudo -S cp libblake3.so /usr/local/lib/ && sudo cp blake3.h /usr/local/include/$# :input t))
+ (:dist () #$cd .stash && mkdir tmp/blake3 && cp src/blake3/c/libblake3.so tmp/blake3/ && cp src/blake3/c/blake3.h tmp/blake3/ && \
+             cd tmp && tar -I 'zstd' -cf ../blake3.tar.zst blake3$#))
  ;; install
  (install-cargo-tools () #$scripts/install-cargo-tools.sh$#)
  (install-rustup () #$curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y$#)
