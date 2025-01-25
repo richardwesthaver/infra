@@ -9,26 +9,36 @@
 :include ("pod/skelfile")
 :components ((:org "readme")
              (:mod "scripts"))
+:bind ((packy_url :env "/opt/core/store/packy")
+       (vc_url :env "~/comp")
+       (prefix :env "/usr/local")
+       (stash :env ".stash")
+       (store :env "/opt/core/store")
+       (dev :env (sb-posix:getenv "USER")))
 :stash ".stash"
 :store "/opt/core/store"
 :rules
 ((check () #$./check.sh$#)
  (clean () 
+        ;; #,@(mapcar (lambda (x) (make-pathname :name (machine-instance) :type x))
+        ;;            '("sxp" "env"))
+
         #$rm -rvf .stash \
-        #,@(mapcar (lambda (x) (make-pathname :name (machine-instance) :type x))
-                   '("sxp" "env"))
         $#)
  (tmp () #$mkdir -pv .stash/tmp$#)
  (src () #$mkdir -pv .stash/src$#)
  (bin () #$mkdir -pv .stash/bin$#)
  ;; src
- (repos (src tmp) #$cd .stash/tmp && curl -O https://packy.compiler.company/src/comp.tar.zst && \
+ (repos (src tmp) #$cd .stash/tmp && scripts/get.sh $PACKY_URL/src/comp.tar.zst && \
         unzstd comp.tar.zst && tar -xf comp.tar -C ../src && \
         mv ../src/hg/* ../src/ && rm -rf ../src/hg comp.tar$#)
  (install-repos-shallow (repos) (funcall #$cd .stash/src && sudo -S mv *.hg /usr/local/src/$# :input t))
- (home (src) #$hg clone https://vc.compiler.company/home .stash/src/home$#)
- (core (src) #$hg clone https://vc.compiler.company/core .stash/src/core$#)
- (packy-repos (src) #$cd .stash/tmp && curl -O https://packy.compiler.company/src/packy.tar.zst && \
+ (home (src) #$hg clone $VC_URL/home .stash/src/home$#)
+ (core (src) 
+       (:build () #$hg clone $VC_URL/core .stash/src/core$#)
+       (:install-pack (tmp) (funcall #$sudo -SE scripts/install-core-pack.sh$# :input t))
+       (:install (tmp) (funcall #$sudo -SE scripts/install-core.sh$# :input t)))
+ (packy-repos (src) #$cd .stash/tmp && ../../scripts/get.sh $PACKY_URL/src/packy.tar.zst && \
               unzstd packy.tar.zst && tar -xf packy.tar -C ../src/ && \
               rm -rf packy.tar$#)
  ;; programs
@@ -43,6 +53,8 @@
                      #$cd .stash/src/emacs && ./autogen.sh$#
                      #$./scripts/build-emacs-mini.sh$#)
         (:install () (funcall #$cd .stash/src/emacs && sudo -S make install$# :input t))
+        (:install-pack (tmp)
+                       (funcall #$sudo -SE scripts/install-emacs-pack.sh$# :input t))
         (:update () #$cd .stash/src/emacs && git pull$#)
         (:dist-mini () #$cd .stash/src/emacs
                     ./make-dist --tar --no-compress --no-info --no-changelog
@@ -61,6 +73,8 @@
                     (funcall #$cd .stash/src/rocksdb \
                              && sudo -S make install-shared && \
                              sudo cp -r include/* /usr/local/include/$# :input t))
+          (:install-pack (tmp)
+                         (funcall #$sudo -SE scripts/install-rocksdb-pack.sh$# :input t))
           (:dist () #$scripts/dist-rocksdb-binary.sh$#)
           (:dist-source () #$scripts/dist-rocksdb-source.sh$#))
  (sbcl ()
@@ -77,7 +91,7 @@
        (:install () (funcall #$cd .stash/src/sbcl && INSTALL_ROOT=/usr/local sudo -S sh install.sh$# :input t))
        (:dist () #$scripts/dist-sbcl-binary.sh$#)
        (:dist-source () #$scripts/dist-sbcl-source.sh$#))
- (install-quicklisp () #$cd .stash && curl -O https://beta.quicklisp.org/quicklisp.lisp$#
+ (install-quicklisp () #$cd .stash && ../scripts/get.sh https://beta.quicklisp.org/quicklisp.lisp$#
                     #$./scripts/quicklisp-install.sh$#)
  (stumpwm ()
           (:build (src)
@@ -127,8 +141,9 @@
          blake3_sse2_x86-64_unix.S blake3_sse41_x86-64_unix.S blake3_avx2_x86-64_unix.S \
          blake3_avx512_x86-64_unix.S$#)
  (:install () (funcall #$cd .stash/src/blake3/c && sudo -S cp libblake3.so /usr/local/lib/ && sudo cp blake3.h /usr/local/include/$# :input t))
- (:dist () #$cd .stash && mkdir tmp/blake3 && cp src/blake3/c/libblake3.so tmp/blake3/ && cp src/blake3/c/blake3.h tmp/blake3/ && \
-             cd tmp && tar -I 'zstd' -cf ../blake3.tar.zst blake3$#))
+ (:install-pack (tmp)
+                (funcall #$sudo -SE scripts/install-blake3-pack.sh$# :input t))
+ (:dist () #$scripts/dist-blake3.sh$#))
  ;; install
  (install-cargo-tools () #$scripts/install-cargo-tools.sh$#)
  (install-rustup () #$curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y$#)

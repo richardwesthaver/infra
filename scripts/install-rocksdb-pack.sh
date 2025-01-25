@@ -3,10 +3,17 @@
 # static library is shipped separately.
 set -e
 cd .stash/tmp
-TARGET="${1:-x86_64-unknown-linux-gnu}"
-curl -O "https://packy.compiler.company/dist/${TARGET}/pack/rocksdb.tar.zst"
-unzstd rocksdb.tar.zst
-tar -xvf rocksdb.tar
+if [ ! -d "rocksdb" ]; then
+  TARGET="${1:-x86_64-unknown-linux-gnu}"
+  pack="${PACKY_URL}/dist/${TARGET}/rocksdb.tar.zst"
+  if [[ "$PACKY_URL" =~ ^https?://([^/]+) ]]; then
+    curl -O $pack
+  else
+    cp $pack ./
+  fi
+  unzstd rocksdb.tar.zst
+  tar -xvf rocksdb.tar
+fi
 cd rocksdb
 cp librocksdb.* /usr/local/lib/
 cp -rf include/* /usr/local/include/

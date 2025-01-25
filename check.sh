@@ -55,11 +55,7 @@ say() {
 }
 
 _write_var() {
-  if [ $# -eq 2 ]; then
-    say "$1=$2" >> $INFRA_HOST_ENV
-  else 
-    say "$1=$(eval echo "\$$1" 2> /dev/null)" >> $INFRA_HOST_ENV
-  fi
+  say "$1=$(eval echo "\$$1" 2> /dev/null)" >> $INFRA_HOST_ENV
 }
 
 _write() {
@@ -411,12 +407,12 @@ check_cpus () {
 }
 
 write_env () {
-  _write_var STASH /opt/core/stash
-  _write_var STORE /opt/core/store
-  _write_var DIST /opt/core/store/packy/dist
-  _write_var PACKY_URL https://packy.compiler.company
-  _write_var VC_URL https://vc.compiler.company
-  _write_var INSTALL_PREFIX /usr/local
+  _write_var STASH
+  _write_var STORE
+  _write_var DIST
+  _write_var PACKY_URL
+  _write_var VC_URL
+  _write_var PREFIX
   _write_var CC
   _write_var AR
   _write_var HG
