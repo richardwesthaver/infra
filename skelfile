@@ -14,7 +14,7 @@
        (prefix :env "/usr/local")
        (stash :env ".stash")
        (store :env "/opt/core/store")
-       (dev :env (sb-posix:getenv "USER")))
+       (dev :env (or (sb-posix:getenv "USER") "")))
 :stash ".stash"
 :store "/opt/core/store"
 :rules
@@ -106,10 +106,13 @@
                       #$cd .stash/src/scryer-prolog && cargo build --release$#)
  (tree-sitter (src)
               (:build (src) 
-                      #$./scripts/get-tree-sitter.sh$#)
+                      #$./scripts/get-tree-sitter.sh
+                      cd .stash/src/tree-sitter && make libtree-sitter.so$#)
               (:install (src) 
                         (funcall #$cd .stash/src/tree-sitter && sudo -S make install$# :input t))
-              (:install-langs (src) (funcall #$sudo -S ./scripts/tree-sitter-langs.sh$# :input t)))
+              (:install-langs (src) (funcall #$sudo -S ./scripts/tree-sitter-langs.sh$# :input t))
+              (:dist (tmp) #$scripts/dist-tree-sitter.sh$#)
+              (:dist-langs (tmp) #$scripts/dist-tree-sitter-langs.sh$#))
  (build-linux () #$mkdir -pv .stash/src/linux$#
               #$gpg --export autosigner@ torvalds@ gregkh@ > .stash/src/linux/keyring.gpg$#
               #$./scripts/get-linux.sh $(uname -r | cut -d- -f1) .stash .stash/src/linux/keyring.gpg$#
@@ -117,7 +120,6 @@
         tar -xvf .stash/src/linux.tar $(uname -r | cut -d- -f1)$#
               #$cd .stash/src/linux && make mrproper -j &&
               zcat /proc/config.gz > .config && yes N | make localmodconfig$#)
- 
 (caddy ()
  (:build-xcaddy () #$go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest$#)
  (:build (build-xcaddy) #$~/go/bin/xcaddy build --output .stash/bin/caddy --with github.com/mholt/caddy-webdav$#)

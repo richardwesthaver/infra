@@ -10,10 +10,9 @@ declare -ar default_langs=(
 # see https://tree-sitter.github.io/tree-sitter/#parsers for a
 # complete list of parsers available
 TARGETDIR="${1:-.stash/src/tree-sitter-langs}"
-
-PREFIX=$(realpath "${PREFIX:-/usr/local}")
-CC=${CC:-clang}
-CXX=${CXX:-clang++}
+PREFIX=$(realpath "${2:-${PREFIX:-/usr/local}}")
+CC=${CC:-cc}
+CXX=${CXX:-c++}
 if [ $(uname) == "Darwin" ];then
    EXT=dylib;
 else
@@ -26,7 +25,7 @@ repos[yaml]=https://github.com/ikatyang/tree-sitter-yaml.git
 repos[cpp]=https://github.com/ruricolist/tree-sitter-cpp.git
 
 declare -a langs
-if [ -z "${2:-}" ]; then
+if [ -z "${3:-}" ]; then
   langs=(${default_langs[@]})
 else
   langs=($@)

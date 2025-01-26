@@ -6,11 +6,10 @@ cd .stash/tmp
 if [ ! -d "rocksdb" ]; then
   TARGET="${1:-x86_64-unknown-linux-gnu}"
   pack="${PACKY_URL}/dist/${TARGET}/rocksdb.tar.zst"
-  if [[ "$PACKY_URL" =~ ^https?://([^/]+) ]]; then
-    curl -O $pack
-  else
-    cp $pack ./
-  fi
+  case $PACKY_URL in
+    "http"*) curl -O $pack ;;
+    *) cp $pack ./ ;;
+  esac
   unzstd rocksdb.tar.zst
   tar -xvf rocksdb.tar
 fi

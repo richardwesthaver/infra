@@ -5,7 +5,7 @@ cd .stash/tmp
 if [ ! -d "sbcl" ]; then
   TARGET="${1:-x86_64-unknown-linux-gnu}"
   pack="${PACKY_URL}/dist/${TARGET}/sbcl.tar.zst"
-  if [[ "$PACKY_URL" =~ ^https?://([^/]+) ]]; then
+  if [[ "$PACKY_URL" =~ '^https?://([^/]+)' ]]; then
     curl -O $pack
   else
     cp $pack ./
