@@ -44,8 +44,8 @@
  ;; programs
  (bootstrap () #$./bootstrap.sh$#)
  (emacs ()
-        (:build (src) 
-                #$./scripts/get-emacs.sh$#
+        (:get (src) #$./scripts/get-emacs.sh$#)
+        (:build (get-emacs) 
                 #$cd .stash/src/emacs && ./autogen.sh$#
                 #$./scripts/build-emacs.sh$#)
         (:build-mini (src) 
@@ -108,8 +108,8 @@
               (:build (src) 
                       #$./scripts/get-tree-sitter.sh
                       cd .stash/src/tree-sitter && make libtree-sitter.so$#)
-              (:install (src) 
-                        (funcall #$cd .stash/src/tree-sitter && sudo -S make install$# :input t))
+              (:install ()
+                        (funcall #$sudo -S ./scripts/install-tree-sitter.sh$# :input t))
               (:install-langs (src) (funcall #$sudo -S ./scripts/tree-sitter-langs.sh$# :input t))
               (:dist (tmp) #$scripts/dist-tree-sitter.sh$#)
               (:dist-langs (tmp) #$scripts/dist-tree-sitter-langs.sh$#))
@@ -122,7 +122,7 @@
               zcat /proc/config.gz > .config && yes N | make localmodconfig$#)
 (caddy ()
  (:build-xcaddy () #$go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest$#)
- (:build (build-xcaddy) #$~/go/bin/xcaddy build --output .stash/bin/caddy --with github.com/mholt/caddy-webdav$#)
+ (:build (build-xcaddy-caddy) #$~/go/bin/xcaddy build --output .stash/bin/caddy --with github.com/mholt/caddy-webdav$#)
  (:install () (funcall #$sudo -S cp .stash/bin/caddy /usr/local/bin/caddy$# :input t)))
 (rust (src)
  (:build () #$scripts/get-rust.sh$#)
@@ -154,5 +154,10 @@
  ;; dist
  (dist (dist-rocksdb dist-sbcl dist-source-sbcl))
  (dist-source (clean) #$cd .. && tar --exclude='.hg' --exclude='#*#' -I 'zstd' -cf infra/infra.tar.zst infra/*$#)
- (dist-home-source (clean) #$tar --exclude='.hg' --exclude='#*#' --exclude='readme.org' \
-                   -I 'zstd' -cf home.tar.zst home$#))
+ (dist-home-source () #$tar --exclude='.hg' --exclude='#*#' --exclude='readme.org' \
+                   -I 'zstd' -cf home.tar.zst home$#)
+ (dist-core-source () #$PATH="$HOME/.cargo/bin:$PATH"
+                   cd ../core && skel dist source && mv core.tar.zst ../infra/$#)
+ (dist-org-source () #$cd ../ && tar --exclude='*/.hg' --exclude='#*#' -I 'zstd' -cf org.tar.zst org && mv org.tar.zst infra/$#)
+ (dist-demo-source () #$cd ../ && tar --exclude='*/.hg' --exclude='#*#' -I 'zstd' -cf demo.tar.zst org && mv demo.tar.zst infra/$#)
+ (dist-all-source (dist-source dist-home-source dist-core-source dist-demo-source dist-org-source)))
