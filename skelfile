@@ -127,11 +127,12 @@
 (rust (src)
  (:build () #$scripts/get-rust.sh$#)
  (:build-docs (rust) #$cd .stash/src/rust && ./x doc$#))
-(rustls-ffi (src) 
+(rustls (src)
   (:build () 
    #$git clone https://github.com/rustls/rustls-ffi .stash/src/rustls-ffi$#
    #$cd .stash/src/rustls-ffi && cargo capi build --release$#)
-  (:install () #$cd .stash/src/rustls-ffi && cargo capi install$#))
+  (:install () #$cd .stash/src/rustls-ffi && cargo capi install$#)
+  (:dist (tmp) #$scripts/dist-rustls.sh$#))
 (ublk (src)
  (:build () #$scripts/get-ublksrv.sh$#
        #$cd .stash/src/ublksrv && autoreconf -i && ./configure && make$#)
