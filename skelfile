@@ -30,7 +30,6 @@
  (clean () 
         ;; #,@(mapcar (lambda (x) (make-pathname :name (machine-instance) :type x))
         ;;            '("sxp" "env"))
-
         #$rm -rvf .stash \
         $#)
  (tmp () #$mkdir -pv .stash/tmp$#)
