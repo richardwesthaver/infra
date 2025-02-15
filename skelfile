@@ -20,13 +20,38 @@
 :rules
 ((check () #$./check.sh$#)
  (upstream ()
-           ;; pretty gross hack to fix broken tree
+           (delete-directories 
+            '("/tmp/infra/" "/tmp/home/" "/tmp/pod/" "/tmp/box/" "/tmp/etc/"))
            (vc:hg-fast-export (sk-vc *skel-project*))
            #$cd /tmp/infra
            git remote add cb ssh://git@codeberg.org/c-c/infra
            git remote add gh ssh://git@github.com/richardwesthaver/infra
-           git push -u cb default
-           git push gh default$#)
+           # git push -u cb --all --force
+           git push gh --all --force$#
+           (vc:hg-fast-export (make-instance 'vc:hg-repo :path (probe-file "home/")))
+           #$cd /tmp/home
+           git remote add cb ssh://git@codeberg.org/c-c/home
+           git remote add gh ssh://git@github.com/richardwesthaver/home
+           # git push -u cb --all --force
+           git push gh --all --force$#
+           (vc:hg-fast-export (make-instance 'vc:hg-repo :path (probe-file "pod/")))
+           #$cd /tmp/pod
+           git remote add cb ssh://git@codeberg.org/c-c/pod
+           git remote add gh ssh://git@github.com/richardwesthaver/pod
+           # git push -u cb --all --force
+           git push gh --all --force$#
+           (vc:hg-fast-export (make-instance 'vc:hg-repo :path (probe-file "box/")))
+           #$cd /tmp/box
+           git remote add cb ssh://git@codeberg.org/c-c/box
+           git remote add gh ssh://git@github.com/richardwesthaver/box
+           # git push -u cb --all --force
+           git push gh --all --force$#
+           (vc:hg-fast-export (make-instance 'vc:hg-repo :path (probe-file "etc/")))
+           #$cd /tmp/etc
+           git remote add cb ssh://git@codeberg.org/c-c/etc
+           git remote add gh ssh://git@github.com/richardwesthaver/etc
+           # git push -u cb --all --force
+           git push gh --all --force$#)
  (clean () 
         ;; #,@(mapcar (lambda (x) (make-pathname :name (machine-instance) :type x))
         ;;            '("sxp" "env"))
