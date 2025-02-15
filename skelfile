@@ -22,19 +22,6 @@
  (upstream ()
            (delete-directories 
             '("/tmp/infra/" "/tmp/home/" "/tmp/pod/" "/tmp/box/" "/tmp/etc/"))
-           (vc:hg-fast-export (sk-vc *skel-project*))
-           #$cd /tmp/infra
-           git remote add cb ssh://git@codeberg.org/c-c/infra
-           git remote add gh ssh://git@github.com/richardwesthaver/infra
-           git checkout
-           git submodule add https://github.com/richardwesthaver/home
-           git submodule add https://github.com/richardwesthaver/pod
-           git submodule add https://github.com/richardwesthaver/box
-           git submodule add https://github.com/richardwesthaver/etc
-           git add .gitmodules
-           git commit -m 'gitmodules'
-           # git push -u cb --all --force
-           git push gh --all --force$#
            (vc:hg-fast-export (make-instance 'vc:hg-repo :path (probe-file "home/")))
            #$cd /tmp/home
            git remote add cb ssh://git@codeberg.org/c-c/home
@@ -57,6 +44,19 @@
            #$cd /tmp/etc
            git remote add cb ssh://git@codeberg.org/c-c/etc
            git remote add gh ssh://git@github.com/richardwesthaver/etc
+           # git push -u cb --all --force
+           git push gh --all --force$#
+           (vc:hg-fast-export (sk-vc *skel-project*))
+           #$cd /tmp/infra
+           git remote add cb ssh://git@codeberg.org/c-c/infra
+           git remote add gh ssh://git@github.com/richardwesthaver/infra
+           git checkout
+           git submodule add https://github.com/richardwesthaver/home
+           git submodule add https://github.com/richardwesthaver/pod
+           git submodule add https://github.com/richardwesthaver/box
+           git submodule add https://github.com/richardwesthaver/etc
+           git add .gitmodules
+           git commit -m 'gitmodules'
            # git push -u cb --all --force
            git push gh --all --force$#)
  (clean () 
