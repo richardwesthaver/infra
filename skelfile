@@ -26,25 +26,25 @@
            #$cd /tmp/home
            git remote add cb ssh://git@codeberg.org/c-c/home
            git remote add gh ssh://git@github.com/richardwesthaver/home
-           # git push -u cb --all --force
+           git push -u cb --all --force
            git push gh --all --force$#
            (vc:hg-fast-export (make-instance 'vc:hg-repo :path (probe-file "pod/")))
            #$cd /tmp/pod
            git remote add cb ssh://git@codeberg.org/c-c/pod
            git remote add gh ssh://git@github.com/richardwesthaver/pod
-           # git push -u cb --all --force
+           git push -u cb --all --force
            git push gh --all --force$#
            (vc:hg-fast-export (make-instance 'vc:hg-repo :path (probe-file "box/")))
            #$cd /tmp/box
            git remote add cb ssh://git@codeberg.org/c-c/box
            git remote add gh ssh://git@github.com/richardwesthaver/box
-           # git push -u cb --all --force
+           git push -u cb --all --force
            git push gh --all --force$#
            (vc:hg-fast-export (make-instance 'vc:hg-repo :path (probe-file "etc/")))
            #$cd /tmp/etc
            git remote add cb ssh://git@codeberg.org/c-c/etc
            git remote add gh ssh://git@github.com/richardwesthaver/etc
-           # git push -u cb --all --force
+           git push -u cb --all --force
            git push gh --all --force$#
            (vc:hg-fast-export (sk-vc *skel-project*))
            #$cd /tmp/infra
@@ -57,7 +57,7 @@
            git submodule add https://github.com/richardwesthaver/etc
            git add .gitmodules
            git commit -m 'gitmodules'
-           # git push -u cb --all --force
+           git push -u cb --all --force
            git push gh --all --force$#)
  (clean () 
         ;; #,@(mapcar (lambda (x) (make-pathname :name (machine-instance) :type x))
@@ -172,6 +172,10 @@
    #$cd .stash/src/rustls-ffi && cargo capi build --release$#)
   (:install () #$cd .stash/src/rustls-ffi && cargo capi install$#)
   (:dist (tmp) #$scripts/dist-rustls.sh$#))
+(slime ()
+ (:install () 
+  (unless (probe-file #1=(merge-homedir-pathnames ".stash/lisp/slime"))
+   (vc:vc-clone #1# "https://github.com/slime/slime"))))
 (ublk (src)
  (:build () #$scripts/get-ublksrv.sh$#
        #$cd .stash/src/ublksrv && autoreconf -i && ./configure && make$#)
@@ -196,8 +200,15 @@
  (dist-source (clean) #$cd .. && tar --exclude='.hg' --exclude='#*#' -I 'zstd' -cf infra/infra.tar.zst infra/*$#)
  (dist-home-source () #$tar --exclude='.hg' --exclude='#*#' --exclude='readme.org' \
                    -I 'zstd' -cf home.tar.zst home$#)
- (dist-core-source () #$PATH="$HOME/.cargo/bin:$PATH"
-                   cd ../core && skel dist source && mv core.tar.zst ../infra/$#)
- (dist-org-source () #$cd ../ && tar --exclude='*/.hg' --exclude='#*#' -I 'zstd' -cf org.tar.zst org && mv org.tar.zst infra/$#)
+ (dist-core-source () 
+                   (let ((p *default-pathname-defaults*))
+                     (with-project "../core"
+                       (sk-run (sk-find "dist-source" *skel-project*))
+                       (rename-file "core.tar.zst" (merge-pathnames "core.tar.zst" p)))))
+ (dist-org-source () 
+                  (let ((p *default-pathname-defaults*))
+                    (with-project "../org"
+                      (sk-run (sk-find "dist-source" *skel-project*))
+                      (rename-file "org.tar.zst" (merge-pathnames "org.tar.zst" p)))))
  (dist-demo-source () #$cd ../ && tar --exclude='*/.hg' --exclude='#*#' -I 'zstd' -cf demo.tar.zst org && mv demo.tar.zst infra/$#)
  (dist-all-source (dist-source dist-home-source dist-core-source dist-demo-source dist-org-source)))
