@@ -9,8 +9,8 @@
 :include ("pod/skelfile")
 :components ((:org "readme")
              (:mod "scripts"))
-:bind ((packy_url :env "/opt/core/store/packy")
-       (vc_url :env "~/comp")
+:bind ((packy-home :env "/opt/core/store/packy")
+       (vc-url :env "~/comp")
        (prefix :env "/usr/local")
        (stash :env ".stash")
        (store :env "/opt/core/store")
@@ -68,7 +68,7 @@
  (src () #$mkdir -pv .stash/src$#)
  (bin () #$mkdir -pv .stash/bin$#)
  ;; src
- (repos (src tmp) #$cd .stash/tmp && scripts/get.sh $PACKY_URL/src/comp.tar.zst && \
+ (repos (src tmp) #$cd .stash/tmp && scripts/get.sh $PACKY_HOME/src/comp.tar.zst && \
         unzstd comp.tar.zst && tar -xf comp.tar -C ../src && \
         mv ../src/hg/* ../src/ && rm -rf ../src/hg comp.tar$#)
  (install-repos-shallow (repos) (funcall #$cd .stash/src && sudo -S mv *.hg /usr/local/src/$# :input t))
@@ -77,20 +77,19 @@
        (:build () #$hg clone $VC_URL/core .stash/src/core$#)
        (:install-pack (tmp) (funcall #$sudo -SE scripts/install-core-pack.sh$# :input t))
        (:install (tmp) (funcall #$sudo -SE scripts/install-core.sh$# :input t)))
- (packy-repos (src) #$cd .stash/tmp && ../../scripts/get.sh $PACKY_URL/src/packy.tar.zst && \
+ (packy-repos (src) #$cd .stash/tmp && ../../scripts/get.sh $PACKY_HOME/src/packy.tar.zst && \
               unzstd packy.tar.zst && tar -xf packy.tar -C ../src/ && \
               rm -rf packy.tar$#)
  ;; programs
  (bootstrap () #$./bootstrap.sh$#)
  (emacs ()
-        (:get (src) #$./scripts/get-emacs.sh$#)
-        (:build (get-emacs) 
+        (:clone (src) (vc:vc-clone ".stash/src/emacs" "https://github.com/emacs-mirror/emacs"))
+        (:build (clone-emacs) 
                 #$cd .stash/src/emacs && ./autogen.sh$#
                 #$./scripts/build-emacs.sh$#)
-        (:build-mini (src) 
-                     #$./scripts/get-emacs.sh$#
-                     #$cd .stash/src/emacs && ./autogen.sh$#
-                     #$./scripts/build-emacs-mini.sh$#)
+        (:build-mini (clone-emacs) 
+                     #$cd .stash/src/emacs && ./autogen.sh
+                     ./scripts/build-emacs-mini.sh$#)
         (:install () (funcall #$cd .stash/src/emacs && sudo -S make install$# :input t))
         (:install-pack (tmp)
                        (funcall #$sudo -SE scripts/install-emacs-pack.sh$# :input t))
@@ -102,11 +101,9 @@
                ./make-dist --tar --no-compress
                zstd -8 emacs-31.0.50.tar -o "../../emacs.tar.zst"$#))
  (rocksdb ()
-          (:build (src)
-                  #$scripts/get-rocksdb.sh$#
-                  #$cd .stash/src/rocksdb && make shared_lib DISABLE_JEMALLOC=1$#)
-          (:build-static (src) #$scripts/get-rocksdb.sh$#
-                         #$cd .stash/src/rocksdb && make static_lib DISABLE_JEMALLOC=1$#)
+          (:clone (src) (vc:vc-clone ".stash/src/rocksdb" "https://github.com/facebook/rocksdb"))
+          (:build (clone-rocksdb) #$cd .stash/src/rocksdb && make shared_lib DISABLE_JEMALLOC=1$#)
+          (:build-static (clone-rocksdb) #$cd .stash/src/rocksdb && make static_lib DISABLE_JEMALLOC=1$#)
           (:update () #$cd .stash/src/rocksdb && git pull$#)
           (:install () 
                     (funcall #$cd .stash/src/rocksdb \
@@ -119,7 +116,7 @@
  (sbcl ()
        (:clone (src)
                (vc:vc-clone ".stash/src/sbcl" "https://github.com/sbcl/sbcl"))
-       (:build (src)
+       (:build (clone-sbcl)
                #$cd .stash/src/sbcl
                ./make.sh --dynamic-space-size=8Gb --without-gencgc --with-mark-region-gc --fancy \
                # --with-sb-fasteval --without-sb-eval$#)
@@ -135,20 +132,23 @@
  (install-quicklisp () #$cd .stash && ../scripts/get.sh https://beta.quicklisp.org/quicklisp.lisp$#
                     #$./scripts/quicklisp-install.sh$#)
  (stumpwm ()
-          (:build (src)
-                  #$./scripts/get-stumpwm.sh$#
+          (:clone (src) (vc:vc-clone ".stash/src/stumpwm" "https://github.com/stumpwm/stumpwm"))
+          (:build (clone-stumpwm)
                   #$cd .stash/src/stumpwm && ./autogen.sh && ./configure && make$#)
           (:install () (funcall #$cd .stash/src/stumpwm && sudo -S make install$# :input t))
           (:update () #$cd .stash/src/stumpwm && git pull$#)
           (:dist () #$scripts/dist-stumpwm-binary.sh$#))
- (build-nyxt (src) #$./scripts/get-nyxt.sh$#
-             #$cd .stash/src/nyxt && git submodule update --init && make all$#)
- (build-scryer-prolog (src) #$./scripts/get-scryer-prolog.sh$#
-                      #$cd .stash/src/scryer-prolog && cargo build --release$#)
+ (nyxt () 
+       (:clone (src) (vc:vc-clone ".stash/src/nyxt" "https://github.com/atlas-engineer/nyxt"))
+       (:build (clone-nyxt)
+               #$cd .stash/src/nyxt && git submodule update --init && make all$#))
+ (scryer-prolog ()
+                (:clone (src) (vc:vc-clone ".stash/src/scryer-prolog" "https://github.com/mthom/scryer-prolog"))
+                (:build (clone-scryer-prolog)
+                        #$cd .stash/src/scryer-prolog && cargo build --release$#))
  (tree-sitter (src)
-              (:build (src) 
-                      #$./scripts/get-tree-sitter.sh
-                      cd .stash/src/tree-sitter && make libtree-sitter.so$#)
+              (:clone (src) (vc:vc-clone ".stash/src/tree-sitter" "https://github.com/tree-sitter/tree-sitter"))
+              (:build (clone-tree-sitter) #$cd .stash/src/tree-sitter && make libtree-sitter.so$#)
               (:install ()
                         (funcall #$sudo -S ./scripts/install-tree-sitter.sh$# :input t))
               (:install-langs (src) (funcall #$sudo -S ./scripts/tree-sitter-langs.sh$# :input t))
@@ -166,11 +166,11 @@
  (:build (build-xcaddy-caddy) #$~/go/bin/xcaddy build --output .stash/bin/caddy --with github.com/mholt/caddy-webdav$#)
  (:install () (funcall #$sudo -S cp .stash/bin/caddy /usr/local/bin/caddy$# :input t)))
 (rust (src)
- (:build () #$scripts/get-rust.sh$#)
- (:build-docs (rust) #$cd .stash/src/rust && ./x doc$#))
+ (:clone (src) (vc:vc-clone ".stash/src/rust" "https://github.com/rust-lang/rust"))
+ (:build-docs (clone-rust) #$cd .stash/src/rust && ./x doc$#))
 (rustls (src)
-  (:build () 
-   #$git clone https://github.com/rustls/rustls-ffi .stash/src/rustls-ffi$#
+  (:clone (src) (vc:vc-clone ".stash/src/rustls-ffi" "https://github.com/rustls/rustls-ffi"))
+  (:build (clone-rustls)
    #$cd .stash/src/rustls-ffi && cargo capi build --release$#)
   (:install () #$cd .stash/src/rustls-ffi && cargo capi install$#)
   (:dist (tmp) #$scripts/dist-rustls.sh$#))
@@ -179,12 +179,14 @@
   (unless (probe-file #1=(merge-homedir-pathnames ".stash/lisp/slime"))
    (vc:vc-clone #1# "https://github.com/slime/slime"))))
 (ublk (src)
- (:build () #$scripts/get-ublksrv.sh$#
+ (:clone (src) (vc:vc-clone ".stash/src/ublksrv""https://github.com/ublk-org/ublksrv"))
+ (:build (clone-ublk)
        #$cd .stash/src/ublksrv && autoreconf -i && ./configure && make$#)
  (:install () (funcall #$cd .stash/src/ublksrv && sudo -S make install$# :input t)))
  ;; ref: https://github.com/BLAKE3-team/BLAKE3/tree/master/c#building
 (blake3 (src)
- (:build () #$scripts/get-blake3.sh$#
+ (:clone (src) (vc:vc-clone ".stash/src/blake3" "https://github.com/BLAKE3-team/BLAKE3"))
+ (:build (clone-blake3)
          #$cd .stash/src/blake3/c && gcc -shared -O3 -o libblake3.so blake3.c blake3_dispatch.c blake3_portable.c \
          blake3_sse2_x86-64_unix.S blake3_sse41_x86-64_unix.S blake3_avx2_x86-64_unix.S \
          blake3_avx512_x86-64_unix.S$#)
@@ -213,4 +215,5 @@
                       (sk-run (sk-find "dist-source" *skel-project*))
                       (rename-file "org.tar.zst" (merge-pathnames "org.tar.zst" p)))))
  (dist-demo-source () #$cd ../ && tar --exclude='*/.hg' --exclude='#*#' -I 'zstd' -cf demo.tar.zst org && mv demo.tar.zst infra/$#)
- (dist-all-source (dist-source dist-home-source dist-core-source dist-demo-source dist-org-source)))
+ (dist-all-source (dist-source dist-home-source dist-core-source dist-demo-source dist-org-source))
+ (deploy (dist-all-source) #$mv *.tar.zst $PACKY_HOME/src/$#))
