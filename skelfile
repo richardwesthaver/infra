@@ -117,8 +117,9 @@
           (:dist () #$scripts/dist-rocksdb-binary.sh$#)
           (:dist-source () #$scripts/dist-rocksdb-source.sh$#))
  (sbcl ()
-       (:build (src) 
-               #$scripts/get-sbcl.sh$#
+       (:clone (src)
+               (vc:vc-clone ".stash/src/sbcl" "https://github.com/sbcl/sbcl"))
+       (:build (src)
                #$cd .stash/src/sbcl
                ./make.sh --dynamic-space-size=8Gb --without-gencgc --with-mark-region-gc --fancy \
                # --with-sb-fasteval --without-sb-eval$#)
@@ -126,6 +127,7 @@
        (:build-gencgc (src) #$cd .stash/src/sbcl &&
                       ./make.sh --fancy$#)
        (:build-shared () #$cd .stash/src/sbcl && sh make-shared-library.sh$#)
+       (:build-all-cores () #$cd .stash/src/sbcl && sh build-all-cores.sh$#)
        (:update () #$cd .stash/src/sbcl && git pull$#)
        (:install () (funcall #$cd .stash/src/sbcl && INSTALL_ROOT=/usr/local sudo -S sh install.sh$# :input t))
        (:dist () #$scripts/dist-sbcl-binary.sh$#)
