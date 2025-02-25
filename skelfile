@@ -88,8 +88,8 @@
                 #$cd .stash/src/emacs && ./autogen.sh$#
                 #$./scripts/build-emacs.sh$#)
         (:build-mini (clone-emacs) 
-                     #$cd .stash/src/emacs && ./autogen.sh
-                     ./scripts/build-emacs-mini.sh$#)
+                     #$cd .stash/src/emacs && ./autogen.sh$#
+                     #$./scripts/build-emacs-mini.sh$#)
         (:install () (funcall #$cd .stash/src/emacs && sudo -S make install$# :input t))
         (:install-pack (tmp)
                        (funcall #$sudo -SE scripts/install-emacs-pack.sh$# :input t))
