@@ -4,7 +4,7 @@ VERSION="${2:-31.0.50}"
 cd .stash/tmp
 if [ ! -d "emacs-${VERSION}" ]; then
   TARGET="${1:-x86_64-unknown-linux-gnu}"
-  pack="${PACKY_URL}/dist/${TARGET}/emacs.tar.zst"
+  pack="${PACKY_HOME}/dist/${TARGET}/emacs.tar.zst"
   case $PACKY_URL in
     "http"*) curl -O $pack ;;
     *) cp $pack ./ ;;

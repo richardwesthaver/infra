@@ -3,7 +3,7 @@ set -e
 cd .stash/tmp
 if [ ! -d "tree-sitter" ]; then
   TARGET="${1:-x86_64-unknown-linux-gnu}"
-  pack="${PACKY_URL}/dist/${TARGET}/tree-sitter.tar.zst"
+  pack="${PACKY_HOME}/dist/${TARGET}/tree-sitter.tar.zst"
   case $PACKY_URL in
     "http"*) curl -O $pack ;;
     *) cp $pack ./ ;;

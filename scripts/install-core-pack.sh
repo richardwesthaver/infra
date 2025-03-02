@@ -2,7 +2,7 @@
 set -e
 TARGET="${1:-x86_64-unknown-linux-gnu}"
 cd .stash/tmp
-pack="${PACKY_URL}/dist/${TARGET}/core.tar.zst"
+pack="${PACKY_HOME}/dist/${TARGET}/core.tar.zst"
 if [ ! -d "core" ]; then
   case $PACKY_URL in
     "http"*) curl -O $pack ;;

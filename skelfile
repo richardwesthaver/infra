@@ -127,6 +127,8 @@
        (:build-all-cores () #$cd .stash/src/sbcl && sh build-all-cores.sh$#)
        (:update () #$cd .stash/src/sbcl && git pull$#)
        (:install () (funcall #$cd .stash/src/sbcl && INSTALL_ROOT=/usr/local sudo -S sh install.sh$# :input t))
+       (:install-pack (tmp)
+                      (funcall #$sudo -SE scripts/install-sbcl-pack.sh$# :input t))
        (:dist () #$scripts/dist-sbcl-binary.sh$#)
        (:dist-source () #$scripts/dist-sbcl-source.sh$#))
  (install-quicklisp () #$cd .stash && ../scripts/get.sh https://beta.quicklisp.org/quicklisp.lisp$#
@@ -196,7 +198,9 @@
  (:dist () #$scripts/dist-blake3.sh$#))
  ;; install
  (install-cargo-tools () #$scripts/install-cargo-tools.sh$#)
- (install-rustup () #$curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y$#)
+ (install-rustup () 
+  "Install rust - don't forget to source the env file: `. $HOME/.cargo/env`"
+  #$curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y$#)
  (install-bettercap () (tools/go:go-install "github.com/bettercap/bettercap@latest"))
  (install-alacritty () (tools/rust:cargo-install :alacritty))
  ;; dist

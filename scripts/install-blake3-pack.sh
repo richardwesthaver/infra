@@ -3,7 +3,7 @@ set -e
 cd .stash/tmp
 if [ ! -d "blake3" ]; then
   TARGET="${1:-x86_64-unknown-linux-gnu}"
-  pack="${PACKY_URL}/dist/${TARGET}/blake3.tar.zst"
+  pack="${PACKY_HOME}/dist/${TARGET}/blake3.tar.zst"
   case $PACKY_URL in
     "http"*) curl -O $pack ;;
     *) cp $pack ./ ;;

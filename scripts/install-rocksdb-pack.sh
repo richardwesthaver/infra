@@ -5,7 +5,7 @@ set -e
 cd .stash/tmp
 if [ ! -d "rocksdb" ]; then
   TARGET="${1:-x86_64-unknown-linux-gnu}"
-  pack="${PACKY_URL}/dist/${TARGET}/rocksdb.tar.zst"
+  pack="${PACKY_HOME}/dist/${TARGET}/rocksdb.tar.zst"
   case $PACKY_URL in
     "http"*) curl -O $pack ;;
     *) cp $pack ./ ;;
