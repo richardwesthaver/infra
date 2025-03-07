@@ -215,6 +215,29 @@
  (:install-pack (tmp)
                 (funcall #$sudo -SE scripts/install-blake3-pack.sh$# :input t))
  (:dist () #$scripts/dist-blake3.sh$#))
+(liburing (src)
+ (:clone (src) (vc:vc-clone ".stash/src/liburing" "https://github.com/axboe/liburing"))
+ (:build (clone-liburing)
+	 #$cd .stash/src/liburing 
+         ./configure --cc=gcc --cxx=g++
+         make -j$(nproc)
+         make liburing.pc$#)
+ (:install () (funcall #$cd .stash/src/liburing && sudo make install$# :input t))
+ (:install-pack (tmp)
+		(funcall #$sudo -SE scripts/install-liburing-pack.sh$# :input t))
+ (:dist () #$scripts/dist-liburing.sh$#))
+(bzip2 (src)
+ (:clone (src) (vc:vc-clone ".stash/src/bzip2" "https://gitlab.com/federicomenaquintero/bzip2"))
+ (:build (clone-bzip2)
+	 #$cd .stash/src/bzip2
+         meson --prefix /usr build
+         ninja -C build
+         # meson test -C build --print-errorlogs
+         $#)
+ (:install () (funcall #$cd .stash/src/bzip2 && sudo ninja -C build install$# :input t))
+ (:install-pack (tmp)
+		(funcall #$sudo -SE scripts/install-bzip2-pack.sh$# :input t))
+ (:dist () #$scripts/dist-bzip2.sh$#))
  ;; install
  (install-cargo-tools () #$scripts/install-cargo-tools.sh$#)
  (install-rustup () 
