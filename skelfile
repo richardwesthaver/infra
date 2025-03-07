@@ -64,6 +64,14 @@
         ;;            '("sxp" "env"))
         #$rm -rvf .stash \
         $#)
+ (readme ()
+	 (:update ()
+		  (cli/ed:with-emacs (e)
+		    (org-babel-lob-ingest company-babel-file)
+		    (org-with-file-buffer (join-paths company-source-directory \"infra/readme.org\")
+					  (org-babel-execute-buffer)
+					  (save-buffer)))))
+
  (tmp () #$mkdir -pv .stash/tmp$#)
  (src () #$mkdir -pv .stash/src$#)
  (bin () #$mkdir -pv .stash/bin$#)

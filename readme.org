@@ -9,15 +9,15 @@
 #+RESULTS:
 |-------------+------------------------------------------------------|
 | name        | infra                                                |
-| version     | 0.1.0                                                |
-| description | The Compiler Company Infrastructure                  |
-| skel-id     | 3466-87d9-5b04-a5df                                  |
+| version     | :version 0.1.0                                       |
+| description | :description The Compiler Company Infrastructure     |
+| skel-id     | :id 3775854705201423839                              |
 | root        | ~/comp/infra/                                        |
-| vc          | :hg [[https://vc.compiler.company/infra][vc.compiler.company/infra]] :rev [[https://vc.compiler.company/infra/rev/ef43a9b9da64][ef43a9b9da64:373+]] |
-| tags        | INFRA                                                |
-| updated     | Thu Dec 12 23:53:59 2024 -0500                       |
-| langs       | autoconf bash lisp org sh                            |
-| lines       | 2584 :λ 1910 :# 387 :_ 287                           |
+| vc          | :hg [[https://vc.compiler.company/infra][vc.compiler.company/infra]] :rev [[https://vc.compiler.company/infra/rev/a32e4e4ce4c4][a32e4e4ce4c4:396+]] |
+| tags        | :tags (infra)                                        |
+| updated     | Thu Mar 06 19:53:46 2025 -0500                       |
+| langs       | autoconf bash json lisp org sh                       |
+| lines       | 2631 :λ 1993 :# 370 :_ 268                           |
 |-------------+------------------------------------------------------|
 
 #+CALL: project-links()
