@@ -238,6 +238,15 @@
  (:install-pack (tmp)
 		(funcall #$sudo -SE scripts/install-bzip2-pack.sh$# :input t))
  (:dist () #$scripts/dist-bzip2.sh$#))
+(zstd (src)
+ (:clone (src) (vc:vc-clone ".stash/src/zstd" "https://github.com/facebook/zstd"))
+ (:build (clone-zstd)
+	 #$cd .stash/src/zstd/lib
+         make$#)
+ (:install () (funcall #$cd .stash/src/zstd/lib && make install$# :input t))
+ (:install-pack (tmp)
+		(funcall #$sudo -SE scripts/install-zstd-pack.sh$# :input t))
+ (:dist () #$scripts/dist-zstd.sh$#))
  ;; install
  (install-cargo-tools () #$scripts/install-cargo-tools.sh$#)
  (install-rustup () 

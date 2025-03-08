@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 cd .stash 
 mkdir blake3 
 cp src/blake3/c/libblake3.so src/blake3/c/blake3.h blake3/ 
