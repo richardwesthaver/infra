@@ -1,4 +1,3 @@
 pod=https://vc.compiler.company/infra/pod
 box=https://vc.compiler.company/infra/box
-etc=https://vc.compiler.company/infra/etc
 home=https://vc.compiler.company/infra/home

@@ -212,9 +212,7 @@ a warning instead of an error."
     (sb-thread:make-thread (lambda () (vc:run-hg-command "clone" (list ".stash/src/core.hg" ".stash/src/core")))
                            :name "core")
     (sb-thread:make-thread (lambda () (vc:run-hg-command "clone" (list ".stash/src/home.hg" ".stash/src/home")))
-                           :name "home")
-    (sb-thread:make-thread (lambda () (vc:run-hg-command "clone" (list ".stash/src/etc.hg" ".stash/src/etc")))
-                           :name "etc"))))
+                           :name "home"))))
 
 (defun make-pods ()
   (vc:run-hg-command "clone" (list ".stash/src/pod.hg" ".stash/src/pod"))

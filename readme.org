@@ -43,7 +43,6 @@ install, update, and configure software for our machines.
 
 There are four subprojects:
 - home :: User home directories and configuration files
-- etc :: System configuration files
 - box :: VM and full system image scripts
 - pod :: Containerfiles and build scripts
 
