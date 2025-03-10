@@ -21,7 +21,7 @@
 ((check () #$./check.sh$#)
  (upstream ()
            (delete-directories 
-            '("/tmp/infra/" "/tmp/home/" "/tmp/pod/" "/tmp/box/" "/tmp/etc/"))
+            '("/tmp/infra/" "/tmp/home/" "/tmp/pod/" "/tmp/box/"))
            (vc:hg-fast-export (make-instance 'vc:hg-repo :path (probe-file "home/")))
            #$cd /tmp/home
            git remote add cb ssh://git@codeberg.org/c-c/home
@@ -38,10 +38,6 @@
            #$cd /tmp/box
            git remote add cb ssh://git@codeberg.org/c-c/box
            git remote add gh ssh://git@github.com/richardwesthaver/box
-           git push -u cb --all --force
-           git push gh --all --force$#
-           (vc:hg-fast-export (make-instance 'vc:hg-repo :path (probe-file "etc/")))
-           #$cd /tmp/etc
            git push -u cb --all --force
            git push gh --all --force$#
            (vc:hg-fast-export (sk-vc *skel-project*))
