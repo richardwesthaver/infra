@@ -244,6 +244,19 @@
  (:install-pack (tmp)
 		(funcall #$sudo -SE scripts/install-zstd-pack.sh$# :input t))
  (:dist () #$scripts/dist-zstd.sh$#))
+(edk2 (src)
+ (:clone (src) (vc:vc-clone ".stash/src/edk2" "https://github.com/tianocore/edk2"))
+ (:build (clone-edk2)
+	 #$cd .stash/src/edk2
+         git submodule update --init
+	 make -C BaseTools
+         . edksetup.sh$#)
+ (:build-ovmf (build-edk2)
+  #$cd .stash/src/edk2
+  echo "ACTIVE_PLATFORM       = OvmfPkg/OvmfPkgX64.dsc \
+TARGET_ARCH           = X64 \
+TOOL_CHAIN_TAG        = GCC5" >> Conf/target.txt
+  ./build$#))
  ;; install
  (install-cargo-tools () #$scripts/install-cargo-tools.sh$#)
  (install-rustup () 
