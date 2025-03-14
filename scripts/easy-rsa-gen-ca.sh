@@ -1,4 +1,5 @@
-#!/usr/bin/bash
+#!/bin/sh
+set -e
 cd /root
 export EASYRSA=/etc/easy-rsa
 export EASYRSA_VARS_FILE=/etc/easy-rsa/vars

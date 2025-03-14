@@ -1,4 +1,5 @@
-#!/usr/bin/bash
+#!/bin/sh
+set -e
 cd /etc/easy-rsa
 easyrsa init-pki
 easyrsa gen-req $HOSTNAME nopass

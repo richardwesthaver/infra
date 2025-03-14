@@ -1,10 +1,10 @@
-#!/bin/bash
+#!/bin/sh
 
 # given a directory bundle files (.hg), unbundle and replace
 # the files with bare directories.
-
+set -e
 DIR="${1:-/home/vc/src/}"
-cd $DIR
+cd "$DIR"
 echo "entering $DIR"
 for i in $(find . -type f -name "*.hg"); do
   echo "unbundling $i"
