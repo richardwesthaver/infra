@@ -7,163 +7,165 @@
 :license "MPL"
 :vc (:hg "https://vc.compiler.company/infra")
 :include ("pod/skelfile")
-:components ((:org "readme")
-             (:mod "scripts"))
-:bind ((packy-home :env "/opt/core/store/packy")
-       (vc-url :env "~/comp")
-       (prefix :env "/usr/local")
-       (stash :env ".stash")
-       (store :env "/opt/core/store")
-       (dev :env (or (sb-posix:getenv "USER") "")))
+:components 
+((:org "readme")
+ (:mod "scripts"))
+:bind 
+((packy-home :env "/opt/core/store/packy")
+ (vc-url :env "~/comp")
+ (prefix :env "/usr/local")
+ (stash :env ".stash")
+ (store :env "/opt/core/store")
+ (dev :env (or (sb-posix:getenv "USER") "")))
 :stash ".stash"
 :store "/opt/core/store"
 :rules
 ((check () #$./check.sh$#)
  (upstream ()
-           (delete-directories 
-            '("/tmp/infra/" "/tmp/home/" "/tmp/pod/" "/tmp/box/"))
-           (vc:hg-fast-export (make-instance 'vc:hg-repo :path (probe-file "home/")))
-           #$cd /tmp/home
-           git remote add cb ssh://git@codeberg.org/c-c/home
-           git remote add gh ssh://git@github.com/richardwesthaver/home
-           git push -u cb --all --force
-           git push gh --all --force$#
-           (vc:hg-fast-export (make-instance 'vc:hg-repo :path (probe-file "pod/")))
-           #$cd /tmp/pod
-           git remote add cb ssh://git@codeberg.org/c-c/pod
-           git remote add gh ssh://git@github.com/richardwesthaver/pod
-           git push -u cb --all --force
-           git push gh --all --force$#
-           (vc:hg-fast-export (make-instance 'vc:hg-repo :path (probe-file "box/")))
-           #$cd /tmp/box
-           git remote add cb ssh://git@codeberg.org/c-c/box
-           git remote add gh ssh://git@github.com/richardwesthaver/box
-           git push -u cb --all --force
-           git push gh --all --force$#
-           (vc:hg-fast-export (sk-vc *skel-project*))
-           #$cd /tmp/infra
-           git remote add cb ssh://git@codeberg.org/c-c/infra
-           git remote add gh ssh://git@github.com/richardwesthaver/infra
-           git checkout
-           git submodule add https://github.com/richardwesthaver/home
-           git submodule add https://github.com/richardwesthaver/pod
-           git submodule add https://github.com/richardwesthaver/box
-           git add .gitmodules
-           git commit -m 'gitmodules'
-           git push -u cb --all --force
-           git push gh --all --force$#)
+  (delete-directories 
+   '("/tmp/infra/" "/tmp/home/" "/tmp/pod/" "/tmp/box/"))
+  (vc:hg-fast-export (make-instance 'vc:hg-repo :path (probe-file "home/")))
+  #$cd /tmp/home
+  git remote add cb ssh://git@codeberg.org/c-c/home
+  git remote add gh ssh://git@github.com/richardwesthaver/home
+  git push -u cb --all --force
+  git push gh --all --force$#
+  (vc:hg-fast-export (make-instance 'vc:hg-repo :path (probe-file "pod/")))
+  #$cd /tmp/pod
+  git remote add cb ssh://git@codeberg.org/c-c/pod
+  git remote add gh ssh://git@github.com/richardwesthaver/pod
+  git push -u cb --all --force
+  git push gh --all --force$#
+  (vc:hg-fast-export (make-instance 'vc:hg-repo :path (probe-file "box/")))
+  #$cd /tmp/box
+  git remote add cb ssh://git@codeberg.org/c-c/box
+  git remote add gh ssh://git@github.com/richardwesthaver/box
+  git push -u cb --all --force
+  git push gh --all --force$#
+  (vc:hg-fast-export (sk-vc *skel-project*))
+  #$cd /tmp/infra
+  git remote add cb ssh://git@codeberg.org/c-c/infra
+  git remote add gh ssh://git@github.com/richardwesthaver/infra
+  git checkout
+  git submodule add https://github.com/richardwesthaver/home
+  git submodule add https://github.com/richardwesthaver/pod
+  git submodule add https://github.com/richardwesthaver/box
+  git add .gitmodules
+  git commit -m 'gitmodules'
+  git push -u cb --all --force
+  git push gh --all --force$#)
  (clean () 
-        ;; #,@(mapcar (lambda (x) (make-pathname :name (machine-instance) :type x))
-        ;;            '("sxp" "env"))
-        #$rm -rvf .stash \
-        $#)
+  ;; #,@(mapcar (lambda (x) (make-pathname :name (machine-instance) :type x))
+  ;;            '("sxp" "env"))
+  #$rm -rvf .stash \
+  $#)
  (readme ()
-	 (:update ()
-		  (cli/ed:with-emacs (e)
-		    (org-babel-lob-ingest company-babel-file)
-		    (org-with-file-buffer (join-paths company-source-directory \"infra/readme.org\")
-					  (org-babel-execute-buffer)
-					  (save-buffer)))))
+  (:update ()
+   (cli/ed:with-emacs (e)
+    (org-babel-lob-ingest company-babel-file)
+    (org-with-file-buffer (join-paths company-source-directory \"infra/readme.org\")
+     (org-babel-execute-buffer)
+     (save-buffer)))))
 
  (tmp () #$mkdir -pv .stash/tmp$#)
  (src () #$mkdir -pv .stash/src$#)
  (bin () #$mkdir -pv .stash/bin$#)
  ;; src
  (repos (src tmp) #$cd .stash/tmp && scripts/get.sh $PACKY_HOME/src/comp.tar.zst && \
-        unzstd comp.tar.zst && tar -xf comp.tar -C ../src && \
-        mv ../src/hg/* ../src/ && rm -rf ../src/hg comp.tar$#)
+  unzstd comp.tar.zst && tar -xf comp.tar -C ../src && \
+  mv ../src/hg/* ../src/ && rm -rf ../src/hg comp.tar$#)
  (install-repos-shallow (repos) (funcall #$cd .stash/src && sudo -S mv *.hg /usr/local/src/$# :input t))
  (home (src) #$hg clone $VC_URL/home .stash/src/home$#)
  (core (src) 
-       (:build () #$hg clone $VC_URL/core .stash/src/core$#)
-       (:install-pack (tmp) (funcall #$sudo -SE scripts/install-core-pack.sh$# :input t))
-       (:install (tmp) (funcall #$sudo -SE scripts/install-core.sh$# :input t)))
+  (:build () #$hg clone $VC_URL/core .stash/src/core$#)
+  (:install-pack (tmp) (funcall #$sudo -SE scripts/install-core-pack.sh$# :input t))
+  (:install (tmp) (funcall #$sudo -SE scripts/install-core.sh$# :input t)))
  (packy-repos (src) #$cd .stash/tmp && ../../scripts/get.sh $PACKY_HOME/src/packy.tar.zst && \
-              unzstd packy.tar.zst && tar -xf packy.tar -C ../src/ && \
-              rm -rf packy.tar$#)
+  unzstd packy.tar.zst && tar -xf packy.tar -C ../src/ && \
+  rm -rf packy.tar$#)
  ;; programs
  (bootstrap () #$./bootstrap.sh$#)
  (emacs ()
-        (:clone (src) (vc:vc-clone ".stash/src/emacs" "https://github.com/emacs-mirror/emacs"))
-        (:build (clone-emacs) 
-                #$cd .stash/src/emacs && ./autogen.sh$#
-                #$./scripts/build-emacs.sh$#)
-        (:build-mini (clone-emacs) 
-                     #$cd .stash/src/emacs && ./autogen.sh$#
-                     #$./scripts/build-emacs-mini.sh$#)
-        (:install () (funcall #$cd .stash/src/emacs && sudo -S make install$# :input t))
-        (:install-pack (tmp)
-                       (funcall #$sudo -SE scripts/install-emacs-pack.sh$# :input t))
-        (:update () #$cd .stash/src/emacs && git pull$#)
-        (:dist-mini () #$cd .stash/src/emacs
-                    ./make-dist --tar --no-compress --no-info --no-changelog
-                    zstd -8 emacs-31.0.50.tar -o "../../emacs-mini.tar.zst"$#)
-        (:dist () #$cd .stash/src/emacs
-               ./make-dist --tar --no-compress
-               zstd -8 emacs-31.0.50.tar -o "../../emacs.tar.zst"$#))
+  (:clone (src) (vc:vc-clone ".stash/src/emacs" "https://github.com/emacs-mirror/emacs"))
+  (:build (clone-emacs) 
+   #$cd .stash/src/emacs && ./autogen.sh$#
+   #$./scripts/build-emacs.sh$#)
+  (:build-mini (clone-emacs) 
+   #$cd .stash/src/emacs && ./autogen.sh$#
+   #$./scripts/build-emacs-mini.sh$#)
+  (:install () (funcall #$cd .stash/src/emacs && sudo -S make install$# :input t))
+  (:install-pack (tmp)
+   (funcall #$sudo -SE scripts/install-emacs-pack.sh$# :input t))
+  (:update () #$cd .stash/src/emacs && git pull$#)
+  (:dist-mini () #$cd .stash/src/emacs
+   ./make-dist --tar --no-compress --no-info --no-changelog
+   zstd -8 emacs-31.0.50.tar -o "../../emacs-mini.tar.zst"$#)
+  (:dist () #$cd .stash/src/emacs
+   ./make-dist --tar --no-compress
+   zstd -8 emacs-31.0.50.tar -o "../../emacs.tar.zst"$#))
  (rocksdb ()
-          (:clone (src) (vc:vc-clone ".stash/src/rocksdb" "https://github.com/facebook/rocksdb"))
-          (:build (clone-rocksdb) #$cd .stash/src/rocksdb && make shared_lib DISABLE_JEMALLOC=1$#)
-          (:build-static (clone-rocksdb) #$cd .stash/src/rocksdb && make static_lib DISABLE_JEMALLOC=1$#)
-          (:update () #$cd .stash/src/rocksdb && git pull$#)
-          (:install () 
-                    (funcall #$cd .stash/src/rocksdb \
-                             && sudo -S make install-shared && \
-                             sudo cp -r include/* /usr/local/include/$# :input t))
-          (:install-pack (tmp)
-                         (funcall #$sudo -SE scripts/install-rocksdb-pack.sh$# :input t))
-          (:dist () #$scripts/dist-rocksdb-binary.sh$#)
-          (:dist-source () #$scripts/dist-rocksdb-source.sh$#))
+  (:clone (src) (vc:vc-clone ".stash/src/rocksdb" "https://github.com/facebook/rocksdb"))
+  (:build (clone-rocksdb) #$cd .stash/src/rocksdb && make shared_lib DISABLE_JEMALLOC=1$#)
+  (:build-static (clone-rocksdb) #$cd .stash/src/rocksdb && make static_lib DISABLE_JEMALLOC=1$#)
+  (:update () #$cd .stash/src/rocksdb && git pull$#)
+  (:install () 
+   (funcall #$cd .stash/src/rocksdb \
+    && sudo -S make install-shared && \
+    sudo cp -r include/* /usr/local/include/$# :input t))
+  (:install-pack (tmp)
+   (funcall #$sudo -SE scripts/install-rocksdb-pack.sh$# :input t))
+  (:dist () #$scripts/dist-rocksdb-binary.sh$#)
+  (:dist-source () #$scripts/dist-rocksdb-source.sh$#))
  (sbcl ()
-       (:clone (src)
-               (vc:vc-clone ".stash/src/sbcl" "https://github.com/sbcl/sbcl"))
-       (:build (clone-sbcl)
-               #$cd .stash/src/sbcl
-               ./make.sh --dynamic-space-size=8Gb --without-gencgc --with-mark-region-gc --fancy \
-               # --with-sb-fasteval --without-sb-eval$#)
-       (:build-docs () #$cd .stash/src/sbcl/doc/manual && make$#)
-       (:build-gencgc (src) #$cd .stash/src/sbcl &&
-                      ./make.sh --fancy$#)
-       (:build-shared () #$cd .stash/src/sbcl && sh make-shared-library.sh$#)
-       (:build-all-cores () #$cd .stash/src/sbcl && sh build-all-cores.sh$#)
-       (:update () #$cd .stash/src/sbcl && git pull$#)
-       (:install () (funcall #$cd .stash/src/sbcl && INSTALL_ROOT=/usr/local sudo -S sh install.sh$# :input t))
-       (:install-pack (tmp)
-                      (funcall #$sudo -SE scripts/install-sbcl-pack.sh$# :input t))
-       (:dist () #$scripts/dist-sbcl-binary.sh$#)
-       (:dist-source () #$scripts/dist-sbcl-source.sh$#))
+  (:clone (src)
+   (vc:vc-clone ".stash/src/sbcl" "https://github.com/sbcl/sbcl"))
+  (:build (clone-sbcl)
+   #$cd .stash/src/sbcl
+   ./make.sh --dynamic-space-size=8Gb --without-gencgc --with-mark-region-gc --fancy \
+   # --with-sb-fasteval --without-sb-eval$#)
+  (:build-docs () #$cd .stash/src/sbcl/doc/manual && make$#)
+  (:build-gencgc (src) #$cd .stash/src/sbcl &&
+   ./make.sh --fancy$#)
+  (:build-shared () #$cd .stash/src/sbcl && sh make-shared-library.sh$#)
+  (:build-all-cores () #$cd .stash/src/sbcl && sh build-all-cores.sh$#)
+  (:update () #$cd .stash/src/sbcl && git pull$#)
+  (:install () (funcall #$cd .stash/src/sbcl && INSTALL_ROOT=/usr/local sudo -S sh install.sh$# :input t))
+  (:install-pack (tmp)
+   (funcall #$sudo -SE scripts/install-sbcl-pack.sh$# :input t))
+  (:dist () #$scripts/dist-sbcl-binary.sh$#)
+  (:dist-source () #$scripts/dist-sbcl-source.sh$#))
  (install-quicklisp () #$cd .stash && ../scripts/get.sh https://beta.quicklisp.org/quicklisp.lisp$#
-                    #$./scripts/quicklisp-install.sh$#)
+  #$./scripts/quicklisp-install.sh$#)
  (stumpwm ()
-          (:clone (src) (vc:vc-clone ".stash/src/stumpwm" "https://github.com/stumpwm/stumpwm"))
-          (:build (clone-stumpwm)
-                  #$cd .stash/src/stumpwm && ./autogen.sh && ./configure && make$#)
-          (:install () (funcall #$cd .stash/src/stumpwm && sudo -S make install$# :input t))
-          (:update () #$cd .stash/src/stumpwm && git pull$#)
-          (:dist () #$scripts/dist-stumpwm-binary.sh$#))
+  (:clone (src) (vc:vc-clone ".stash/src/stumpwm" "https://github.com/stumpwm/stumpwm"))
+  (:build (clone-stumpwm)
+   #$cd .stash/src/stumpwm && ./autogen.sh && ./configure && make$#)
+  (:install () (funcall #$cd .stash/src/stumpwm && sudo -S make install$# :input t))
+  (:update () #$cd .stash/src/stumpwm && git pull$#)
+  (:dist () #$scripts/dist-stumpwm-binary.sh$#))
  (nyxt () 
-       (:clone (src) (vc:vc-clone ".stash/src/nyxt" "https://github.com/atlas-engineer/nyxt"))
-       (:build (clone-nyxt)
-               #$cd .stash/src/nyxt && git submodule update --init && make all$#))
+  (:clone (src) (vc:vc-clone ".stash/src/nyxt" "https://github.com/atlas-engineer/nyxt"))
+  (:build (clone-nyxt)
+   #$cd .stash/src/nyxt && git submodule update --init && make all$#))
  (scryer-prolog ()
-                (:clone (src) (vc:vc-clone ".stash/src/scryer-prolog" "https://github.com/mthom/scryer-prolog"))
-                (:build (clone-scryer-prolog)
-                        #$cd .stash/src/scryer-prolog && cargo build --release$#))
+  (:clone (src) (vc:vc-clone ".stash/src/scryer-prolog" "https://github.com/mthom/scryer-prolog"))
+  (:build (clone-scryer-prolog)
+   #$cd .stash/src/scryer-prolog && cargo build --release$#))
  (tree-sitter (src)
-              (:clone (src) (vc:vc-clone ".stash/src/tree-sitter" "https://github.com/tree-sitter/tree-sitter"))
-              (:build (clone-tree-sitter) #$cd .stash/src/tree-sitter && make libtree-sitter.so$#)
-              (:install ()
-                        (funcall #$sudo -S ./scripts/install-tree-sitter.sh$# :input t))
-              (:install-langs (src) (funcall #$sudo -S ./scripts/tree-sitter-langs.sh$# :input t))
-              (:dist (tmp) #$scripts/dist-tree-sitter.sh$#)
-              (:dist-langs (tmp) #$scripts/dist-tree-sitter-langs.sh$#))
+  (:clone (src) (vc:vc-clone ".stash/src/tree-sitter" "https://github.com/tree-sitter/tree-sitter"))
+  (:build (clone-tree-sitter) #$cd .stash/src/tree-sitter && make libtree-sitter.so$#)
+  (:install ()
+   (funcall #$sudo -S ./scripts/install-tree-sitter.sh$# :input t))
+  (:install-langs (src) (funcall #$sudo -S ./scripts/tree-sitter-langs.sh$# :input t))
+  (:dist (tmp) #$scripts/dist-tree-sitter.sh$#)
+  (:dist-langs (tmp) #$scripts/dist-tree-sitter-langs.sh$#))
  (build-linux () #$mkdir -pv .stash/src/linux$#
-              #$gpg --export autosigner@ torvalds@ gregkh@ > .stash/src/linux/keyring.gpg$#
-              #$./scripts/get-linux.sh $(uname -r | cut -d- -f1) .stash .stash/src/linux/keyring.gpg$#
+  #$gpg --export autosigner@ torvalds@ gregkh@ > .stash/src/linux/keyring.gpg$#
+  #$./scripts/get-linux.sh $(uname -r | cut -d- -f1) .stash .stash/src/linux/keyring.gpg$#
         #$cd scripts && unxz .stash/src/linux.tar.xz &&
         tar -xvf .stash/src/linux.tar $(uname -r | cut -d- -f1)$#
-              #$cd .stash/src/linux && make mrproper -j &&
-              zcat /proc/config.gz > .config && yes N | make localmodconfig$#)
+  #$cd .stash/src/linux && make mrproper -j &&
+  zcat /proc/config.gz > .config && yes N | make localmodconfig$#)
 (caddy ()
  (:build-xcaddy () #$go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest$#)
  (:build (build-xcaddy-caddy) #$~/go/bin/xcaddy build --output .stash/bin/caddy --with github.com/mholt/caddy-webdav$#)
@@ -264,17 +266,17 @@ TOOL_CHAIN_TAG        = GCC5" >> Conf/target.txt
  (dist (dist-rocksdb dist-sbcl dist-source-sbcl))
  (dist-source (clean) #$cd .. && tar --exclude='.hg' --exclude='#*#' -I 'zstd' -cf infra/infra.tar.zst infra/*$#)
  (dist-home-source () #$tar --exclude='.hg' --exclude='#*#' --exclude='readme.org' \
-                   -I 'zstd' -cf home.tar.zst home$#)
+  -I 'zstd' -cf home.tar.zst home$#)
  (dist-core-source () 
-                   (let ((p *default-pathname-defaults*))
-                     (with-project "../core"
-                       (sk-run (sk-find "dist-source" *skel-project*))
-                       (rename-file "core.tar.zst" (merge-pathnames "core.tar.zst" p)))))
+  (let ((p *default-pathname-defaults*))
+   (with-project "../core"
+    (sk-run (sk-find "dist-source" *skel-project*))
+    (rename-file "core.tar.zst" (merge-pathnames "core.tar.zst" p)))))
  (dist-org-source () 
-                  (let ((p *default-pathname-defaults*))
-                    (with-project "../org"
-                      (sk-run (sk-find "dist-source" *skel-project*))
-                      (rename-file "org.tar.zst" (merge-pathnames "org.tar.zst" p)))))
+  (let ((p *default-pathname-defaults*))
+   (with-project "../org"
+    (sk-run (sk-find "dist-source" *skel-project*))
+    (rename-file "org.tar.zst" (merge-pathnames "org.tar.zst" p)))))
  (dist-demo-source () #$cd ../ && tar --exclude='*/.hg' --exclude='#*#' -I 'zstd' -cf demo.tar.zst org && mv demo.tar.zst infra/$#)
  (dist-all-source (dist-source dist-home-source dist-core-source dist-demo-source dist-org-source))
  (deploy (dist-all-source) #$mv *.tar.zst $PACKY_HOME/src/$#))
