@@ -1,5 +1,5 @@
 #!/bin/sh
-set -e
+set -ex
 mkdir -pv .stash/tmp/tree-sitter-langs/lib
 mkdir -pv .stash/tmp/tree-sitter-langs/share
 ./scripts/tree-sitter-langs.sh .stash/src/tree-sitter-langs .stash/tmp/tree-sitter-langs

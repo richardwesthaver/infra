@@ -11,14 +11,14 @@
 ((:org "readme")
  (:mod "scripts"))
 :bind 
-((packy-home :env "/opt/core/store/packy")
+((packy-home :env "/opt/store/packy")
  (vc-url :env "~/comp")
  (prefix :env "/usr/local")
  (stash :env ".stash")
- (store :env "/opt/core/store")
+ (store :env "/opt/store")
  (dev :env (or (sb-posix:getenv "USER") "")))
 :stash ".stash"
-:store "/opt/core/store"
+:store "/opt/store"
 :rules
 ((check () #$./check.sh$#)
  (upstream ()

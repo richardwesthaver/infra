@@ -1,5 +1,5 @@
 #!/bin/sh
-set -e
+set -ex
 TARGET="${1:-x86_64-unknown-linux-gnu}"
 cd .stash/tmp
 pack="${PACKY_HOME}/dist/${TARGET}/core.tar.zst"
