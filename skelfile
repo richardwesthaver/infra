@@ -267,7 +267,7 @@ TOOL_CHAIN_TAG        = GCC5" >> Conf/target.txt
  (dist-source (clean) #$cd .. && tar --exclude='.hg' --exclude='#*#' -I 'zstd' -cf infra/infra.tar.zst infra/*$#)
  (dist-home-source () #$tar --exclude='.hg' --exclude='#*#' --exclude='readme.org' \
   -I 'zstd' -cf home.tar.zst home$#)
- (dist-core-source () 
+ (dist-core-source ()
   (let ((p *default-pathname-defaults*))
    (with-project "../core"
     (sk-run (sk-find "dist-source" *skel-project*))
