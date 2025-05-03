@@ -1,5 +1,8 @@
 #!/bin/sh
 set -xe
+if [ -z "$HOME" ]; then  HOME='/root' 
+fi
+mkdir -pv "$HOME/.stash/"
 QUICKLISP_HOME="${1:$HOME/.stash/quicklisp/}"
 if [ -z "$QUICKLISP_DIST_VERSION" ] || [ "$QUICKLISP_DIST_VERSION" = "latest" ]; then
     QUICKLISP_DIST_VERSION=nil

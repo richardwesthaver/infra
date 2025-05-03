@@ -13,11 +13,11 @@
 | description | :description The Compiler Company Infrastructure     |
 | skel-id     | :id 3775854705201423839                              |
 | root        | ~/comp/infra/                                        |
-| vc          | :hg [[https://vc.compiler.company/infra][vc.compiler.company/infra]] :rev [[https://vc.compiler.company/infra/rev/c5d85a370841][c5d85a370841:407+]] |
+| vc          | :hg [[https://vc.compiler.company/infra][vc.compiler.company/infra]] :rev [[https://vc.compiler.company/infra/rev/fa80ac8442ff][fa80ac8442ff:410+]] |
 | tags        | :tags (infra)                                        |
-| updated     | Sat Mar 15 22:27:13 2025 -0400                       |
-| langs       | autoconf bash json lisp org sh                       |
-| lines       | 2707 :λ 2065 :# 376 :_ 266                           |
+| updated     | Sun Apr 20 01:25:40 2025 -0400                       |
+| langs       | autoconf bash lisp org sh                            |
+| lines       | 2696 :λ 2042 :# 385 :_ 269                           |
 |-------------+------------------------------------------------------|
 
 #+CALL: project-links()

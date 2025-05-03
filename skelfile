@@ -130,6 +130,7 @@
   (:build-all-cores () #$cd .stash/src/sbcl && sh build-all-cores.sh$#)
   (:update () #$cd .stash/src/sbcl && git pull$#)
   (:install () (funcall #$cd .stash/src/sbcl && INSTALL_ROOT=/usr/local sudo -S sh install.sh$# :input t))
+  (:install-src () (funcall #$cd .stash/src/sbcl && sudo cp -rf src contrib "$PREFIX/src/sbcl/"$# :input t))
   (:install-pack (tmp)
    (funcall #$sudo -SE scripts/install-sbcl-pack.sh$# :input t))
   (:dist () #$scripts/dist-sbcl-binary.sh$#)
