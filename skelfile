@@ -137,7 +137,7 @@
    (funcall #$sudo -SE scripts/install-sbcl-pack.sh$# :input t))
   (:dist () #$scripts/dist-sbcl-binary.sh$#)
   (:dist-source () #$scripts/dist-sbcl-source.sh$#))
- (install-quicklisp () #$cd .stash && ../scripts/get.sh https://beta.quicklisp.org/quicklisp.lisp$#
+ (install-quicklisp (tmp) #$cd .stash && curl -O https://beta.quicklisp.org/quicklisp.lisp$#
   #$./scripts/quicklisp-install.sh$#)
  (stumpwm ()
   (:clone (src) (vc:vc-clone ".stash/src/stumpwm" "https://github.com/stumpwm/stumpwm"))
