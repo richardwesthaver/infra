@@ -23,7 +23,7 @@ HOST_VER=$(uname -r | cut -d- -f1)
 VER="${1:-$HOST_VER}"
 
 # Where to download the tarball and verification data.
-TARGETDIR=${2:-.stash/src/linux-$VER}
+TARGETDIR=${2:-.stash/src/}
 
 # For CI and other automated infrastructure, you may want to
 # create a keyring containing the keys belonging to:
