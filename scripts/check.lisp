@@ -11,7 +11,7 @@
            :*results*
            :check))
 
-(in-package :infra/scripts/check)
+(in-package :infra/check)
 
 (defvar *results* (make-hash-table :size 32 :test 'equal))
 
@@ -58,7 +58,7 @@ When WARN is non-nil, signal a warning instead of an error."
   
 (defun check-system ()
   (destructuring-bind (lisp version features)
-      (my-lisp-implementation)
+      (lisp-implementation-type)
     (push-result "lisp" (list lisp version features)
     #-sbcl (push-result "lisp" "unsupported")
     #-sb-core-compression (println "WARNING: feature sb-core-compression disabled")
@@ -124,4 +124,4 @@ When WARN is non-nil, signal a warning instead of an error."
   (check-for-shared-lib "cbqn" warn)
   *results*)
 
-(defmain () (println (check)))
+(defmain check-it () (println (check)))
