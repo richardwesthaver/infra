@@ -12,6 +12,7 @@
  (:mod "scripts"))
 :bind 
 ((packy-home :env "/opt/store/packy")
+ (cdn-home :env "/opt/stash/data/web/cdn")
  (vc-url :env "~/comp")
  (prefix :env "/usr/local")
  (stash :env ".stash")
@@ -19,7 +20,12 @@
  (lisp :env "core")
  (dev :env (or (sb-posix:getenv "USER") ""))
  (kver :env #1$(uname -r | cut -d- -f1)$#)
- (packy-src "/opt/store/packy/src/"))
+ (packy-src "/opt/store/packy/src/")
+ (deploy-ssh-key :env "~/.ssh/ellis_aws.pem")
+ (deploy-user :env "fedora")
+ (deploy-host :env "compiler.company")
+ (packy-deploy-path :env "/srv/http/packy.compiler.company/")
+ (cdn-deploy-path :env "/srv/http/cdn.compiler.company/"))
 :stash ".stash"
 :store "/opt/store"
 :rules
@@ -266,6 +272,22 @@ TOOL_CHAIN_TAG        = GCC5" >> Conf/target.txt
  (install-alacritty () (tools/rust:cargo-install :alacritty))
 ;;; dist
  (dist (dist-rocksdb dist-sbcl dist-source-sbcl))
+ (dist-repos (clean) 
+  #$hg bundle -a -t zstd-v2 $PACKY_HOME/vc/infra.hg$#
+  #$cd home && hg bundle -a -t zstd-v2 $PACKY_HOME/vc/home.hg$#
+  #$cd pod && hg bundle -a -t zstd-v2 $PACKY_HOME/vc/pod.hg$#
+  #$cd box && hg bundle -a -t zstd-v2 $PACKY_HOME/vc/box.hg$#)
+ (dist-core-repo (clean) #$cd ../core && hg bundle -a -t zstd-v2 $PACKY_HOME/vc/core.hg$#)
+ (dist-org-repos (clean) 
+  #$cd ../org && hg bundle -a -t zstd-v2 $PACKY_HOME/vc/org.hg$#
+  #$cd ../org/blog && hg bundle -a -t zstd-v2 $PACKY_HOME/vc/blog.hg$#
+  #$cd ../org/plan && hg bundle -a -t zstd-v2 $PACKY_HOME/vc/plan.hg$#
+  #$cd ../org/graph && hg bundle -a -t zstd-v2 $PACKY_HOME/vc/graph.hg$#
+  #$cd ../org/meta && hg bundle -a -t zstd-v2 $PACKY_HOME/vc/meta.hg$#
+  #$cd ../org/notes && hg bundle -a -t zstd-v2 $PACKY_HOME/vc/notes.hg$#
+  #$cd ../org/archive && hg bundle -a -t zstd-v2 $PACKY_HOME/vc/archive.hg$#)
+ (dist-demo-repo (clean) #$cd ../demo && hg bundle -a -t zstd-v2 $PACKY_HOME/vc/demo.hg$#)
+ (dist-all-repos (clean dist-repos dist-core-repo dist-org-repos dist-demo-repo))
  (dist-source (clean) #$cd .. && tar --exclude='.hg' --exclude='#*#' -I 'zstd' -cf $PACKY_HOME/src/infra.tar.zst infra/*$#)
  (dist-home-source () #$tar --exclude='.hg' --exclude='#*#' --exclude='readme.org' \
   -I 'zstd' -cf /opt/store/packy/src/home.tar.zst home$#)
@@ -279,4 +301,9 @@ TOOL_CHAIN_TAG        = GCC5" >> Conf/target.txt
     (move-file "org.tar.zst" (merge-pathnames "org.tar.zst" packy-src))))
  (dist-demo-source () #$cd ../ && tar --exclude='*/.hg' --exclude='#*#' -I 'zstd' -cf demo.tar.zst org && mv demo.tar.zst $PACKY_HOME/src/$#)
  (dist-all-source (dist-source dist-home-source dist-core-source dist-demo-source dist-org-source))
- (deploy (dist-all-source) #$mv *.tar.zst $PACKY_HOME/src/$#))
+ (deploy-packy ()
+  #$scp -i $DEPLOY_SSH_KEY -r $PACKY_HOME/* $DEPLOY_USER@$DEPLOY_HOST:$PACKY_DEPLOY_PATH$#
+  (println :packy-ok))
+ (deploy-cdn ()
+  #$scp -i $DEPLOY_SSH_KEY -r $CDN_HOME/* $DEPLOY_USER@$DEPLOY_HOST:$CDN_DEPLOY_PATH$#
+  (println :cdn-ok)))
