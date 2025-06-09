@@ -10,6 +10,6 @@ CONFIG=(--with-mailutils
 	--enable-link-time-optimization
 	--with-modules
 	--disable-gc-mark-trace)
-cd $TARGETDIR
-./configure ${CONFIG[@]} 
+cd "$TARGETDIR"
+./configure "${CONFIG[@]}"
 NATIVE_FULL_AOT=1 make -j"$CPUS"

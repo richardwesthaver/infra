@@ -3,7 +3,7 @@
 # given a directory bundle files (.hg), unbundle and replace
 # the files with bare directories.
 set -e
-DIR="${1:-/home/vc/src/}"
+DIR="${1:-/usr/local/src/}"
 cd "$DIR"
 echo "entering $DIR"
 for i in $(find . -type f -name "*.hg"); do
