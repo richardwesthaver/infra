@@ -39,9 +39,9 @@
 
 When WARN is non-nil, signal a warning instead of an error."
   (if-let ((lib (ignore-errors (load-shared-object (format nil "lib~a.so" name)))))
-    (prog1
-        (push-result name lib)
-      (unload-shared-object lib))
+  (prog1
+      (push-result name lib)
+    (unload-shared-object lib))
     (check-err warn "shared library missing: ~x" name)))
 
 (defun check-for-bin (name &optional warn)
@@ -62,8 +62,7 @@ When WARN is non-nil, signal a warning instead of an error."
     (push-result "lisp" (list lisp version features)
     #-sbcl (push-result "lisp" "unsupported")
     #-sb-core-compression (println "WARNING: feature sb-core-compression disabled")
-    #-mark-region-gc (println "WARNING: feature mark-region-gc disabled")
-)))
+    #-mark-region-gc (println "WARNING: feature mark-region-gc disabled"))))
 
 (defun check-shell ()
   (push-result "shell" (sb-posix:getenv "SHELL")))
