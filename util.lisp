@@ -3,6 +3,15 @@
 ;; 
 
 ;;; Code:
+(defpkg :infra/util
+  (:use :cl :std :cli/tools/term :cli/tools/net))
+(in-package :infra/util)
+
+(definline %script-name () (format nil "ts-~A" (time:format-date-simple)))
+(defun script-record (&key (name (%script-name)) log)
+  (run-script "-t" (or log (concatenate 'string name ".log")) "-q" name "-c"))
+(defun script-replay (&key (name (%script-name)) log)
+  (run-scriptreplay "-t" (or log (concatenate 'string name ".log")) name))
 
 ;; useradd vc -U -r -s /sbin/nologin -d /home/vc -c "vc user"
 
