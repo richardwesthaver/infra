@@ -30,10 +30,10 @@
 :stash ".stash"
 :store "/opt/store"
 :rules
-((check () (host-check) (println (hash-table-alist *CHECKS*)))
+((check () (print-table (check-host)))
  (upstream ()
-  (delete-directories 
-   '("/tmp/infra/" "/tmp/home/" "/tmp/pod/" "/tmp/box/"))
+  (with-directory "/tmp"
+   (delete-directories '("infra" "home" "pod" "box")))
   (vc:hg-fast-export (make-instance 'vc:hg-repo :path (probe-file "home/")))
   #$cd /tmp/home
   git remote add cb ssh://git@codeberg.org/c-c/home
@@ -79,12 +79,12 @@
  (repos (src tmp) #$cd .stash/tmp && scripts/get.sh $PACKY_HOME/src/comp.tar.zst && \
   unzstd comp.tar.zst && tar -xf comp.tar -C ../src && \
   mv ../src/hg/* ../src/ && rm -rf ../src/hg comp.tar$#)
- (install-repos-shallow (repos) (funcall #$cd .stash/src && sudo -S mv *.hg /usr/local/src/$# :input t))
+ (install-repos-shallow (repos) (funcall #0$cd .stash/src && sudo -S mv *.hg /usr/local/src/$# :input t))
  (home (src) #$hg clone $VC_URL/home .stash/src/home$#)
  (core (src) 
   (:build () #$hg clone $VC_URL/core .stash/src/core$#)
-  (:install-pack (tmp) (funcall #$sudo -SE scripts/install-core-pack.sh$# :input t))
-  (:install (tmp) (funcall #$sudo -SE scripts/install-core.sh$# :input t)))
+  (:install-pack (tmp) (funcall #0$sudo -SE scripts/install-core-pack.sh$# :input t))
+  (:install (tmp) (funcall #0$sudo -SE scripts/install-core.sh$# :input t)))
  (packy-repos (src) #$cd .stash/tmp && ../../scripts/get.sh $PACKY_HOME/src/packy.tar.zst && \
   unzstd packy.tar.zst && tar -xf packy.tar -C ../src/ && \
   rm -rf packy.tar$#)
@@ -98,9 +98,9 @@
   (:build-mini (clone-emacs) 
    #$cd .stash/src/emacs && ./autogen.sh$#
    #$./scripts/build-emacs-mini.sh$#)
-  (:install () (funcall #$cd .stash/src/emacs && sudo -S make install$# :input t))
+  (:install () (funcall #0$cd .stash/src/emacs && sudo -S make install$# :input t))
   (:install-pack (tmp)
-   (funcall #$sudo -SE scripts/install-emacs-pack.sh$# :input t))
+   (funcall #0$sudo -SE scripts/install-emacs-pack.sh$# :input t))
   (:update () #$cd .stash/src/emacs && git pull$#)
   (:dist-mini () #$cd .stash/src/emacs
    ./make-dist --tar --no-compress --no-info --no-changelog
@@ -114,11 +114,11 @@
   (:build-static (clone-rocksdb) #$cd .stash/src/rocksdb && make static_lib DISABLE_JEMALLOC=1$#)
   (:update () #$cd .stash/src/rocksdb && git pull$#)
   (:install () 
-   (funcall #$cd .stash/src/rocksdb \
+   (funcall #0$cd .stash/src/rocksdb \
     && sudo -S make install-shared && \
     sudo cp -r include/* /usr/local/include/$# :input t))
   (:install-pack (tmp)
-   (funcall #$sudo -SE scripts/install-rocksdb-pack.sh$# :input t))
+   (funcall #0$sudo -SE scripts/install-rocksdb-pack.sh$# :input t))
   (:dist () #$scripts/dist-rocksdb-binary.sh$#)
   (:dist-source () #$scripts/dist-rocksdb-source.sh$#))
  (sbcl ()
@@ -134,19 +134,19 @@
   (:build-shared () #$cd .stash/src/sbcl && sh make-shared-library.sh$#)
   (:build-all-cores () #$cd .stash/src/sbcl && sh build-all-cores.sh$#)
   (:update () #$cd .stash/src/sbcl && git pull$#)
-  (:install () (funcall #$cd .stash/src/sbcl && INSTALL_ROOT=/usr/local sudo -S sh install.sh$# :input t))
-  (:install-src () (funcall #$cd .stash/src/sbcl && sudo cp -rf src contrib "$PREFIX/src/sbcl/"$# :input t))
+  (:install () (funcall #0$cd .stash/src/sbcl && INSTALL_ROOT=/usr/local sudo -S sh install.sh$# :input t))
+  (:install-src () (funcall #0$cd .stash/src/sbcl && sudo cp -rf src contrib "$PREFIX/src/sbcl/"$# :input t))
   (:install-pack (tmp)
-   (funcall #$sudo -SE scripts/install-sbcl-pack.sh$# :input t))
+   (funcall #0$sudo -SE scripts/install-sbcl-pack.sh$# :input t))
   (:dist () #$scripts/dist-sbcl-binary.sh$#)
   (:dist-source () #$scripts/dist-sbcl-source.sh$#))
- (install-quicklisp (tmp) #$cd .stash && curl -O https://beta.quicklisp.org/quicklisp.lisp$#
-  #$./scripts/quicklisp-install.sh$#)
+ (install-quicklisp (tmp) 
+  (install-quicklisp ".stash/quicklisp.lisp"))
  (stumpwm ()
   (:clone (src) (vc:vc-clone ".stash/src/stumpwm" "https://github.com/stumpwm/stumpwm"))
   (:build (clone-stumpwm)
    #$cd .stash/src/stumpwm && ./autogen.sh && ./configure && make$#)
-  (:install () (funcall #$cd .stash/src/stumpwm && sudo -S make install$# :input t))
+  (:install () (funcall #0$cd .stash/src/stumpwm && sudo -S make install$# :input t))
   (:update () #$cd .stash/src/stumpwm && git pull$#)
   (:dist () #$scripts/dist-stumpwm-binary.sh$#))
  (nyxt () 
@@ -161,8 +161,8 @@
   (:clone (src) (vc:vc-clone ".stash/src/tree-sitter" "https://github.com/tree-sitter/tree-sitter"))
   (:build (clone-tree-sitter) #$cd .stash/src/tree-sitter && make libtree-sitter.so$#)
   (:install ()
-   (funcall #$sudo -S ./scripts/install-tree-sitter.sh$# :input t))
-  (:install-langs (src) (funcall #$sudo -S ./scripts/tree-sitter-langs.sh$# :input t))
+   (funcall #0$sudo -S ./scripts/install-tree-sitter.sh$# :input t))
+  (:install-langs (src) (funcall #0$sudo -S ./scripts/tree-sitter-langs.sh$# :input t))
   (:dist (tmp) #$scripts/dist-tree-sitter.sh$#)
   (:dist-langs (tmp) #$scripts/dist-tree-sitter-langs.sh$#))
  (build-linux () #$mkdir -pv .stash/src/linux$#
@@ -175,16 +175,17 @@
   (caddy ()
    (:build-xcaddy () #$go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest$#)
    (:build (build-xcaddy-caddy) #$~/go/bin/xcaddy build --output .stash/bin/caddy --with github.com/mholt/caddy-webdav$#)
-   (:install () (funcall #$sudo -S cp .stash/bin/caddy /usr/local/bin/caddy$# :input t)))
+   (:install () (funcall #0$sudo -S cp .stash/bin/caddy /usr/local/bin/caddy$# :input t)))
   (rust (src)
    (:clone (src) (vc:vc-clone ".stash/src/rust" "https://github.com/rust-lang/rust"))
    (:build-docs (clone-rust) #$cd .stash/src/rust && ./x doc$#))
   (rustls (src)
    (:clone (src) (vc:vc-clone ".stash/src/rustls-ffi" "https://github.com/rustls/rustls-ffi"))
    (:build (clone-rustls)
-    #$cd .stash/src/rustls-ffi && #,(find-exe "cargo") capi build --release$#)
+    (with-directory ".stash/src/rustls-ffi"
+     (tools/rust:run-cargo "capi" "build" "--release")))
    (:install () 
-    (funcall #$cd .stash/src/rustls-ffi && sudo cargo capi install --release$# :input t))
+    (funcall #0$cd .stash/src/rustls-ffi && sudo cargo capi install --release$# :input t))
    (:dist (tmp) #$scripts/dist-rustls.sh$#))
   (slime ()
    (:install () 
@@ -195,15 +196,15 @@
    (:clone (src) (vc:vc-clone ".stash/src/ublksrv" "https://github.com/ublk-org/ublksrv"))
    (:build (clone-ublksrv)
     #$cd .stash/src/ublksrv && autoreconf -i && ./configure && make$#)
-   (:install () (funcall #$cd .stash/src/ublksrv && sudo -S make install$# :input t))
-   (:install-pack (tmp) (funcall #$sudo -SE scripts/install-ublksrv-pack.sh$# :input t))
+   (:install () (funcall #0$cd .stash/src/ublksrv && sudo -S make install$# :input t))
+   (:install-pack (tmp) (funcall #0$sudo -SE scripts/install-ublksrv-pack.sh$# :input t))
    (:dist () #$scripts/dist-ublksrv.sh$#))
   (graphviz (src)
    (:clone (src) (vc:vc-clone ".stash/src/graphviz" "https://gitlab.com/graphviz/graphviz"))
    (:build (clone-graphviz)
     "See https://graphviz.org/doc/build.html"
     #$cd .stash/src/graphviz && ./autogen.sh && ./configure && make$#)
-   (:install () (funcall #$cd .stash/src/graphviz && sudo -S make install$# :input t)))
+   (:install () (funcall #0$cd .stash/src/graphviz && sudo -S make install$# :input t)))
   (blake3 (src)
    "See https://github.com/BLAKE3-team/BLAKE3/tree/master/c#building"
    (:clone (src) (vc:vc-clone ".stash/src/blake3" "https://github.com/BLAKE3-team/BLAKE3"))
@@ -211,9 +212,9 @@
     #$cd .stash/src/blake3/c && gcc -shared -O3 -o libblake3.so blake3.c blake3_dispatch.c blake3_portable.c \
     blake3_sse2_x86-64_unix.S blake3_sse41_x86-64_unix.S blake3_avx2_x86-64_unix.S \
     blake3_avx512_x86-64_unix.S$#)
-   (:install () (funcall #$cd .stash/src/blake3/c && sudo -S cp libblake3.so /usr/local/lib/ && sudo cp blake3.h /usr/local/include/$# :input t))
+   (:install () (funcall #0$cd .stash/src/blake3/c && sudo -S cp libblake3.so /usr/local/lib/ && sudo cp blake3.h /usr/local/include/$# :input t))
    (:install-pack (tmp)
-    (funcall #$sudo -SE scripts/install-blake3-pack.sh$# :input t))
+    (funcall #0$sudo -SE scripts/install-blake3-pack.sh$# :input t))
    (:dist () #$scripts/dist-blake3.sh$#))
   (liburing (src)
    (:clone (src) (vc:vc-clone ".stash/src/liburing" "https://github.com/axboe/liburing"))
@@ -222,9 +223,9 @@
     ./configure --cc=gcc --cxx=g++
     make -j$(nproc)
     make liburing.pc$#)
-   (:install () (funcall #$cd .stash/src/liburing && sudo make install$# :input t))
+   (:install () (funcall #0$cd .stash/src/liburing && sudo make install$# :input t))
    (:install-pack (tmp)
-    (funcall #$sudo -SE scripts/install-liburing-pack.sh$# :input t))
+    (funcall #0$sudo -SE scripts/install-liburing-pack.sh$# :input t))
    (:dist () #$scripts/dist-liburing.sh$#))
   (bzip2 (src)
    (:clone (src) (vc:vc-clone ".stash/src/bzip2" "https://gitlab.com/federicomenaquintero/bzip2"))
@@ -234,18 +235,18 @@
     ninja -C build
     # meson test -C build --print-errorlogs
     $#)
-   (:install () (funcall #$cd .stash/src/bzip2 && sudo ninja -C build install$# :input t))
+   (:install () (funcall #0$cd .stash/src/bzip2 && sudo ninja -C build install$# :input t))
    (:install-pack (tmp)
-    (funcall #$sudo -SE scripts/install-bzip2-pack.sh$# :input t))
+    (funcall #0$sudo -SE scripts/install-bzip2-pack.sh$# :input t))
    (:dist () #$scripts/dist-bzip2.sh$#))
   (zstd (src)
    (:clone (src) (vc:vc-clone ".stash/src/zstd" "https://github.com/facebook/zstd"))
    (:build (clone-zstd)
     #$cd .stash/src/zstd/lib
     make$#)
-   (:install () (funcall #$cd .stash/src/zstd/lib && make install$# :input t))
+   (:install () (funcall #0$cd .stash/src/zstd/lib && make install$# :input t))
    (:install-pack (tmp)
-    (funcall #$sudo -SE scripts/install-zstd-pack.sh$# :input t))
+    (funcall #0$sudo -SE scripts/install-zstd-pack.sh$# :input t))
    (:dist () #$scripts/dist-zstd.sh$#))
   (edk2 (src)
    (:clone (src) (vc:vc-clone ".stash/src/edk2" "https://github.com/tianocore/edk2"))
@@ -261,28 +262,28 @@ TARGET_ARCH           = X64 \
 TOOL_CHAIN_TAG        = GCC5" >> Conf/target.txt
     ./build$#))
 ;;; install
-  (install-cargo-tools () #$scripts/install-cargo-tools.sh$#)
+  (install-cargo-tools () (mapc #'tools/rust:cargo-install '(cbindgen cargo-bloat wasm-bindgen-cli wasm-opt wasm-pack)))
   (install-rustup () 
    "Install rust - don't forget to source the env file: `. $HOME/.cargo/env`"
    #$curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y$#)
  (install-bettercap () (tools/go:go-install "github.com/bettercap/bettercap@latest"))
- (install-alacritty () (tools/rust:cargo-install :alacritty))
+ (install-alacritty () (cargo-install :alacritty))
 ;;; dist
  (dist (dist-rocksdb dist-sbcl dist-source-sbcl))
- (dist-repos (clean) 
-  #$hg bundle -a -t zstd-v2 $PACKY_HOME/vc/infra.hg$#
-  #$cd home && hg bundle -a -t zstd-v2 $PACKY_HOME/vc/home.hg$#
-  #$cd pod && hg bundle -a -t zstd-v2 $PACKY_HOME/vc/pod.hg$#
-  #$cd box && hg bundle -a -t zstd-v2 $PACKY_HOME/vc/box.hg$#)
- (dist-core-repo (clean) #$cd ../core && hg bundle -a -t zstd-v2 $PACKY_HOME/vc/core.hg$#)
- (dist-org-repos (clean) 
-  #$cd ../org && hg bundle -a -t zstd-v2 $PACKY_HOME/vc/org.hg$#
-  #$cd ../org/blog && hg bundle -a -t zstd-v2 $PACKY_HOME/vc/blog.hg$#
-  #$cd ../org/plan && hg bundle -a -t zstd-v2 $PACKY_HOME/vc/plan.hg$#
-  #$cd ../org/graph && hg bundle -a -t zstd-v2 $PACKY_HOME/vc/graph.hg$#
-  #$cd ../org/meta && hg bundle -a -t zstd-v2 $PACKY_HOME/vc/meta.hg$#
-  #$cd ../org/notes && hg bundle -a -t zstd-v2 $PACKY_HOME/vc/notes.hg$#
-  #$cd ../org/archive && hg bundle -a -t zstd-v2 $PACKY_HOME/vc/archive.hg$#)
+ (dist-repos (clean)
+  (vc:vc-bundle (sk-vc *skel-project*) "/opt/store/packy/vc/core.hg")
+  (mapc
+   (lambda (x)
+     (vc:vc-bundle
+      (vc:make-repo (probe-file (directory-path x)))
+      (merge-pathnames (format nil "vc/~A.hg" x) "/opt/store/packy/")))
+   '("home" "pod" "box")))
+ (dist-core-repo (clean) 
+  (with-project "../core"
+   (sk-run (sk-find "dist-repo" *skel-project*))))
+ (dist-org-repos (clean)
+  (with-project "../org"
+    (sk-run (sk-find "dist-repos" *skel-project*))))
  (dist-demo-repo (clean) #$cd ../demo && hg bundle -a -t zstd-v2 $PACKY_HOME/vc/demo.hg$#)
  (dist-all-repos (clean dist-repos dist-core-repo dist-org-repos dist-demo-repo))
  (dist-source (clean) #$cd .. && tar --exclude='.hg' --exclude='#*#' -I 'zstd' -cf $PACKY_HOME/src/infra.tar.zst infra/*$#)
