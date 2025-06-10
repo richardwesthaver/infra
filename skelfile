@@ -9,6 +9,7 @@
 :include ("pod/skelfile")
 :components 
 ((:org "readme")
+ (:lisp "util" :eval :load :read t)
  (:mod "scripts"))
 :bind 
 ((packy-home :env "/opt/store/packy")
@@ -29,7 +30,7 @@
 :stash ".stash"
 :store "/opt/store"
 :rules
-((check () #$./check.sh$#)
+((check () (host-check) (println (hash-table-alist *CHECKS*)))
  (upstream ()
   (delete-directories 
    '("/tmp/infra/" "/tmp/home/" "/tmp/pod/" "/tmp/box/"))
@@ -63,11 +64,7 @@
   git commit -m 'gitmodules'
   git push -u cb --all --force
   git push gh --all --force$#)
- (clean () 
-  ;; #,@(mapcar (lambda (x) (make-pathname :name (machine-instance) :type x))
-  ;;            '("sxp" "env"))
-  #$rm -rvf .stash \
-  $#)
+ (clean () #$rm -rvf .stash *.fasl$#)
  (readme ()
   (:update ()
    (cli/ed:with-emacs (e)

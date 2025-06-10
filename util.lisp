@@ -3,23 +3,17 @@
 ;; 
 
 ;;; Code:
-(defpkg :infra/util 
-  (:use :cl :std :cli/tools/term 
-   :cli/tools/net :cli/env :pod :box
-   :cli/tools/sbcl)
-  (:export :*host-checks*
-   :check-host :install-quicklisp))
-  
-(in-package :infra/util)
+(in-package :sk-user)
+(use-package '(:cli/tools/term :cli/tools/net :cli/env :pod :box))
+;; (use-package :infra/util :sk-user)
 
 ;; host checks
-(defparameter *host-checks* (make-hash-table))
-
+(eval-always (defparameter *checks* (make-hash-table)))
 (macrolet ((def-check (name &body body)
              `(definline ,(symbolicate "CHECK-" name) ()
                 (let ((ret (progn ,@body)))
                   (assert ret (ret) (format nil "check failed: ~A" ',name))
-                  (setf (gethash ',name *host-checks*) ret)))))
+                  (setf (gethash ',name *checks*) ret)))))
   (def-check shell (sb-posix:getenv "SHELL"))
   (def-check cpu (machine-version))
   (def-check display (sb-posix:getenv "DISPLAY"))
@@ -28,7 +22,7 @@
   (def-check lisp (cons (lisp-implementation-type) (lisp-implementation-version)))
   (def-check cc (or (sb-posix:getenv "CC") (find-exe "gcc") (find-exe "clang"))))
 
-(definline check-host ()
+(definline host-check ()
   (check-shell)
   (check-cpu)
   (check-display)
@@ -51,7 +45,7 @@
 
 ;; get-iso.sh IMG
 
-(defmacro install-quicklisp (init-file
+(defmacro init-quicklisp (init-file
                           &key (home (merge-homedir-pathnames ".stash/quicklisp/"))
                                (dist-version "latest")
                                (client-version "latest"))
@@ -93,4 +87,3 @@
        ,@(when enable-link-time-optimization '("--enable-link-time-optimization"))
        ,@(when with-modules '("--with-modules"))
        ,@(when disable-gc-mark-trace '("--disable-gc-mark-trace"))))))
-                        
