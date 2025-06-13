@@ -57,13 +57,14 @@
 (defun script-replay (&key (name (%script-name)) log)
   (run-scriptreplay "-t" (or log (concatenate 'string name ".log")) name))
 
-;; useradd vc -U -r -s /sbin/nologin -d /home/vc -c "vc user"
+#|
+(box/archiso::mkarchiso 
+ "/usr/share/archiso/configs/releng" 
+ :verbose t :work-dir "/tmp/archiso-tmp" :out-dir ".stash/box")
 
-;; sudo mkarchiso -v -w /tmp/archiso-tmp -o .stash/box /usr/share/archiso/configs/releng/
+(box/archiso:run-archiso "/path/to/archlinux-yyyy.mm.dd-x86_64.iso")
+|#
 
-;; run_archiso -u -i /path/to/archlinux-yyyy.mm.dd-x86_64.iso
-
-;; get-iso.sh IMG
 (defun archiso-name (profile)
   (format nil "~A-~A.iso" profile (string-downcase (substitute #\_ #\- (machine-type)))))
 
@@ -91,16 +92,16 @@
      (ql-dist:install-dist "http://dist.ultralisp.org" :prompt nil)))
 
 ;; install-pack (app/packy)
+;; (defmethod packy:install-package ((self infra-package) &key))
 
 ;; make-windows-iso
 ;; (defun make-windows-iso ())
 
 ;; qemu-system-x86_64 -cdrom win11-x86_64.iso -hda vm.win11.raw -boot d -accel kvm -m 8G -usbdevice tablet -cpu host -drive file=win11-virtio.iso
 
-;; dist PACKAGE utils
+;; dist PACKAGE (SOURCE REPO BINARY DOCS)
 
 ;; build PACKAGE
-
 (defun random-mac () (format nil "DE:AD:BE:EF:~2,'0x:~2,'0x" (random 255) (random 255)))
   
 (defun build-emacs (&key (src ".stash/src/emacs/")

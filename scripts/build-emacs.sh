@@ -7,6 +7,7 @@ CONFIG=(--with-mailutils
 	--without-pop
         --with-tree-sitter
 	--without-sound
+	--with-x-toolkit=lucid
 	--enable-link-time-optimization
 	--with-modules
 	--disable-gc-mark-trace)
