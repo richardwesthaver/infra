@@ -34,37 +34,32 @@
  (upstream ()
   (with-directory "/tmp"
    (delete-directories '("infra" "home" "pod" "box")))
-  (vc:hg-fast-export (make-instance 'vc:hg-repo :path (probe-file "home/")))
-  #$cd /tmp/home
-  git remote add cb ssh://git@codeberg.org/c-c/home
-  git remote add gh ssh://git@github.com/richardwesthaver/home
-  git push -u cb --all --force
-  git push gh --all --force$#
-  (vc:hg-fast-export (make-instance 'vc:hg-repo :path (probe-file "pod/")))
-  #$cd /tmp/pod
-  git remote add cb ssh://git@codeberg.org/c-c/pod
-  git remote add gh ssh://git@github.com/richardwesthaver/pod
-  git push -u cb --all --force
-  git push gh --all --force$#
-  (vc:hg-fast-export (make-instance 'vc:hg-repo :path (probe-file "box/")))
-  #$cd /tmp/box
-  git remote add cb ssh://git@codeberg.org/c-c/box
-  git remote add gh ssh://git@github.com/richardwesthaver/box
-  git push -u cb --all --force
-  git push gh --all --force$#
-  (vc:hg-fast-export (sk-vc *skel-project*))
-  #$cd /tmp/infra
-  git remote add cb ssh://git@codeberg.org/c-c/infra
-  git remote add gh ssh://git@github.com/richardwesthaver/infra
-  git checkout
-  git submodule add https://github.com/richardwesthaver/home
-  git submodule add https://github.com/richardwesthaver/pod
-  git submodule add https://github.com/richardwesthaver/box
-  git add .gitmodules
-  git commit -m 'gitmodules'
-  git push -u cb --all --force
-  git push gh --all --force$#)
- (clean () #$rm -rvf .stash *.fasl$#)
+  (labels ((add-remotes (repo name)
+            (vc-remote repo :add :name "cb" :url (format nil "ssh://git@codeberg.org/c-c/~A" name))
+            (vc-remote repo :add :name "gh" :url (format nil "ssh://git@github.com/richardwesthaver/~A" name)))
+           (bump (name) 
+            (vc:hg-fast-export (make-instance 'vc:hg-repo :path (probe-file "home/")))
+            (with-repo (r :type :git :path (merge-pathnames path "/tmp/"))
+             (add-remotes r name)
+             (vc-push r :set-upstream t :remote "cb" :branch "default")
+             (vc-push r :remote "gh" :branch "default"))))
+   (bump "home")
+   (bump "pod")
+   (bump "box")
+   (vc:hg-fast-export (sk-vc *skel-project*))
+   (with-repo (r :type :git :path "/tmp/infra/")
+    (add-remotes r "infra")
+    (vc-update r)
+    (vc-submodule r :add :url "https://github.com/richardwesthaver/home")
+    (vc-submodule r :add :url "https://github.com/richardwesthaver/pod")
+    (vc-submodule r :add :url "https://github.com/richardwesthaver/box")
+    (vc-add r ".gitmodules")
+    (vc-commit "gitmodules")
+    (vc-push :set-upstream t :remote "cb" :all t :force t)
+    (vc-push :remote "gh" :all t :force t))))
+ (clean () 
+  (delete-directory ".stash")
+  (mapc 'delete-file (directory "**/*.fasl")))
  (readme ()
   (:update ()
    (cli/ed:with-emacs (e)
@@ -72,9 +67,9 @@
     (org-with-file-buffer (join-paths company-source-directory \"infra/readme.org\")
      (org-babel-execute-buffer)
      (save-buffer)))))
- (tmp () #$mkdir -pv .stash/tmp$#)
- (src () #$mkdir -pv .stash/src$#)
- (bin () #$mkdir -pv .stash/bin$#)
+ (tmp () (ensure-directories-exist ".stash/tmp"))
+ (src () (ensure-directories-exist ".stash/src"))
+ (bin () (ensure-directories-exist ".stash/bin"))
 ;;; src
  (repos (src tmp) #$cd .stash/tmp && scripts/get.sh $PACKY_HOME/src/comp.tar.zst && \
   unzstd comp.tar.zst && tar -xf comp.tar -C ../src && \
@@ -91,17 +86,22 @@
 ;;; programs
  (bootstrap () #$./bootstrap.sh$#)
  (emacs ()
-  (:clone (src) (vc:vc-clone ".stash/src/emacs" "https://github.com/emacs-mirror/emacs"))
+  (:clone (src) 
+   (vc:vc-clone ".stash/src/emacs" "https://github.com/emacs-mirror/emacs"))
   (:build (clone-emacs) 
-   #$cd .stash/src/emacs && ./autogen.sh$#
-   #$./scripts/build-emacs.sh$#)
-  (:build-mini (clone-emacs) 
-   #$cd .stash/src/emacs && ./autogen.sh$#
-   #$./scripts/build-emacs-mini.sh$#)
-  (:install () (funcall #0$cd .stash/src/emacs && sudo -S make install$# :input t))
+   (build-emacs))
+  (:build-mini (clone-emacs)
+   (build-emacs 
+    :without-all t 
+    :with-x-toolkit "no" 
+    :without-x t 
+    :with-imagemagick nil
+    :with-tree-sitter nil))
+  (:install () 
+   (funcall #0$cd .stash/src/emacs && sudo -S make install$# :input t))
   (:install-pack (tmp)
    (funcall #0$sudo -SE scripts/install-emacs-pack.sh$# :input t))
-  (:update () #$cd .stash/src/emacs && git pull$#)
+  (:update () (with-repo (r :path ".stash/src/emacs" :type :git) (vc-pull r)))
   (:dist-mini () #$cd .stash/src/emacs
    ./make-dist --tar --no-compress --no-info --no-changelog
    zstd -8 emacs-31.0.50.tar -o "../../emacs-mini.tar.zst"$#)
@@ -180,15 +180,15 @@
    (:clone (src) (vc:vc-clone ".stash/src/rust" "https://github.com/rust-lang/rust"))
    (:build-docs (clone-rust) #$cd .stash/src/rust && ./x doc$#))
   (aws-lc (src)
-   (:clone (src) (vc:vc-cline ".stash/src/aws-lc" "https://github.com/aws/aws-lc"))
+   (:clone (src) (vc:vc-clone ".stash/src/aws-lc" "https://github.com/aws/aws-lc"))
    (:build (clone-aws-lc)
-    (with-directory ".stash/src/aws-lc"
-     (setf *shell-directory* *default-pathname-defaults*)
-     #$cmake -GNinja -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=1$#))
+    (with-directory (merge-pathnames ".stash/src/aws-lc")
+     (cli/tools/make:run-cmake '("-GNinja" "-B" "build" "-DCMAKE_BUILD_TYPE=Release" "-DBUILD_SHARED_LIBS=1"))
+     (cli/tools/ninja:run-ninja '("-C" "build"))))
+   (:clean ()
+    #$ninja -C .stash/src/aws-lc/build clean$#)
    (:install ()
-    (with-directory ".stash/src/aws-lc"
-     (setf *shell-directory* *default-pathname-defaults*)
-     (funcall #0$sudo ninja install$# :input t))))
+    (funcall #0$sudo ninja -C .stash/src/aws-lc/build install$# :input t)))
   (rustls (src)
    (:clone (src) (vc:vc-clone ".stash/src/rustls-ffi" "https://github.com/rustls/rustls-ffi"))
    (:build (clone-rustls)

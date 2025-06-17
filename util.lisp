@@ -6,7 +6,6 @@
 (in-package :sk-user)
 (in-readtable :shell)
 (use-package '(:cli/tools/term :cli/tools/net :cli/env :pod :box))
-;; (use-package :infra/util :sk-user)
 
 ;; host checks
 (defparameter *host-checks* nil)
@@ -105,22 +104,34 @@
 (defun random-mac () (format nil "DE:AD:BE:EF:~2,'0x:~2,'0x" (random 255) (random 255)))
   
 (defun build-emacs (&key (src ".stash/src/emacs/")
+                         prefix
                          (with-mailutils t)
+                         (with-x-toolkit "lucid")
                          (with-imagemagick t)
+                         without-x
+                         without-all
                          (without-pop t)
                          (with-tree-sitter t)
                          (without-sound t)
                          (enable-link-time-optimization t)
                          (with-modules t)
                          (disable-gc-mark-trace t))
-  (with-directory src
+  (with-directory (probe-directory src)
+    (sb-ext:run-program "/bin/sh" '("./autogen.sh"))
     (sb-ext:run-program 
      "/bin/sh"
-     `(,@(when with-mailutils '("--with-mailutils"))
+     `("./configure"
+       ,@(when with-mailutils '("--with-mailutils"))
+       ,@(when without-x '("--without-x"))
        ,@(when with-imagemagick '("--with-imagemagick"))
+       ,@(when with-x-toolkit `(,(format nil "--with-x-toolkit=~A" with-x-toolkit)))
        ,@(when without-pop '("--without-pop"))
        ,@(when with-tree-sitter '("--with-tree-sitter"))
        ,@(when without-sound '("--without-sound"))
+       ,@(when without-all '("--without-all"))
        ,@(when enable-link-time-optimization '("--enable-link-time-optimization"))
        ,@(when with-modules '("--with-modules"))
-       ,@(when disable-gc-mark-trace '("--disable-gc-mark-trace"))))))
+       ,@(when disable-gc-mark-trace '("--disable-gc-mark-trace"))
+       ,@(when prefix (format nil "--prefix=~A" prefix))))
+    (sb-posix:setenv "NATIVE_FULL_AOT" "1" 1)
+    (sb-ext:run-program (find-exe "make") `(,(format nil "-j~A" (num-cpus))) :output t)))
