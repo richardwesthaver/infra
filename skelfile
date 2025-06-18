@@ -59,7 +59,7 @@
     (vc-commit r "gitmodules")
     (push-upstream r t t))))
  (clean () 
-  (delete-directory ".stash")
+  (delete-directory ".stash" :recursive t)
   (mapc 'delete-file (directory "**/*.fasl")))
  (readme ()
   (:update ()
@@ -72,23 +72,15 @@
  (src () (ensure-directories-exist ".stash/src"))
  (bin () (ensure-directories-exist ".stash/bin"))
 ;;; src
- (repos (src tmp) #$cd .stash/tmp && scripts/get.sh $PACKY_HOME/src/comp.tar.zst && \
-  unzstd comp.tar.zst && tar -xf comp.tar -C ../src && \
-  mv ../src/hg/* ../src/ && rm -rf ../src/hg comp.tar$#)
- (install-repos-shallow (repos) (funcall #0$cd .stash/src && sudo -S mv *.hg /usr/local/src/$# :input t))
  (home (src) #$hg clone $VC_URL/home .stash/src/home$#)
  (core (src) 
   (:build () #$hg clone $VC_URL/core .stash/src/core$#)
-  (:install-pack (tmp) (funcall #0$sudo -SE scripts/install-core-pack.sh$# :input t))
-  (:install (tmp) (funcall #0$sudo -SE scripts/install-core.sh$# :input t)))
- (packy-repos (src) #$cd .stash/tmp && ../../scripts/get.sh $PACKY_HOME/src/packy.tar.zst && \
-  unzstd packy.tar.zst && tar -xf packy.tar -C ../src/ && \
-  rm -rf packy.tar$#)
+  (:install-pack (tmp) (with-sudo "-E scripts/install-core-pack.sh"))
+  (:install (tmp) (with-sudo "-E scripts/install-core.sh")))
 ;;; programs
- (bootstrap () #$./bootstrap.sh$#)
  (emacs ()
   (:clone (src) 
-   (vc:vc-clone ".stash/src/emacs" "https://github.com/emacs-mirror/emacs"))
+   (vc-clone ".stash/src/emacs" "https://github.com/emacs-mirror/emacs"))
   (:build (clone-emacs) 
    (build-emacs))
   (:build-mini (clone-emacs)
@@ -98,19 +90,20 @@
     :without-x t 
     :with-imagemagick nil
     :with-tree-sitter nil))
-  (:install () 
-   (funcall #0$cd .stash/src/emacs && sudo -S make install$# :input t))
+  (:install () (with-directory ".stash/src/emacs" (with-sudo "make install")))
   (:install-pack (tmp)
-   (funcall #0$sudo -SE scripts/install-emacs-pack.sh$# :input t))
+   (with-sudo "-E scripts/install-emacs-pack.sh"))
   (:update () (with-repo (r :path ".stash/src/emacs" :type :git) (vc-pull r)))
-  (:dist-mini () #$cd .stash/src/emacs
-   ./make-dist --tar --no-compress --no-info --no-changelog
-   zstd -8 emacs-31.0.50.tar -o "../../emacs-mini.tar.zst"$#)
-  (:dist () #$cd .stash/src/emacs
-   ./make-dist --tar --no-compress
-   zstd -8 emacs-31.0.50.tar -o "../../emacs.tar.zst"$#))
+  (:dist-mini () 
+   (with-directory ".stash/src/emacs"
+   (run-program *shell* '("./make-dist" "--tar" "--no-compress" "--no-info" "--no-changelog"))
+   #$zstd -8 emacs-31.0.50.tar -o "../../emacs-mini.tar.zst"$#))
+  (:dist () 
+   (with-directory ".stash/src/emacs"
+    (run-program *shell* "./make-dist" "--tar" "--no-compress")
+    #$zstd -8 emacs-31.0.50.tar -o "../../emacs.tar.zst"$#)))
  (rocksdb ()
-  (:clone (src) (vc:vc-clone ".stash/src/rocksdb" "https://github.com/facebook/rocksdb"))
+  (:clone (src) (vc-clone ".stash/src/rocksdb" "https://github.com/facebook/rocksdb"))
   (:build (clone-rocksdb) #$cd .stash/src/rocksdb && make shared_lib DISABLE_JEMALLOC=1$#)
   (:build-static (clone-rocksdb) #$cd .stash/src/rocksdb && make static_lib DISABLE_JEMALLOC=1$#)
   (:update () #$cd .stash/src/rocksdb && git pull$#)
@@ -124,7 +117,7 @@
   (:dist-source () #$scripts/dist-rocksdb-source.sh$#))
  (sbcl ()
   (:clone (src)
-   (vc:vc-clone ".stash/src/sbcl" "https://github.com/sbcl/sbcl"))
+   (vc-clone ".stash/src/sbcl" "https://github.com/sbcl/sbcl"))
   (:build (clone-sbcl)
    #$cd .stash/src/sbcl
    ./make.sh --dynamic-space-size=8Gb --without-gencgc --with-mark-region-gc --fancy \
@@ -144,22 +137,22 @@
  (install-quicklisp (tmp) 
   (install-quicklisp ".stash/quicklisp.lisp"))
  (stumpwm ()
-  (:clone (src) (vc:vc-clone ".stash/src/stumpwm" "https://github.com/stumpwm/stumpwm"))
+  (:clone (src) (vc-clone ".stash/src/stumpwm" "https://github.com/stumpwm/stumpwm"))
   (:build (clone-stumpwm)
    #$cd .stash/src/stumpwm && ./autogen.sh && ./configure && make$#)
   (:install () (funcall #0$cd .stash/src/stumpwm && sudo -S make install$# :input t))
   (:update () #$cd .stash/src/stumpwm && git pull$#)
   (:dist () #$scripts/dist-stumpwm-binary.sh$#))
  (nyxt () 
-  (:clone (src) (vc:vc-clone ".stash/src/nyxt" "https://github.com/atlas-engineer/nyxt"))
+  (:clone (src) (vc-clone ".stash/src/nyxt" "https://github.com/atlas-engineer/nyxt"))
   (:build (clone-nyxt)
    #$cd .stash/src/nyxt && git submodule update --init && make all$#))
  (scryer-prolog ()
-  (:clone (src) (vc:vc-clone ".stash/src/scryer-prolog" "https://github.com/mthom/scryer-prolog"))
+  (:clone (src) (vc-clone ".stash/src/scryer-prolog" "https://github.com/mthom/scryer-prolog"))
   (:build (clone-scryer-prolog)
    #$cd .stash/src/scryer-prolog && cargo build --release$#))
  (tree-sitter (src)
-  (:clone (src) (vc:vc-clone ".stash/src/tree-sitter" "https://github.com/tree-sitter/tree-sitter"))
+  (:clone (src) (vc-clone ".stash/src/tree-sitter" "https://github.com/tree-sitter/tree-sitter"))
   (:build (clone-tree-sitter) #$cd .stash/src/tree-sitter && make libtree-sitter.so$#)
   (:install ()
    (funcall #0$sudo -S ./scripts/install-tree-sitter.sh$# :input t))
@@ -178,10 +171,10 @@
    (:build (build-xcaddy-caddy) #$~/go/bin/xcaddy build --output .stash/bin/caddy --with github.com/mholt/caddy-webdav$#)
    (:install () (funcall #0$sudo -S cp .stash/bin/caddy /usr/local/bin/caddy$# :input t)))
   (rust (src)
-   (:clone (src) (vc:vc-clone ".stash/src/rust" "https://github.com/rust-lang/rust"))
+   (:clone (src) (vc-clone ".stash/src/rust" "https://github.com/rust-lang/rust"))
    (:build-docs (clone-rust) #$cd .stash/src/rust && ./x doc$#))
   (aws-lc (src)
-   (:clone (src) (vc:vc-clone ".stash/src/aws-lc" "https://github.com/aws/aws-lc"))
+   (:clone (src) (vc-clone ".stash/src/aws-lc" "https://github.com/aws/aws-lc"))
    (:build (clone-aws-lc)
     (with-directory (merge-pathnames ".stash/src/aws-lc")
      (cli/tools/make:run-cmake '("-GNinja" "-B" "build" "-DCMAKE_BUILD_TYPE=Release" "-DBUILD_SHARED_LIBS=1"))
@@ -191,7 +184,7 @@
    (:install ()
     (funcall #0$sudo ninja -C .stash/src/aws-lc/build install$# :input t)))
   (rustls (src)
-   (:clone (src) (vc:vc-clone ".stash/src/rustls-ffi" "https://github.com/rustls/rustls-ffi"))
+   (:clone (src) (vc-clone ".stash/src/rustls-ffi" "https://github.com/rustls/rustls-ffi"))
    (:build (clone-rustls)
     ;; note that we build with FIPS enabled - requires cmake and go at build-time
     (with-directory ".stash/src/rustls-ffi"
@@ -203,91 +196,111 @@
    (:install () 
     (let ((slime-dir (merge-homedir-pathnames ".stash/lisp/slime")))
      (unless (probe-file slime-dir)
-      (vc:vc-clone slime-dir "https://github.com/slime/slime")))))
+      (vc-clone slime-dir "https://github.com/slime/slime")))))
   (ublksrv (src)
-   (:clone (src) (vc:vc-clone ".stash/src/ublksrv" "https://github.com/ublk-org/ublksrv"))
+   (:clone (src) (vc-clone ".stash/src/ublksrv" "https://github.com/ublk-org/ublksrv"))
    (:build (clone-ublksrv)
-    #$cd .stash/src/ublksrv && autoreconf -i && ./configure && make$#)
-   (:install () (funcall #0$cd .stash/src/ublksrv && sudo -S make install$# :input t))
-   (:install-pack (tmp) (funcall #0$sudo -SE scripts/install-ublksrv-pack.sh$# :input t))
+    (with-directory ".stash/src/ublksrv" 
+     (run-program (find-exe "autoreconf") '("-i"))
+     (run-program *shell* '("./configure"))
+     (run-make)))
+   (:install () 
+    (with-directory ".stash/src/ublksrv" 
+     (with-sudo "make install")))
+   (:install-pack (tmp) (with-sudo "-E scripts/install-ublksrv-pack.sh"))
    (:dist () #$scripts/dist-ublksrv.sh$#))
   (graphviz (src)
-   (:clone (src) (vc:vc-clone ".stash/src/graphviz" "https://gitlab.com/graphviz/graphviz"))
+   (:clone (src) (vc-clone ".stash/src/graphviz" "https://gitlab.com/graphviz/graphviz"))
    (:build (clone-graphviz)
     "See https://graphviz.org/doc/build.html"
-    #$cd .stash/src/graphviz && ./autogen.sh && ./configure && make$#)
-   (:install () (funcall #0$cd .stash/src/graphviz && sudo -S make install$# :input t)))
+    (with-directory ".stash/src/graphviz" 
+     (run-program *shell* '("autogen.sh"))
+     (run-program *shell* '("./configure")) 
+     (run-make)))
+   (:install () (with-directory ".stash/src/graphviz" (with-sudo "make install"))))
   (blake3 (src)
    "See https://github.com/BLAKE3-team/BLAKE3/tree/master/c#building"
-   (:clone (src) (vc:vc-clone ".stash/src/blake3" "https://github.com/BLAKE3-team/BLAKE3"))
+   (:clone (src) (vc-clone ".stash/src/blake3" "https://github.com/BLAKE3-team/BLAKE3"))
    (:build (clone-blake3)
-    #$cd .stash/src/blake3/c && gcc -shared -O3 -o libblake3.so blake3.c blake3_dispatch.c blake3_portable.c \
-    blake3_sse2_x86-64_unix.S blake3_sse41_x86-64_unix.S blake3_avx2_x86-64_unix.S \
-    blake3_avx512_x86-64_unix.S$#)
-   (:install () (funcall #0$cd .stash/src/blake3/c && sudo -S cp libblake3.so /usr/local/lib/ && sudo cp blake3.h /usr/local/include/$# :input t))
+    (with-directory ".stash/src/blake3/c" 
+     (run-cc "-shared" "-O3" "-o" "libblake3.so" "blake3.c" "blake3_dispatch.c" "blake3_portable.c"
+      "blake3_sse2_x86-64_unix.S" "blake3_sse41_x86-64_unix.S" "blake3_avx2_x86-64_unix.S"
+      "blake3_avx512_x86-64_unix.S")))
+   (:install () 
+    (with-directory ".stash/src/blake3/c" 
+     (with-sudo "cp libblake3.so /usr/local/lib/ && sudo cp blake3.h /usr/local/include/")))
    (:install-pack (tmp)
-    (funcall #0$sudo -SE scripts/install-blake3-pack.sh$# :input t))
+    (with-sudo "-E scripts/install-blake3-pack.sh"))
    (:dist () #$scripts/dist-blake3.sh$#))
   (liburing (src)
-   (:clone (src) (vc:vc-clone ".stash/src/liburing" "https://github.com/axboe/liburing"))
+   (:clone (src) (vc-clone ".stash/src/liburing" "https://github.com/axboe/liburing"))
    (:build (clone-liburing)
-    #$cd .stash/src/liburing 
-    ./configure --cc=gcc --cxx=g++
-    make -j$(nproc)
-    make liburing.pc$#)
-   (:install () (funcall #0$cd .stash/src/liburing && sudo make install$# :input t))
+    (with-directory ".stash/src/liburing"
+     (run-program *shell* '("./configure" "--cc=gcc" "--cxx=g++") :output t)
+     (run-make (format nil "-j~A" (num-cpus)))
+     (run-make "liburing.pc")))
+   (:install () 
+    (with-directory ".stash/src/liburing"
+     (with-sudo "make install")))
    (:install-pack (tmp)
-    (funcall #0$sudo -SE scripts/install-liburing-pack.sh$# :input t))
-   (:dist () #$scripts/dist-liburing.sh$#))
+    (with-sudo "-E scripts/install-liburing-pack.sh"))
+   (:dist () (run-program *shell* '("scripts/dist-liburing.sh") :output t)))
   (bzip2 (src)
-   (:clone (src) (vc:vc-clone ".stash/src/bzip2" "https://gitlab.com/federicomenaquintero/bzip2"))
+   (:clone (src) (vc-clone ".stash/src/bzip2" "https://gitlab.com/federicomenaquintero/bzip2"))
    (:build (clone-bzip2)
-    #$cd .stash/src/bzip2
-    meson --prefix /usr build
-    ninja -C build
-    # meson test -C build --print-errorlogs
-    $#)
-   (:install () (funcall #0$cd .stash/src/bzip2 && sudo ninja -C build install$# :input t))
+    (with-directory ".stash/src/bzip2"
+     (run-meson '("--prefix" "/usr" "build"))
+     (run-ninja '("-C" "build"))))
+   (:install () 
+    (with-directory ".stash/src/bzip2"
+     (with-sudo "ninja -C build install")))
    (:install-pack (tmp)
-    (funcall #0$sudo -SE scripts/install-bzip2-pack.sh$# :input t))
-   (:dist () #$scripts/dist-bzip2.sh$#))
+    (with-sudo "-E scripts/install-bzip2-pack.sh"))
+   (:dist () (run-program *shell* '("scripts/dist-bzip2.sh") :output t)))
   (zstd (src)
-   (:clone (src) (vc:vc-clone ".stash/src/zstd" "https://github.com/facebook/zstd"))
+   (:clone (src) (vc-clone ".stash/src/zstd" "https://github.com/facebook/zstd"))
    (:build (clone-zstd)
-    #$cd .stash/src/zstd/lib
-    make$#)
-   (:install () (funcall #0$cd .stash/src/zstd/lib && make install$# :input t))
+    (with-directory ".stash/src/zstd/lib"
+     (run-make nil)))
+   (:install () 
+    (with-directory ".stash/src/zstd/lib"
+     (with-sudo "make install")))
    (:install-pack (tmp)
-    (funcall #0$sudo -SE scripts/install-zstd-pack.sh$# :input t))
-   (:dist () #$scripts/dist-zstd.sh$#))
+    (with-sudo "-E scripts/install-zstd-pack.sh"))
+   (:dist () (run-program *shell* '("scripts/dist-zstd.sh"))))
   (edk2 (src)
-   (:clone (src) (vc:vc-clone ".stash/src/edk2" "https://github.com/tianocore/edk2"))
+   (:clone (src) (vc-clone ".stash/src/edk2" "https://github.com/tianocore/edk2"))
    (:build (clone-edk2)
-    #$cd .stash/src/edk2
-    git submodule update --init
-    make -C BaseTools
-    . edksetup.sh$#)
+    (with-repo (r :path ".stash/src/edk2" :type :git)
+     (vc-submodule r :update :init t)
+     (run-make '("-C" "BaseTools"))
+     (run-program *shell* '("edksetup.sh"))))
    (:build-ovmf (build-edk2)
-    #$cd .stash/src/edk2
-    echo "ACTIVE_PLATFORM       = OvmfPkg/OvmfPkgX64.dsc \
-TARGET_ARCH           = X64 \
-TOOL_CHAIN_TAG        = GCC5" >> Conf/target.txt
-    ./build$#))
+    (with-directory ".stash/src/edk2"
+     (with-output-to-file (f "Conf/target.txt" :if-exists :supersede)
+      (write-string 
+       #"ACTIVE_PLATFORM       = OvmfPkg/OvmfPkgX64.dsc
+TARGET_ARCH           = X64
+TOOL_CHAIN_TAG        = GCC5"# 
+       f)
+      (run-program *shell* '("build") :output t)))))
 ;;; install
-  (install-cargo-tools () (mapc #'tools/rust:cargo-install '(cbindgen cargo-bloat wasm-bindgen-cli wasm-opt wasm-pack)))
+  (install-cargo-tools () 
+   (mapc 'cargo-install '(cbindgen cargo-bloat wasm-bindgen-cli wasm-opt wasm-pack)))
   (install-rustup () 
    "Install rust - don't forget to source the env file: `. $HOME/.cargo/env`"
-   #$curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y$#)
- (install-bettercap () (tools/go:go-install "github.com/bettercap/bettercap@latest"))
+   (with-input-from-string (s (net/req:get "https://sh.rustup.rs" :force-string t))
+    (run-program *shell* '("-s" "--" "-y") :input s :output t)))
+ (install-bettercap () (go-install "github.com/bettercap/bettercap@latest"))
  (install-alacritty () (cargo-install :alacritty))
 ;;; dist
  (dist (dist-rocksdb dist-sbcl dist-source-sbcl))
  (dist-repos (clean)
-  (vc:vc-bundle (sk-vc *skel-project*) "/opt/store/packy/vc/core.hg")
+  (vc-bundle (sk-vc *skel-project*) "/opt/store/packy/vc/core.hg")
   (mapc
    (lambda (x)
-     (vc:vc-bundle
-      (vc:make-repo (probe-file (directory-path x)))
+     (vc-bundle
+      (make-repo (probe-file (directory-path x)))
       (merge-pathnames (format nil "vc/~A.hg" x) "/opt/store/packy/")))
    '("home" "pod" "box")))
  (dist-core-repo (clean) 
@@ -296,10 +309,15 @@ TOOL_CHAIN_TAG        = GCC5" >> Conf/target.txt
  (dist-org-repos (clean)
   (with-project "../org"
     (sk-run (sk-find "dist-repos" *skel-project*))))
- (dist-demo-repo (clean) #$cd ../demo && hg bundle -a -t zstd-v2 $PACKY_HOME/vc/demo.hg$#)
+ (dist-demo-repo (clean) 
+  (with-repo (r :path "../demo") 
+   (vc-bundle r "/opt/store/packy/vc/demo.hg" :type :zstd-v2)))
  (dist-all-repos (clean dist-repos dist-core-repo dist-org-repos dist-demo-repo))
- (dist-source (clean) #$cd .. && tar --exclude='.hg' --exclude='#*#' -I 'zstd' -cf $PACKY_HOME/src/infra.tar.zst infra/*$#)
- (dist-home-source () #$tar --exclude='.hg' --exclude='#*#' --exclude='readme.org' \
+ (dist-source (clean) 
+  (with-directory ".."
+   #$tar --exclude='.hg' --exclude='#*#' -I 'zstd' -cf $PACKY_HOME/src/infra.tar.zst infra/*$#))
+ (dist-home-source () 
+  #$tar --exclude='.hg' --exclude='#*#' --exclude='readme.org' \
   -I 'zstd' -cf /opt/store/packy/src/home.tar.zst home$#)
  (dist-core-source ()
    (with-project "../core"
@@ -309,7 +327,9 @@ TOOL_CHAIN_TAG        = GCC5" >> Conf/target.txt
    (with-project "../org"
     (sk-run (sk-find "dist-source" *skel-project*))
     (move-file "org.tar.zst" (merge-pathnames "org.tar.zst" packy-src))))
- (dist-demo-source () #$cd ../ && tar --exclude='*/.hg' --exclude='#*#' -I 'zstd' -cf demo.tar.zst org && mv demo.tar.zst $PACKY_HOME/src/$#)
+ (dist-demo-source () 
+  (with-directory ".."
+   #$tar --exclude='*/.hg' --exclude='#*#' -I 'zstd' -cf demo.tar.zst org && mv demo.tar.zst $PACKY_HOME/src/$#))
  (dist-all-source (dist-source dist-home-source dist-core-source dist-demo-source dist-org-source))
  (deploy-packy ()
   #$scp -i $DEPLOY_SSH_KEY -r $PACKY_HOME/* $DEPLOY_USER@$DEPLOY_HOST:$PACKY_DEPLOY_PATH$#
