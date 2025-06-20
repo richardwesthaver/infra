@@ -98,7 +98,38 @@
 
 ;; qemu-system-x86_64 -cdrom win11-x86_64.iso -hda vm.win11.raw -boot d -accel kvm -m 8G -usbdevice tablet -cpu host -drive file=win11-virtio.iso
 
+(defun run-vm (img &optional mem)
+  (run-qemu img "--enable-kvm" "-m" mem "-cpu" "host"))
+
+(defun qemu-ifup (intf switch &optional (user (sb-posix:getenv "USER")))
+  (run-ip "tuntap" "add" intf "mode" "tap" "user" user)
+  (ip-link-up intf)
+  (sleep 0.5)
+  (run-ip "link" "set" intf "master" switch))
+
 ;; dist PACKAGE (SOURCE REPO BINARY DOCS)
+
+(defun git-vendor-pull (name domain 
+                        &key (path ".stash/src/") 
+                             (repo (format nil 
+                                           "ssh://git@vc.compiler.company/packy/~A"
+                                           name)))
+  (ensure-directories-exist path)
+  (let ((out (merge-pathnames name path))
+        (remote (format nil "https://~A/~A" domain name)))
+    (vc-clone out repo)
+    (with-repo (r :path out :type :git)
+      (vc-pull r remote)
+      (vc-push r))))
+
+(defun init-vc-bundles (&optional (dir #p"/usr/local/src/") delete)
+  (with-directory dir
+    (loop for i in (directory "*.hg")
+          with path = (pathname-name i)
+          do (with-repo (r :path path :init t)
+               (log:info! "unbundling ~A to ~A" i path)
+               (vc-unbundle r i)
+               (when delete (delete-file i))))))
 
 ;; build PACKAGE
 (defun random-mac () (format nil "DE:AD:BE:EF:~2,'0x:~2,'0x" (random 255) (random 255)))
