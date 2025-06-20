@@ -98,7 +98,7 @@
 
 ;; qemu-system-x86_64 -cdrom win11-x86_64.iso -hda vm.win11.raw -boot d -accel kvm -m 8G -usbdevice tablet -cpu host -drive file=win11-virtio.iso
 
-(defun run-vm (img &optional mem)
+(defun run-vm (img &optional (mem "8G"))
   (run-qemu img "--enable-kvm" "-m" mem "-cpu" "host"))
 
 (defun qemu-ifup (intf switch &optional (user (sb-posix:getenv "USER")))
@@ -107,6 +107,10 @@
   (sleep 0.5)
   (run-ip "link" "set" intf "master" switch))
 
+(defun qemu-build-vm (out &optional (size "32G") (mem "8G"))
+  (let ((img (namestring out)))
+    (run-qemu-img "create" "-f" "raw" img size)
+    (run-qemu "-cdrom" img "-boot" "order=d" (format nil "file=~A,format=raw" img) "-m" mem "-cpu" "host")))
 ;; dist PACKAGE (SOURCE REPO BINARY DOCS)
 
 (defun git-vendor-pull (name domain 
