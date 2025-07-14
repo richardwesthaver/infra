@@ -50,6 +50,24 @@
   (check-core)
   *host-checks*)
 
+;;; Dependency
+(defun dependency-src (name)
+  (merge-pathnames (format nil "src/~A/" name) (sk-stash *skel-project*)))
+
+(defun dist-dependency (name &optional (packy "/opt/store/packy/") (arch "x86_64-unknown-linux-gnu"))
+  "Distribute the dependency NAME."
+  (move-file (merge-pathnames (format nil "~A.tar.zst" name) ".stash/")
+             (merge-pathnames (format nil "dist/~A/~A.tar.zst" arch name) packy)))
+
+(defun get-dependency-pack (name &optional (arch "x86_64-unknown-linux-gnu"))
+  "Install the dependency pack NAME from the remote
+packy (packy.compiler.company)."
+  (let* ((ntar (format nil "~A.tar" name))
+         (n (format nil "~A.zst" ntar)))
+    (req:fetch (uri:merge-uris n (uri:merge-uris (format nil "dist/~A" arch) packy:*packy-url*))
+               (merge-pathnames name ".stash/tmp/"))))
+
+;;; Utils
 (definline %script-name () (format nil "ts-~A" (time:format-date-simple)))
 (defun script-record (&key (name (%script-name)) log)
   (run-script "-t" (or log (concatenate 'string name ".log")) "-q" name "-c"))
@@ -111,6 +129,7 @@
   (let ((img (namestring out)))
     (run-qemu-img "create" "-f" "raw" img size)
     (run-qemu "-cdrom" img "-boot" "order=d" (format nil "file=~A,format=raw" img) "-m" mem "-cpu" "host")))
+
 ;; dist PACKAGE (SOURCE REPO BINARY DOCS)
 
 (defun git-vendor-pull (name domain 
@@ -138,7 +157,7 @@
 ;; build PACKAGE
 (defun random-mac () (format nil "DE:AD:BE:EF:~2,'0x:~2,'0x" (random 255) (random 255)))
   
-(defun build-emacs (&key (src ".stash/src/emacs/")
+(defun build-emacs (&key (src (dependency-src "emacs"))
                          prefix
                          (with-mailutils t)
                          (with-x-toolkit "lucid")
