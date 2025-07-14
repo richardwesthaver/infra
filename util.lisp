@@ -51,9 +51,6 @@
   *host-checks*)
 
 ;;; Dependency
-(defun dependency-src (name)
-  (merge-pathnames (format nil "src/~A/" name) (sk-stash *skel-project*)))
-
 (defun dist-dependency (name &optional (packy "/opt/store/packy/") (arch "x86_64-unknown-linux-gnu"))
   "Distribute the dependency NAME."
   (move-file (merge-pathnames (format nil "~A.tar.zst" name) ".stash/")
@@ -157,7 +154,7 @@ packy (packy.compiler.company)."
 ;; build PACKAGE
 (defun random-mac () (format nil "DE:AD:BE:EF:~2,'0x:~2,'0x" (random 255) (random 255)))
   
-(defun build-emacs (&key (src (dependency-src "emacs"))
+(defun build-emacs (&key (src ".stash/src/emacs")
                          prefix
                          (with-mailutils t)
                          (with-x-toolkit "lucid")

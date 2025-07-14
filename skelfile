@@ -82,7 +82,7 @@
  (emacs ()
   (:clone (src) 
    (vc-clone ".stash/src/emacs" "https://github.com/emacs-mirror/emacs"))
-  (:build (clone-emacs) 
+  (:build (clone-emacs)
    (build-emacs))
   (:build-mini (clone-emacs)
    (build-emacs 
