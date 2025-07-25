@@ -191,9 +191,9 @@
   (:build (clone-rustls)
    ;; note that we build with FIPS enabled - requires cmake and go at build-time
    (with-directory ".stash/src/rustls-ffi"
-    (tools/rust:run-cargo "capi" "build" "--release" "--features=fips")))
+    (tools/rust:run-cargo "cbuild" "--release" "--prefix=/usr/local" "--libdir=/usr/local/lib" "--features=fips")))
   (:install () 
-   (funcall #0$cd .stash/src/rustls-ffi && sudo cargo capi install --release$# :input t))
+   (funcall #0$cd .stash/src/rustls-ffi && sudo cargo cinstall --release --prefix=/usr/local$# :input t))
   (:dist (tmp) #$scripts/dist-rustls.sh$#))
  (slime ()
   (:install () 
@@ -235,6 +235,17 @@
   (:install-pack (tmp)
    (with-sudo "-E scripts/install-blake3-pack.sh"))
   (:dist () #$scripts/dist-blake3.sh$#))
+ (libx11 (src)
+  (:clone (src) (vc-clone ".stash/src/libx11" "https://gitlab.freedesktop.org/xorg/lib/libx11"))
+  (:build (clone-libx11)
+   (with-directory ".stash/src/libx11"
+    ;; requires xtrans package
+    (run-program *shell* '("./autogen.sh"))
+    (run-program *shell* '("./configure"))
+    (run-make nil)))
+  (:install ()
+   (with-directory ".stash/src/libx11"
+    (with-sudo "make install"))))
  (liburing (src)
   (:clone (src) (vc-clone ".stash/src/liburing" "https://github.com/axboe/liburing"))
   (:build (clone-liburing)
@@ -293,7 +304,7 @@ TOOL_CHAIN_TAG        = GCC5"#
      (run-program *shell* '("build") :output t)))))
 ;;; install
  (install-cargo-tools () 
-  (mapc 'cargo-install '(cbindgen cargo-bloat wasm-bindgen-cli wasm-opt wasm-pack)))
+  (mapc 'cargo-install '(cbindgen cargo-bloat wasm-bindgen-cli wasm-opt wasm-pack cargo-c)))
  (install-rustup () 
   "Install rust - don't forget to source the env file: `. $HOME/.cargo/env`"
   (with-input-from-string (s (net/req:get "https://sh.rustup.rs" :force-string t))
