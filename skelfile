@@ -5,7 +5,9 @@
 :description "The Compiler Company Infrastructure"
 :tags (:infra)
 :license "MPL"
-:vc (:hg "https://vc.compiler.company/infra")
+:vc (:hg "https://vc.compiler.company/infra"
+     (cb (:git "ssh://git@codeberg.org/c-c/infra"))
+     (gh (:git "ssh://git@github.com/richardwesthaver/core")))
 :include ("pod/skelfile")
 :components 
 ((:org "readme")
@@ -42,7 +44,7 @@
             (vc-push repo :remote "gh" :all t :force force))
            (bump (name)
             (let ((tmp (directory-path (merge-pathnames name "/tmp/"))))
-             (vc-export (make-instance 'vc:hg-repo :path (probe-directory name)) tmp)
+             (vc-export (sk-vc *skel-project*) tmp)
              (with-repo (r :type :git :path tmp)
               (add-remotes r name)
               (push-upstream r t)))))
@@ -101,7 +103,7 @@
    #$zstd -8 emacs-31.0.50.tar -o "../../emacs-mini.tar.zst"$#))
   (:dist () 
    (with-directory ".stash/src/emacs"
-    (run-program *shell* "./make-dist" "--tar" "--no-compress")
+    (run-program *shell* '("./make-dist" "--tar" "--no-compress"))
     #$zstd -8 emacs-31.0.50.tar -o "../../emacs.tar.zst"$#)))
  (rocksdb ()
   (:clone (src) (vc-clone ".stash/src/rocksdb" "https://github.com/facebook/rocksdb"))
@@ -131,7 +133,7 @@
   (:install () 
    (with-directory ".stash/src/sbcl" 
     (with-sudo "INSTALL_ROOT=/usr/local ./install.sh")))
-  (:install-src () (with-directory ".stash/src/sbcl" (with-sudo "cp -rf src contrib $PREFIX/src/sbcl/")))
+  (:install-src () (with-directory ".stash/src/sbcl" (with-sudo (format nil "cp -rf src contrib ~A/src/sbcl/" (sb-posix:getenv "PREFIX")))))
   (:install-pack (tmp)
    (with-sudo "-E scripts/install-sbcl-pack.sh"))
   (:dist () #$scripts/dist-sbcl-binary.sh$#)
@@ -286,6 +288,8 @@
   (:install-pack (tmp)
    (with-sudo "-E scripts/install-zstd-pack.sh"))
   (:dist () (run-program *shell* '("scripts/dist-zstd.sh"))))
+ (avr-libc (src)
+  (:clone (src) (vc-clone ".stash/src/avr-libc" "https://github.com/avrdudes/avr-libc")))
  (edk2 (src)
   (:clone (src) (vc-clone ".stash/src/edk2" "https://github.com/tianocore/edk2"))
   (:build (clone-edk2)
