@@ -16,6 +16,7 @@
                   (assert ret (ret) (format nil "check failed: ~A" ',name))
                   (pushnew `(,',name ,ret) *host-checks* :test (lambda (a b) (eql (car a) (car b))))))))
   (def-check shell (sb-posix:getenv "SHELL"))
+  (def-check term (sb-posix:getenv "TERM"))
   (def-check machine 
       (let ((ret (current-machine)))
         (nconc (nreverse ret) (list (num-cpus)))))
@@ -42,8 +43,9 @@
 
 (definline check-host ()
   (check-shell)
-  (check-machine)
+  (check-term)
   (check-display)
+  (check-machine)
   (check-user)
   (check-lisp)
   (check-cc)
@@ -61,7 +63,7 @@
 packy (packy.compiler.company)."
   (let* ((ntar (format nil "~A.tar" name))
          (n (format nil "~A.zst" ntar)))
-    (req:fetch (uri:merge-uris n (uri:merge-uris (format nil "dist/~A" arch) packy:*packy-url*))
+    (req:fetch (uri:merge-uris n (uri:merge-uris (format nil "dist/~A" arch) skel/packy:*packy-url*))
                (merge-pathnames name ".stash/tmp/"))))
 
 ;;; Utils
@@ -106,7 +108,7 @@ packy (packy.compiler.company)."
      (ql-dist:install-dist "http://dist.ultralisp.org" :prompt nil)))
 
 ;; install-pack (app/packy)
-;; (defmethod packy:install-package ((self infra-package) &key))
+;; (defmethod skel/packy:install-package ((self infra-package) &key))
 
 ;; make-windows-iso
 ;; (defun make-windows-iso ())

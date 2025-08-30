@@ -23,7 +23,7 @@
  (lisp :env "core")
  (dev :env (or (sb-posix:getenv "USER") ""))
  (kver :env #1$(uname -r | cut -d- -f1)$#)
- (packy-src "/opt/store/packy/src/")
+ (packy-src :env #p"/opt/store/packy/src/")
  (deploy-ssh-key :env "~/.ssh/ellis_aws.pem")
  (deploy-user :env "fedora")
  (deploy-host :env "compiler.company")
@@ -127,6 +127,11 @@
     (run-program "./make.sh" '("--dynamic-space-size=8Gb" "--without-gencgc" "--with-mark-region-gc" "--fancy"))))
   (:build-docs () (with-directory ".stash/src/sbcl/doc/manual" (run-make nil)))
   (:build-gencgc (src) (with-directory ".stash/src/sbcl" (run-program "./make.sh" '("--fancy"))))
+  (:build-fasteval (clone-sbcl)
+   (with-directory ".stash/src/sbcl"
+    (run-program "./make.sh" 
+     '("--dynamic-space-size=8Gb" "--without-gencgc" "--with-mark-region-gc" "--fancy"
+       "--with-sb-fasteval" "--without-sb-eval"))))
   (:build-shared () (with-directory ".stash/src/sbcl" (run-program *shell* '("make-shared-library.sh"))))
   (:build-all-cores () (with-directory ".stash/src/sbcl" (run-program *shell* '("build-all-cores.sh"))))
   (:update () (with-repo (r :path ".stash/src/sbcl" :type :git) (vc:vc-update r)))
@@ -344,15 +349,18 @@ TOOL_CHAIN_TAG        = GCC5"#
  (dist-core-source ()
   (with-project "../core"
    (sk-run (sk-find "dist-source" *skel-project*))
-   (move-file "core.tar.zst" (merge-pathnames "core.tar.zst" packy-src))))
+   (move-file "core.tar.zst" (merge-pathnames "core.tar.zst" (sb-posix:getenv "PACKY_SRC")))))
  (dist-org-source () 
   (with-project "../org"
    (sk-run (sk-find "dist-source" *skel-project*))
-   (move-file "org.tar.zst" (merge-pathnames "org.tar.zst" packy-src))))
+   (move-file "org.tar.zst" (merge-pathnames "org.tar.zst" (sb-posix:getenv "PACKY_SRC")))))
  (dist-demo-source () 
   (with-directory ".."
-   #$tar --exclude='*/.hg' --exclude='#*#' -I 'zstd' -cf demo.tar.zst org && mv demo.tar.zst $PACKY_HOME/src/$#))
+   #$tar --exclude='*/.hg' --exclude='#*#' -I 'zstd' -cf demo.tar.zst demo && mv demo.tar.zst $PACKY_HOME/src/$#))
  (dist-all-source (dist-source dist-home-source dist-core-source dist-demo-source dist-org-source))
+ (all ()
+  (:build (sbcl rocksdb tree-sitter langs-tree-sitter zstd liburing))
+  (:dist (dist-sbcl dist-rocksdb dist-tree-sitter dist-langs-tree-sitter dist-zstd dist-liburing)))
  (deploy-packy ()
   #$scp -i $DEPLOY_SSH_KEY -r $PACKY_HOME/* $DEPLOY_USER@$DEPLOY_HOST:$PACKY_DEPLOY_PATH$#
   (println :packy-ok))
