@@ -15,7 +15,7 @@ cd core
 # mv bin/* ${PREFIX}/bin/
 mv core ${PREFIX}/bin/
 chmod +x ${PREFIX}/bin/core
-links="skel homer packy rdb organ vc gen swm"
+links="skel homer"
 for i in $links; do
   ln -sf ${PREFIX}/bin/core ${PREFIX}/bin/$i
   echo "${PREFIX}/bin/$i -> ${PREFIX}/bin/core"
