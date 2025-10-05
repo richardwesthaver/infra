@@ -118,6 +118,17 @@
    (funcall #0$sudo -SE scripts/install-rocksdb-pack.sh$# :input t))
   (:dist () #$scripts/dist-rocksdb-binary.sh$#)
   (:dist-source () #$scripts/dist-rocksdb-source.sh$#))
+ (libui ()
+  (:clone (src) 
+   ;; (vc-clone ".stash/src/libui" "https://github.com/andlabs/libui")
+   (vc-clone ".stash/src/libui" "https://github.com/libui-ng/libui-ng"))
+  (:build (clone-libui)
+   #$cd .stash/src/libui
+     meson setup build --buildtype=release --default-library=shared
+     ninja -C build$#)
+  (:install () 
+   (with-directory ".stash/src/libui/"
+    (with-sudo "ninja -C build install"))))
  (sbcl ()
   (:clone (src)
    (vc-clone ".stash/src/sbcl" "https://github.com/sbcl/sbcl"))
