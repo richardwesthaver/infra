@@ -93,7 +93,7 @@
     :without-x t 
     :with-imagemagick nil
     :with-tree-sitter nil))
-  (:install () (with-directory ".stash/src/emacs" (with-sudo "make install")))
+  (:install () (with-directory ".stash/src/emacs/" (with-sudo "make install")))
   (:install-pack (tmp)
    (with-sudo "-E scripts/install-emacs-pack.sh"))
   (:update () (with-repo (r :path ".stash/src/emacs" :type :git) (vc-pull r)))
