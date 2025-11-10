@@ -131,6 +131,7 @@
     (with-sudo "ninja -C build install"))))
  (sbcl ()
   (:clone (src)
+   ;; could arrange to checkout specific branch/tag here (lkg)
    (vc-clone ".stash/src/sbcl" "https://github.com/sbcl/sbcl"))
   (:build (clone-sbcl)
    (with-directory ".stash/src/sbcl"

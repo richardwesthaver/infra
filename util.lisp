@@ -52,7 +52,7 @@
   (check-core)
   *host-checks*)
 
-;;; Dependency
+;;;_. Dependency
 (defun dist-dependency (name &optional (packy "/opt/store/packy/") (arch "x86_64-unknown-linux-gnu"))
   "Distribute the dependency NAME."
   (move-file (merge-pathnames (format nil "~A.tar.zst" name) ".stash/")
@@ -66,7 +66,7 @@ packy (packy.compiler.company)."
     (req:fetch (uri:merge-uris n (uri:merge-uris (format nil "dist/~A" arch) skel/packy:*packy-url*))
                (merge-pathnames name ".stash/tmp/"))))
 
-;;; Utils
+;;;_. Utils
 (definline %script-name () (format nil "ts-~A" (time:format-date-simple)))
 (defun script-record (&key (name (%script-name)) log)
   (run-script "-t" (or log (concatenate 'string name ".log")) "-q" name "-c"))
@@ -75,7 +75,7 @@ packy (packy.compiler.company)."
 
 #|
 (box/archiso::mkarchiso 
- "/usr/share/archiso/configs/releng" 
+ "/usr/share/archiso/configs/releng"
  :verbose t :work-dir "/tmp/archiso-tmp" :out-dir ".stash/box")
 
 (box/archiso:run-archiso "/path/to/archlinux-yyyy.mm.dd-x86_64.iso")
