@@ -44,14 +44,14 @@
             (vc-push repo :remote "gh" :all t :force force))
            (bump (name)
             (let ((tmp (directory-path (merge-pathnames name "/tmp/"))))
-             (vc-export (sk-vc *skel-project*) tmp)
+             (vc-export (vc *skel-project*) tmp)
              (with-repo (r :type :git :path tmp)
               (add-remotes r name)
               (push-upstream r t)))))
    (bump "home")
    (bump "pod")
    (bump "box")
-   (vc-export (sk-vc *skel-project*) (merge-pathnames (name *skel-project*) "/tmp/"))
+   (vc-export (vc *skel-project*) (merge-pathnames (name *skel-project*) "/tmp/"))
    (with-repo (r :type :git :path "/tmp/infra/")
     (add-remotes r "infra")
     (vc-update r)
@@ -335,7 +335,7 @@ TOOL_CHAIN_TAG        = GCC5"#
 ;;; dist
  (dist (dist-rocksdb dist-sbcl dist-source-sbcl))
  (dist-repos (clean)
-  (vc-bundle (sk-vc *skel-project*) "/opt/store/packy/vc/core.hg")
+  (vc-bundle (vc *skel-project*) "/opt/store/packy/vc/core.hg")
   (mapc
    (lambda (x)
     (vc-bundle
