@@ -371,7 +371,7 @@ TOOL_CHAIN_TAG        = GCC5"#
    #$tar --exclude='*/.hg' --exclude='#*#' -I 'zstd' -cf demo.tar.zst demo && mv demo.tar.zst $PACKY_HOME/src/$#))
  (dist-all-source (dist-source dist-home-source dist-core-source dist-demo-source dist-org-source))
  (all ()
-  (:build (sbcl rocksdb tree-sitter langs-tree-sitter zstd liburing))
+  (:build (build-sbcl build-rocksdb build-tree-sitter build-langs-tree-sitter build-zstd build-liburing))
   (:dist (dist-sbcl dist-rocksdb dist-tree-sitter dist-langs-tree-sitter dist-zstd dist-liburing)))
  (deploy-packy ()
   #$scp -i $DEPLOY_SSH_KEY -r $PACKY_HOME/* $DEPLOY_USER@$DEPLOY_HOST:$PACKY_DEPLOY_PATH$#
