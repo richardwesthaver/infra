@@ -136,7 +136,7 @@
   (:build (clone-sbcl)
    (with-directory ".stash/src/sbcl"
     ;; --with-sb-fasteval --without-sb-eval --xc-host=/usr/local/bin/core
-    (run-program "./make.sh" '("--dynamic-space-size=8Gb" "--without-gencgc" "--with-mark-region-gc" "--fancy"))))
+    (run-program "./make.sh" '("--dynamic-space-size=8Gb" "--fancy"))))
   (:build-docs () (with-directory ".stash/src/sbcl/doc/manual" (run-make nil)))
   (:build-gencgc (src) (with-directory ".stash/src/sbcl" (run-program "./make.sh" '("--fancy"))))
   (:build-fasteval (clone-sbcl)
