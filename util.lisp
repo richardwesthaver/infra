@@ -95,6 +95,7 @@ packy (packy.compiler.company)."
    (sb-posix:setenv "AWS_SECRET_ACCESS_KEY" access-key 1)
    (sb-posix:setenv "AWS_DEFAULT_REGION" (string-downcase region) 1)))
 
+#+quicklisp
 (defmacro install-quicklisp (init-file
                           &key (home (merge-homedir-pathnames ".stash/quicklisp/"))
                                (dist-version "latest")
