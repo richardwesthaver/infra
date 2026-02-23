@@ -1,6 +1,6 @@
 #!/bin/sh
 set -e
-cd .stash/tmp
+cd .stash/cache/tmp
 if [ ! -d "blake3" ]; then
   TARGET="${1:-x86_64-unknown-linux-gnu}"
   pack="${PACKY_HOME}/dist/${TARGET}/blake3.tar.zst"

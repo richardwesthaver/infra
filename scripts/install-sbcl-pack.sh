@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 TARGET="${1:-x86_64-unknown-linux-gnu}"
-cd .stash/tmp
+cd .stash/cache/tmp
 if [ ! -d "sbcl" ]; then
   TARGET="${1:-x86_64-unknown-linux-gnu}"
   pack="${PACKY_HOME}/dist/${TARGET}/sbcl.tar.zst"

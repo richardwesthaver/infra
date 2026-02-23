@@ -1,6 +1,6 @@
 #!/bin/sh
 set -e
-cd .stash/tmp
+cd .stash/cache/tmp
 if [ ! -d "bzip2" ]; then
   TARGET="${1:-x86_64-unknown-linux-gnu}"
   pack="${PACKY_HOME}/dist/${TARGET}/bzip2.tar.zst"

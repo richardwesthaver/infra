@@ -25,7 +25,7 @@
  (kver :env #1$(uname -r | cut -d- -f1)$#)
  (packy-src :env #p"/opt/store/packy/src/")
  (deploy-ssh-key :env "~/.ssh/ellis_aws.pem")
- (deploy-user :env "fedora")
+ (deploy-user :env "dev")
  (deploy-host :env "compiler.company")
  (packy-deploy-path :env "/srv/http/packy.compiler.company/")
  (cdn-deploy-path :env "/srv/http/cdn.compiler.company/"))
@@ -71,7 +71,7 @@
     (org-with-file-buffer (join-paths company-source-directory "infra/readme.org")
      (org-babel-execute-buffer)
      (save-buffer)))))
- (tmp () (ensure-directories-exist ".stash/tmp"))
+ (tmp () (ensure-directories-exist ".stash/cache/tmp"))
  (src () (ensure-directories-exist ".stash/src"))
  (bin () (ensure-directories-exist ".stash/bin"))
 ;;; src
@@ -252,6 +252,9 @@
     (run-program *shell* '("./configure")) 
     (run-make nil)))
   (:install () (with-directory ".stash/src/graphviz" (with-sudo "make install"))))
+ (flamegraph.pl (src)
+  (:clone (src) (vc-clone ".stash/src/flamegraph" "https://github.com/brendangregg/FlameGraph"))
+  (:install () #$cp .stash/src/flamegraph/flamegraph.pl ~/.data/skel/ext/flamegraph.pl$#))
  (blake3 (src)
   "See https://github.com/BLAKE3-team/BLAKE3/tree/master/c#building"
   (:clone (src) (vc-clone ".stash/src/blake3" "https://github.com/BLAKE3-team/BLAKE3"))
@@ -289,7 +292,7 @@
     (with-sudo "make install")))
   (:install-pack (tmp)
    (get-dependency-pack "liburing")
-   (with-directory ".stash/tmp/liburing/"
+   (with-directory ".stash/cache/tmp/liburing/"
     (with-sudo 
      "cp liburing*.so* /usr/local/lib/"
      "cp -arf include/* /usr/local/include/")))
@@ -378,12 +381,16 @@ TOOL_CHAIN_TAG        = GCC5"#
   (with-project "../org"
    (sk-run (sk-find "dist-source" *skel-project*))
    (move-file "org.tar.zst" (merge-pathnames "org.tar.zst" (sb-posix:getenv "PACKY_SRC")))))
+ (dist-shed-source () 
+  (with-project "../shed"
+   (sk-run (sk-find "dist-source" *skel-project*))
+   (move-file "shed.tar.zst" (merge-pathnames "shed.tar.zst" (sb-posix:getenv "PACKY_SRC")))))
  (dist-demo-source () 
   (with-directory ".."
    #$tar --exclude='*/.hg' --exclude='#*#' -I 'zstd' -cf demo.tar.zst demo && mv demo.tar.zst $PACKY_HOME/src/$#))
  (dist-all-source (dist-source dist-home-source dist-core-source dist-demo-source dist-org-source))
  (all ()
-  (:build (build-sbcl build-rocksdb build-tree-sitter build-langs-tree-sitter build-zstd build-liburing))
+  (:build (build-sbcl build-rocksdb build-tree-sitter build-zstd build-liburing))
   (:dist (dist-sbcl dist-rocksdb dist-tree-sitter dist-langs-tree-sitter dist-zstd dist-liburing))
   (:install (install-sbcl install-rocksdb install-tree-sitter install-langs-tree-sitter install-zstd install-liburing)))
  (deploy-packy ()
