@@ -14,5 +14,5 @@ if [ ! -d "rocksdb" ]; then
   tar -xvf rocksdb.tar
 fi
 cd rocksdb
-cp librocksdb.* /usr/local/lib/
-cp -rf include/* /usr/local/include/
+cp librocksdb.* /usr/lib/
+cp -rf include/* /usr/include/

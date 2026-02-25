@@ -10,7 +10,7 @@ declare -ar default_langs=(
 # see https://tree-sitter.github.io/tree-sitter/#parsers for a
 # complete list of parsers available
 TARGETDIR="${1:-.stash/src/tree-sitter-langs}"
-PREFIX=$(realpath "${2:-${PREFIX:-/usr/local}}")
+PREFIX=$(realpath "${2:-${PREFIX:-/usr}}")
 CC=${CC:-cc}
 CXX=${CXX:-c++}
 if [ $(uname) == "Darwin" ];then

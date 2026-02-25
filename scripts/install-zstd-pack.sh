@@ -12,5 +12,5 @@ if [ ! -d "zstd" ]; then
   tar -xvf zstd.tar
 fi
 cd zstd
-cp -a libzstd.so* /usr/local/lib/
-cp *.h /usr/local/include/
+cp -a libzstd.so* /usr/lib/
+cp *.h /usr/include/

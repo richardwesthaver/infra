@@ -12,5 +12,5 @@ if [ ! -d "ublksrv" ]; then
   tar -xvf ublksrv.tar
 fi
 cd ublksrv
-cp libublksrv.so* /usr/local/lib/
-cp include/* /usr/local/include/
+cp libublksrv.so* /usr/lib/
+cp include/* /usr/include/

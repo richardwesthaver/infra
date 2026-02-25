@@ -145,7 +145,7 @@ packy (packy.compiler.company)."
       (vc-pull r remote)
       (vc-push r))))
 
-(defun init-vc-bundles (&optional (dir #p"/usr/local/src/") delete)
+(defun init-vc-bundles (&optional (dir #p"/usr/src/") delete)
   (with-directory dir
     (loop for i in (directory "*.hg")
           with path = (pathname-name i)

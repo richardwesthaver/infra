@@ -17,18 +17,16 @@
 ((packy-home :env "/opt/store/packy")
  (cdn-home :env "/opt/stash/data/web/cdn")
  (vc-url :env "~/comp")
- (prefix :env "/usr/local")
+ (prefix :env "/usr")
  (stash :env ".stash")
  (store :env "/opt/store")
  (lisp :env "core")
- (dev :env (or (sb-posix:getenv "USER") ""))
  (kver :env #1$(uname -r | cut -d- -f1)$#)
  (packy-src :env #p"/opt/store/packy/src/")
  (deploy-ssh-key :env "~/.ssh/ellis_aws.pem")
- (deploy-user :env "dev")
  (deploy-host :env "compiler.company")
- (packy-deploy-path :env "/srv/http/packy.compiler.company/")
- (cdn-deploy-path :env "/srv/http/cdn.compiler.company/"))
+ (packy-remote :env "/srv/http/packy.compiler.company/")
+ (cdn-remote :env "/srv/http/cdn.compiler.company/"))
 :stash ".stash"
 :store "/opt/store"
 :rules
@@ -111,8 +109,8 @@
   (:update () #$cd .stash/src/rocksdb && git pull$#)
   (:install () 
    (funcall #0$cd .stash/src/rocksdb \
-    && sudo -S make install-shared && \
-    sudo cp -r include/* /usr/local/include/$# :input t))
+    && sudo -S PREFIX=$PREFIX make install-shared && \
+    sudo cp -r include/* /usr/include/$# :input t))
   (:install-pack (tmp)
    (funcall #0$sudo -SE scripts/install-rocksdb-pack.sh$# :input t))
   (:dist () #$scripts/dist-rocksdb-binary.sh$#)
@@ -134,7 +132,7 @@
    (vc-clone ".stash/src/sbcl" "https://github.com/sbcl/sbcl"))
   (:build (clone-sbcl)
    (with-directory ".stash/src/sbcl"
-    ;; --with-sb-fasteval --without-sb-eval --xc-host=/usr/local/bin/core
+    ;; --with-sb-fasteval --without-sb-eval --xc-host=/usr/bin/core
     (run-program "./make.sh" '("--dynamic-space-size=8Gb" "--fancy"))))
   (:build-docs () (with-directory ".stash/src/sbcl/doc/manual" (run-make nil)))
   (:build-gencgc (src) (with-directory ".stash/src/sbcl" (run-program "./make.sh" '("--fancy"))))
@@ -148,8 +146,11 @@
   (:update () (with-repo (r :path ".stash/src/sbcl" :type :git) (vc:vc-update r)))
   (:install () 
    (with-directory ".stash/src/sbcl" 
-    (with-sudo "INSTALL_ROOT=/usr/local ./install.sh")))
-  (:install-src () (with-directory ".stash/src/sbcl" (with-sudo (format nil "cp -rf src contrib ~A/src/sbcl/" (sb-posix:getenv "PREFIX")))))
+    (with-sudo "INSTALL_ROOT=/usr ./install.sh")))
+  (:install-src () 
+   (with-directory ".stash/src/sbcl" 
+    (with-sudo (format nil "mkdir -pv ~A/src/sbcl/" (sb-posix:getenv "PREFIX"))
+               (format nil "cp -rf src contrib ~A/src/sbcl/" (sb-posix:getenv "PREFIX")))))
   (:install-pack (tmp)
    (with-sudo "-E scripts/install-sbcl-pack.sh"))
   (:dist () #$scripts/dist-sbcl-binary.sh$#)
@@ -165,7 +166,7 @@
   (:update () (with-repo (r :path ".stash/src/cl" :type :git) (vc:vc-update r)))
   (:install () 
    (with-directory ".stash/src/cl" 
-    (with-sudo "INSTALL_ROOT=/usr/local ./install.sh")))
+    (with-sudo "INSTALL_ROOT=/usr ./install.sh")))
   (:install-src () (with-directory ".stash/src/cl" (with-sudo (format nil "cp -rf src contrib ~A/src/cl/" (sb-posix:getenv "PREFIX"))))))
  (install-quicklisp (tmp) (install-quicklisp ".stash/quicklisp.lisp"))
  (stumpwm ()
@@ -203,7 +204,7 @@
  (caddy ()
   (:build-xcaddy () #$go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest$#)
   (:build (build-xcaddy-caddy) #$~/go/bin/xcaddy build --output .stash/bin/caddy --with github.com/mholt/caddy-webdav$#)
-  (:install () (funcall #0$sudo -S cp .stash/bin/caddy /usr/local/bin/caddy$# :input t)))
+  (:install () (funcall #0$sudo -S cp .stash/bin/caddy /usr/bin/caddy$# :input t)))
  (rust (src)
   (:clone (src) (vc-clone ".stash/src/rust" "https://github.com/rust-lang/rust"))
   (:build-docs (clone-rust) #$cd .stash/src/rust && ./x doc$#))
@@ -222,9 +223,9 @@
   (:build (clone-rustls)
    ;; note that we build with FIPS enabled - requires cmake and go at build-time
    (with-directory ".stash/src/rustls-ffi"
-    (tools/rust:run-cargo "cbuild" "--release" "--prefix=/usr/local" "--libdir=/usr/local/lib" "--features=fips")))
+    (tools/rust:run-cargo "cbuild" "--release" "--prefix=/usr" "--libdir=/usr/lib" "--features=fips")))
   (:install () 
-   (funcall #0$cd .stash/src/rustls-ffi && sudo cargo cinstall --release --prefix=/usr/local$# :input t))
+   (funcall #0$cd .stash/src/rustls-ffi && sudo cargo cinstall --release --prefix=/usr$# :input t))
   (:dist (tmp) #$scripts/dist-rustls.sh$#))
  (slime ()
   (:install () 
@@ -265,7 +266,7 @@
      "blake3_avx512_x86-64_unix.S")))
   (:install () 
    (with-directory ".stash/src/blake3/c" 
-    (with-sudo "cp libblake3.so /usr/local/lib/ && sudo cp blake3.h /usr/local/include/")))
+    (with-sudo "cp libblake3.so /usr/lib/ && sudo cp blake3.h /usr/include/")))
   (:install-pack (tmp)
    (with-sudo "-E scripts/install-blake3-pack.sh"))
   (:dist () #$scripts/dist-blake3.sh$#))
@@ -294,8 +295,8 @@
    (get-dependency-pack "liburing")
    (with-directory ".stash/cache/tmp/liburing/"
     (with-sudo 
-     "cp liburing*.so* /usr/local/lib/"
-     "cp -arf include/* /usr/local/include/")))
+     "cp liburing*.so* /usr/lib/"
+     "cp -arf include/* /usr/include/")))
   (:dist () (run-program *shell* '("scripts/dist-liburing.sh") :output t)))
  (bzip2 (src)
   (:clone (src) (vc-clone ".stash/src/bzip2" "https://gitlab.com/federicomenaquintero/bzip2"))
@@ -388,14 +389,15 @@ TOOL_CHAIN_TAG        = GCC5"#
  (dist-demo-source () 
   (with-directory ".."
    #$tar --exclude='*/.hg' --exclude='#*#' -I 'zstd' -cf demo.tar.zst demo && mv demo.tar.zst $PACKY_HOME/src/$#))
- (dist-all-source (dist-source dist-home-source dist-core-source dist-demo-source dist-org-source))
  (all ()
   (:build (build-sbcl build-rocksdb build-tree-sitter build-zstd build-liburing))
   (:dist (dist-sbcl dist-rocksdb dist-tree-sitter dist-langs-tree-sitter dist-zstd dist-liburing))
+  (:dist-source (dist-source dist-home-source dist-core-source dist-demo-source dist-org-source dist-shed-source))
   (:install (install-sbcl install-rocksdb install-tree-sitter install-langs-tree-sitter install-zstd install-liburing)))
+ (deploy ())
  (deploy-packy ()
-  #$scp -i $DEPLOY_SSH_KEY -r $PACKY_HOME/* $DEPLOY_USER@$DEPLOY_HOST:$PACKY_DEPLOY_PATH$#
+  #$scp -i $DEPLOY_SSH_KEY -r $PACKY_HOME/* $DEPLOY_HOST:$PACKY_REMOTE$#
   (println :packy-ok))
  (deploy-cdn ()
-  #$scp -i $DEPLOY_SSH_KEY -r $CDN_HOME/* $DEPLOY_USER@$DEPLOY_HOST:$CDN_DEPLOY_PATH$#
+  #$scp -i $DEPLOY_SSH_KEY -r $CDN_HOME/* $DEPLOY_HOST:$CDN_REMOTE$#
   (println :cdn-ok)))

@@ -12,7 +12,7 @@ if [ ! -d "bzip2" ]; then
   tar -xvf bzip2.tar
 fi
 cd bzip2
-cp -a libbz2.so* /usr/local/lib/
+cp -a libbz2.so* /usr/lib/
 # for fedora...
-ln -sf /usr/local/lib/libbz2.so libbz2.so.1.0 
-cp -rf bzlib.h /usr/local/include/
+ln -sf /usr/lib/libbz2.so libbz2.so.1.0 
+cp -rf bzlib.h /usr/include/

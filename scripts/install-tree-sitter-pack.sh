@@ -12,5 +12,5 @@ if [ ! -d "tree-sitter" ]; then
   tar -xvf tree-sitter.tar
 fi
 cd tree-sitter
-cp libtree-sitter.so /usr/local/lib/
-cp -rf include/* /usr/local/include/
+cp libtree-sitter.so /usr/lib/
+cp -rf include/* /usr/include/

@@ -12,4 +12,4 @@ if [ ! -d "tree-sitter-langs" ]; then
   tar -xvf tree-sitter-langs.tar
 fi
 cd tree-sitter-langs
-cp -rf ./* /usr/local/
+cp -rf ./* /usr/

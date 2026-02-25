@@ -12,5 +12,5 @@ if [ ! -d "blake3" ]; then
   tar -xvf blake3.tar
 fi
 cd blake3
-cp libblake3.so /usr/local/lib/
-cp blake3.h /usr/local/include/
+cp libblake3.so /usr/lib/
+cp blake3.h /usr/include/
