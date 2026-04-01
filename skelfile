@@ -45,7 +45,7 @@
    (bump "pod")
    (bump "box")
    (vc-export (vc *skel-project*))
-   (with-repo (r :type :git :path "/tmp/infra/")
+   (with-repo (r :type :git :path "/tmp/infra/" :delete t)
     (setf (vc-remotes r) (remotes "infra"))
     (loop for remote across (setf (vc-remotes r) (remotes "infra"))
      do (vc-remote r :add :name (name remote) :url (uri remote)))
