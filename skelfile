@@ -225,7 +225,7 @@
   (:build (clone-rustls)
    ;; note that we build with FIPS enabled - requires cmake and go at build-time
    (with-directory ".stash/src/rustls-ffi"
-    (tools/rust:run-cargo "cbuild" "--release" "--prefix=/usr" "--libdir=/usr/lib" "--features=fips")))
+    (tools/build:run-cargo "cbuild" "--release" "--prefix=/usr" "--libdir=/usr/lib" "--features=fips")))
   (:install () 
    (funcall #0$cd .stash/src/rustls-ffi && sudo cargo cinstall --release --prefix=/usr$# :input t))
   (:dist (tmp) #$scripts/dist-rustls.sh$#))
