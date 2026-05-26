@@ -158,10 +158,17 @@ packy (packy.compiler.company)."
 (defun random-mac () (format nil "DE:AD:BE:EF:~2,'0x:~2,'0x" (random 255) (random 255)))
   
 (defun build-emacs (&key (src ".stash/src/emacs")
-                         prefix
+                         (prefix "/usr")
+                         (sysconfdir "/etc")
+                         (libexecdir "/usr/lib")
+                         (mandir "/usr/share/man")
+                         (localstatedir "/var")
                          (with-mailutils t)
                          (with-x-toolkit "lucid")
+                         (with-xwidgets t)
                          (with-imagemagick t)
+                         (with-native-compilation "aot")
+                         (with-json t)
                          without-x
                          without-all
                          (without-pop t)
@@ -171,12 +178,29 @@ packy (packy.compiler.company)."
                          (with-modules t)
                          (disable-gc-mark-trace t))
   (with-directory (probe-directory src)
-    (sb-ext:run-program "/bin/sh" '("./autogen.sh"))
+    (sb-ext:run-program "/bin/bash" '("./autogen.sh"))
     (sb-ext:run-program 
-     "/bin/sh"
+     "/bin/bash"
      `("./configure"
+       "--without-toolkit-scroll-bars"
+       "--with-cairo"
+       "--with-harfbuzz"
+       "--without-libotf"
+       "--without-xdbe"
+       "--without-xim"
+       "--with-gnutls"
+       "--with-file-notification=inotify"
+       "--with-gsettings"
+       "--without-compress-install"
+       "--without-included-regex"
+       "--with-zlib"
+       "--with-xml2"
+       "--with-libgmp"
+       "--with-threads"
+       "--without-xft"
        ,@(when with-mailutils '("--with-mailutils"))
-       ,@(when without-x '("--without-x"))
+       ,(if without-x "--without-x" "--with-x")
+       ,@(when with-xwidgets '("--with-xwidgets"))
        ,@(when with-imagemagick '("--with-imagemagick"))
        ,@(when with-x-toolkit `(,(format nil "--with-x-toolkit=~A" with-x-toolkit)))
        ,@(when without-pop '("--without-pop"))
@@ -185,7 +209,15 @@ packy (packy.compiler.company)."
        ,@(when without-all '("--without-all"))
        ,@(when enable-link-time-optimization '("--enable-link-time-optimization"))
        ,@(when with-modules '("--with-modules"))
+       ,@(when with-json '("--with-json"))
        ,@(when disable-gc-mark-trace '("--disable-gc-mark-trace"))
-       ,@(when prefix (format nil "--prefix=~A" prefix))))
+       ,@(when with-native-compilation `(,(format nil "--with-native-compilation=~A" with-native-compilation)))
+       ,@(when prefix `(,(format nil "--prefix=~A" prefix)))
+       ,@(when sysconfdir `(,(format nil "--sysconfdir=~A" prefix)))
+       ,@(when libexecdir `(,(format nil "--libexecdir=~A" prefix)))
+       ,@(when mandir `(,(format nil "--mandir=~A" prefix)))
+       ,@(when localstatedir `(,(format nil "--localstatedir=~A" prefix)))))
     (sb-posix:setenv "NATIVE_FULL_AOT" "1" 1)
-    (sb-ext:run-program (find-exe "make") `(,(format nil "-j~A" (num-cpus))) :output t)))
+    (sb-ext:run-program (find-exe "make") 
+     `("-j" "8" "-l" "7")
+     :output t)))

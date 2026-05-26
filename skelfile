@@ -26,7 +26,9 @@
  (deploy-ssh-key :env "~/.ssh/ellis_aws.pem")
  (deploy-host :env "compiler.company")
  (packy-remote :env "/srv/http/packy.compiler.company/")
- (cdn-remote :env "/srv/http/cdn.compiler.company/"))
+ (cdn-remote :env "/srv/http/cdn.compiler.company/")
+ (cc :env "clang")
+ (cxx :env "clang++"))
 :stash ".stash"
 :store "/opt/store"
 :rules
@@ -83,15 +85,16 @@
   (:clone (src) 
    (vc-clone ".stash/src/emacs" "https://github.com/emacs-mirror/emacs"))
   (:build (clone-emacs)
-   (build-emacs))
+   (build-emacs
+    :prefix "/usr"))
   (:build-mini (clone-emacs)
    (build-emacs 
-    :without-all t 
+    :without-all t
     :with-x-toolkit "no" 
     :without-x t 
     :with-imagemagick nil
     :with-tree-sitter nil))
-  (:install () (with-sudo "make install -C stash/src/emacs/"))
+  (:install () (with-sudo "-E make install -C .stash/src/emacs/"))
   (:install-pack (tmp) (with-sudo "-E scripts/install-emacs-pack.sh"))
   (:update () (with-repo (r :path ".stash/src/emacs" :type :git) (vc-pull r)))
   (:dist-mini () 
@@ -104,13 +107,13 @@
     #$zstd -8 emacs-31.0.50.tar -o "../../emacs.tar.zst"$#)))
  (rocksdb ()
   (:clone (src) (vc-clone ".stash/src/rocksdb" "https://github.com/facebook/rocksdb"))
-  (:build (clone-rocksdb) #$cd .stash/src/rocksdb && make shared_lib DISABLE_JEMALLOC=1$#)
-  (:build-static (clone-rocksdb) #$cd .stash/src/rocksdb && make static_lib DISABLE_JEMALLOC=1$#)
+  ;; FIX 2026-05-19: https://github.com/facebook/rocksdb/issues/14762
+  (:build (clone-rocksdb) #$cd .stash/src/rocksdb && make shared_lib DISABLE_JEMALLOC=1 CC=clang CXX=clang++$#)
+  (:build-static (clone-rocksdb) #$cd .stash/src/rocksdb && make static_lib DISABLE_JEMALLOC=1 PREFIX=$PREFIX $#)
   (:update () #$cd .stash/src/rocksdb && git pull$#)
   (:install () 
-   (funcall #0$cd .stash/src/rocksdb \
-    && sudo -S PREFIX=$PREFIX make install-shared && \
-    sudo cp -r include/* /usr/include/$# :input t))
+   (with-directory ".stash/src/rocksdb"
+    (with-sudo "make install-shared PREFIX=$PREFIX")))
   (:install-pack (tmp)
    (funcall #0$sudo -SE scripts/install-rocksdb-pack.sh$# :input t))
   (:dist () #$scripts/dist-rocksdb-binary.sh$#)
@@ -132,14 +135,13 @@
    (vc-clone ".stash/src/sbcl" "https://github.com/sbcl/sbcl"))
   (:build (clone-sbcl)
    (with-directory ".stash/src/sbcl"
-    ;; --with-sb-fasteval --without-sb-eval --xc-host=/usr/bin/core
-    (run-program "./make.sh" '("--dynamic-space-size=8Gb" "--fancy"))))
+    (run-program "./make.sh" '("--dynamic-space-size=8Gb" "--fancy" "--prefix=$PREFIX"))))
   (:build-docs () (with-directory ".stash/src/sbcl/doc/manual" (run-make nil)))
   (:build-gencgc (src) (with-directory ".stash/src/sbcl" (run-program "./make.sh" '("--fancy"))))
   (:build-fasteval (clone-sbcl)
    (with-directory ".stash/src/sbcl"
     (run-program "./make.sh" 
-     '("--dynamic-space-size=8Gb" "--without-gencgc" "--with-mark-region-gc" "--fancy"
+     '("--dynamic-space-size=8Gb" "--without-gencgc" "--with-mark-region-gc" "--fancy" "--prefix=$PREFIX"
        "--with-sb-fasteval" "--without-sb-eval"))))
   (:build-shared () (with-directory ".stash/src/sbcl" (run-program *shell* '("make-shared-library.sh"))))
   (:build-all-cores () (with-directory ".stash/src/sbcl" (run-program *shell* '("build-all-cores.sh"))))
