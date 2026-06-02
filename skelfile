@@ -1,4 +1,4 @@
-;;; skelfile --- infra skelfile -*- mode: skel; -*-
+;;; skelfile --- infra skelfile
 :name "infra"
 :author ("Richard Westhaver" . "richard.westhaver@gmail.com")
 :version "0.1.0"
@@ -7,7 +7,7 @@
 :license "MPL"
 :vc (:hg "https://vc.compiler.company/infra"
      (cb (:git "ssh://git@codeberg.org/c-c/infra"))
-     (gh (:git "ssh://git@github.com/richardwesthaver/core")))
+     (gh (:git "ssh://git@github.com/richardwesthaver/infra")))
 :include ("pod/skelfile")
 :components 
 ((:org "readme")
@@ -21,12 +21,14 @@
  (stash :env ".stash")
  (store :env "/opt/store")
  (lisp :env "core")
- (kver :env #1$(uname -r | cut -d- -f1)$#)
+ (kver :env #1$uname -r | cut -d- -f1$#)
  (packy-src :env #p"/opt/store/packy/src/")
  (deploy-ssh-key :env "~/.ssh/ellis_aws.pem")
  (deploy-host :env "compiler.company")
  (packy-remote :env "/srv/http/packy.compiler.company/")
  (cdn-remote :env "/srv/http/cdn.compiler.company/")
+ (eln-destdir :env "/usr/share/emacs/")
+ (bin-destdir :env "/usr/bin/")
  (cc :env "clang")
  (cxx :env "clang++"))
 :stash ".stash"
@@ -100,11 +102,11 @@
   (:dist-mini () 
    (with-directory ".stash/src/emacs"
    (run-program *shell* '("./make-dist" "--tar" "--no-compress" "--no-info" "--no-changelog"))
-   #$zstd -8 emacs-31.0.50.tar -o "../../emacs-mini.tar.zst"$#))
+   #$zstd -8 emacs-32.0.50.tar -o "../../emacs-mini.tar.zst"$#))
   (:dist () 
    (with-directory ".stash/src/emacs"
     (run-program *shell* '("./make-dist" "--tar" "--no-compress"))
-    #$zstd -8 emacs-31.0.50.tar -o "../../emacs.tar.zst"$#)))
+    #$zstd -8 emacs-32.0.50.tar -o "../../emacs.tar.zst"$#)))
  (rocksdb ()
   (:clone (src) (vc-clone ".stash/src/rocksdb" "https://github.com/facebook/rocksdb"))
   ;; FIX 2026-05-19: https://github.com/facebook/rocksdb/issues/14762

@@ -157,6 +157,15 @@ packy (packy.compiler.company)."
 ;; build PACKAGE
 (defun random-mac () (format nil "DE:AD:BE:EF:~2,'0x:~2,'0x" (random 255) (random 255)))
   
+(defun emacs-build-version ()
+  #1$
+  cd ".stash/src/emacs"
+  printf "%s.%s" \
+  $(grep AC_INIT configure.ac | \
+                 awk -F',' '{ gsub("[ \\[\\]]","",$2); print $2 }') \
+           $(git rev-list --count HEAD)
+  $#)
+
 (defun build-emacs (&key (src ".stash/src/emacs")
                          (prefix "/usr")
                          (sysconfdir "/etc")
@@ -178,11 +187,15 @@ packy (packy.compiler.company)."
                          (with-modules t)
                          (disable-gc-mark-trace t))
   (with-directory (probe-directory src)
+    ;; (sb-posix:setenv "NATIVE_FULL_AOT" "1" 1)
+    ;; (sb-posix:setenv "ELN_DESTDIR" "/usr/share/emacs/" 1)
+    ;; (sb-posix:setenv "BIN_DESTDIR" "/usr/bin/" 1)
     (sb-ext:run-program "/bin/bash" '("./autogen.sh"))
     (sb-ext:run-program 
      "/bin/bash"
-     `("./configure"
+     (print `("./configure"
        "--without-toolkit-scroll-bars"
+       "--disable-build-details"
        "--with-cairo"
        "--with-harfbuzz"
        "--without-libotf"
@@ -191,13 +204,16 @@ packy (packy.compiler.company)."
        "--with-gnutls"
        "--with-file-notification=inotify"
        "--with-gsettings"
+       "--with-gconf"
        "--without-compress-install"
        "--without-included-regex"
        "--with-zlib"
        "--with-xml2"
+       "--with-libsystemd"
        "--with-libgmp"
        "--with-threads"
        "--without-xft"
+       "--enable-locallisppath=/usr/share/emacs/site-lisp"
        ,@(when with-mailutils '("--with-mailutils"))
        ,(if without-x "--without-x" "--with-x")
        ,@(when with-xwidgets '("--with-xwidgets"))
@@ -213,11 +229,11 @@ packy (packy.compiler.company)."
        ,@(when disable-gc-mark-trace '("--disable-gc-mark-trace"))
        ,@(when with-native-compilation `(,(format nil "--with-native-compilation=~A" with-native-compilation)))
        ,@(when prefix `(,(format nil "--prefix=~A" prefix)))
+       ,@(when prefix `(,(format nil "--exec-prefix=~A" prefix)))
        ,@(when sysconfdir `(,(format nil "--sysconfdir=~A" prefix)))
        ,@(when libexecdir `(,(format nil "--libexecdir=~A" prefix)))
        ,@(when mandir `(,(format nil "--mandir=~A" prefix)))
-       ,@(when localstatedir `(,(format nil "--localstatedir=~A" prefix)))))
-    (sb-posix:setenv "NATIVE_FULL_AOT" "1" 1)
-    (sb-ext:run-program (find-exe "make") 
+       ,@(when localstatedir `(,(format nil "--localstatedir=~A" prefix))))))
+    (sb-ext:run-program (find-exe "make")
      `("-j" "8" "-l" "7")
      :output t)))

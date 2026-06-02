@@ -2,3 +2,4 @@ pod=https://vc.compiler.company/infra/pod
 box=https://vc.compiler.company/infra/box
 home=https://vc.compiler.company/infra/home
 etc=https://vc.compiler.company/infra/etc
+packy=https://vc.compiler.company/infra/packy
