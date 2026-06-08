@@ -1,35 +1,19 @@
 #+title: infra
-#+author: Richard Westhaver
-#+email: richard.westhaver@gmail.com
 #+description: The Compiler Company Infrastructure
-#+EXPORT_FILE_NAME: index
-#+setupfile: ../org/clean.theme
-
-#+CALL: project-details()
-
-#+RESULTS:
-|-------------+-----------------------------------------------------|
-| name        | infra                                               |
-| version     | 0.1.0                                               |
-| description | The Compiler Company Infrastructure                 |
-| id          | 3775854705201423839                                 |
-| root        | ~/comp/infra/                                       |
-| vc          | :hg [[https://vc.compiler.company/infra][vc.compiler.company/infra]] :rev [[https://vc.compiler.company/infra/rev/9f9458cc01ee][9f9458cc01ee:458]] |
-| tags        | INFRA                                               |
-| updated     | Sun May 17 14:33:08 2026 -0400                      |
-| langs       | css ini javascript lisp org python sh xml           |
-| lines       | 4426 :code 3550 :comment 354 :blank 522             |
-|-------------+-----------------------------------------------------|
-
-#+CALL: project-links()
-
-#+RESULTS:
-- [[https://compiler.company/docs/infra/index.html][Documentation]]
-- [[https://compiler.company/plan/tasks/infra.html][Tasks]]
-
+#+author: Richard Westhaver
+#+email: ellis@compiler.company
 This project is used to build and maintain [[https://compiler.company][CC]] infrastructure.
 
 - home :: User home directories and configuration files
 - box :: VM and full system image scripts
 - pod :: Containerfiles and build scripts
 - etc :: Scripts and Configs
+
+#+call: project-links(include='all)
+
+#+RESULTS:
+- [[https://compiler.company/docs/infra/index.html][Documentation]] 
+  - [[https://compiler.company/docs/infra/man.html][User Manual]]
+  - [[https://compiler.company/docs/infra/api.html][API Reference]]
+  - [[https://compiler.company/docs/infra/info.html][Info]]
+- [[https://compiler.company/plan/tasks/infra.html][Tasks]]

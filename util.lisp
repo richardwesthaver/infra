@@ -127,7 +127,7 @@ packy (packy.compiler.company)."
 
 (defun qemu-build-vm (out &optional (size "32G") (mem "8G"))
   (let ((img (namestring out)))
-    (run-qemu-img "create" "-f" "raw" img size)
+    (qemu-img "create" "-f" "raw" img size)
     (run-qemu "-cdrom" img "-boot" "order=d" (format nil "file=~A,format=raw" img) "-m" mem "-cpu" "host")))
 
 ;; dist PACKAGE (SOURCE REPO BINARY DOCS)
