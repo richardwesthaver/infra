@@ -8,7 +8,7 @@
 :vc (:hg "https://vc.compiler.company/infra"
      (cb (:git "ssh://git@codeberg.org/c-c/infra"))
      (gh (:git "ssh://git@github.com/richardwesthaver/infra")))
-:include ("pod/skelfile")
+:include ("pod/skelfile" "box/skelfile" #+nil "packy/skelfile")
 :components 
 ((:org "readme")
  (:lisp "util" :eval :load :read t)
@@ -50,7 +50,7 @@
    (bump "home")
    (bump "pod")
    (bump "box")
-   (vc-export (vc *skel-project*))
+   (vc-export (vc *project*))
    (with-repo (r :type :git :path "/tmp/infra/" :delete t)
     (setf (vc-remotes r) (remotes "infra"))
     (loop for remote across (setf (vc-remotes r) (remotes "infra"))
@@ -143,7 +143,7 @@
   (:build-fasteval (clone-sbcl)
    (with-directory ".stash/src/sbcl"
     (run-program "./make.sh" 
-     '("--dynamic-space-size=8Gb" "--without-gencgc" "--with-mark-region-gc" "--fancy" "--prefix=$PREFIX"
+     '("--dynamic-space-size=8Gb" "--fancy" "--prefix=$PREFIX"
        "--with-sb-fasteval" "--without-sb-eval"))))
   (:build-shared () (with-directory ".stash/src/sbcl" (run-program *shell* '("make-shared-library.sh"))))
   (:build-all-cores () (with-directory ".stash/src/sbcl" (run-program *shell* '("build-all-cores.sh"))))
@@ -164,7 +164,7 @@
    (vc-clone ".stash/src/cl" "https://github.com/richardwesthaver/cl"))
   (:build (clone-cl)
    (with-project ".stash/src/cl"
-    (sk-run (sk-find "default" *skel-project*))))
+    (exec (project-find "default" *project*))))
   (:build-shared () (with-directory ".stash/src/cl" (run-program *shell* '("make-shared-library.sh"))))
   (:build-all-cores () (with-directory ".stash/src/cl" (run-program *shell* '("build-all-cores.sh"))))
   (:update () (with-repo (r :path ".stash/src/cl" :type :git) (vc:vc-update r)))
@@ -359,7 +359,7 @@ TOOL_CHAIN_TAG        = GCC5"#
 ;;; dist
  (dist (dist-rocksdb dist-sbcl dist-source-sbcl))
  (dist-repos (clean)
-  (vc-bundle (vc *skel-project*) "/opt/store/packy/vc/core.hg")
+  (vc-bundle (vc *project*) "/opt/store/packy/vc/core.hg")
   (mapc
    (lambda (x)
     (vc-bundle
@@ -368,10 +368,10 @@ TOOL_CHAIN_TAG        = GCC5"#
    '("home" "pod" "box")))
  (dist-core-repo (clean) 
   (with-project "../core"
-   (sk-run (sk-find "dist-repo" *skel-project*))))
+   (exec (project-find "dist-repo" *project*))))
  (dist-org-repos (clean)
   (with-project "../org"
-   (sk-run (sk-find "dist-repos" *skel-project*))))
+   (exec (project-find "dist-repos" *project*))))
  (dist-demo-repo (clean) 
   (with-repo (r :path "../demo") 
    (vc-bundle r "/opt/store/packy/vc/demo.hg" :type :zstd-v2)))
@@ -384,21 +384,21 @@ TOOL_CHAIN_TAG        = GCC5"#
   -I 'zstd' -cf /opt/store/packy/src/home.tar.zst home$#)
  (dist-core-source ()
   (with-project "../core"
-   (sk-run (sk-find "dist-source" *skel-project*))
+   (exec (project-find "dist-source" *project*))
    (move-file "core.tar.zst" (merge-pathnames "core.tar.zst" (sb-posix:getenv "PACKY_SRC")))))
  (dist-org-source () 
   (with-project "../org"
-   (sk-run (sk-find "dist-source" *skel-project*))
+   (exec (project-find "dist-source" *project*))
    (move-file "org.tar.zst" (merge-pathnames "org.tar.zst" (sb-posix:getenv "PACKY_SRC")))))
  (dist-shed-source () 
   (with-project "../shed"
-   (sk-run (sk-find "dist-source" *skel-project*))
+   (exec (project-find "dist-source" *project*))
    (move-file "shed.tar.zst" (merge-pathnames "shed.tar.zst" (sb-posix:getenv "PACKY_SRC")))))
  (dist-demo-source () 
   (with-directory ".."
    #$tar --exclude='*/.hg' --exclude='#*#' -I 'zstd' -cf demo.tar.zst demo && mv demo.tar.zst $PACKY_HOME/src/$#))
  (all ()
-  (:build (build-sbcl build-rocksdb build-tree-sitter build-zstd build-liburing build-emacs))
+  (:build (build-fasteval-sbcl build-rocksdb build-tree-sitter build-zstd build-liburing build-emacs))
   (:dist (dist-sbcl dist-rocksdb dist-tree-sitter dist-langs-tree-sitter dist-zstd dist-liburing dist-emacs))
   (:dist-source (dist-source dist-home-source dist-core-source dist-demo-source dist-org-source dist-shed-source))
   (:install (install-sbcl install-rocksdb install-tree-sitter install-langs-tree-sitter install-zstd install-liburing install-emacs)))
@@ -409,5 +409,5 @@ TOOL_CHAIN_TAG        = GCC5"#
  (deploy-cdn ()
   #$scp -i $DEPLOY_SSH_KEY -r $CDN_HOME/* $DEPLOY_HOST:$CDN_REMOTE$#
   (println :cdn-ok))
- (build (build-sbcl build-rocksdb build-emacs))
+ (build (build-fasteval-sbcl build-rocksdb build-emacs))
  (install (install-sbcl install-rocksdb install-emacs)))
