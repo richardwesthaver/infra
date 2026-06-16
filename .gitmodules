@@ -1,0 +1,9 @@
+[submodule "home"]
+	path = home
+	url = https://github.com/richardwesthaver/home
+[submodule "pod"]
+	path = pod
+	url = https://github.com/richardwesthaver/pod
+[submodule "box"]
+	path = box
+	url = https://github.com/richardwesthaver/box
